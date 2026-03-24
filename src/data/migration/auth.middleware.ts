@@ -20,13 +20,12 @@ export const verifyToken = (req: Request, res: Response, next: NextFunction) => 
   }
 
   try {
-    // Giải mã JWT bằng Secret Key đã validate
     const decoded = jwt.verify(token, env.JWT_SECRET) as { id: string; role: string };
-    
-    // Gắn thông tin vào Request
     req.user = decoded;
     next();
-  } catch (error) {
+    return;
+  } catch {
+    // Không cần khai báo biến error nếu bạn không dùng nó để log hay xử lý gì
     return res.status(401).json({ message: 'Phiên đăng nhập không hợp lệ hoặc đã hết hạn' });
   }
 };
@@ -37,4 +36,5 @@ export const requireAdmin = (req: Request, res: Response, next: NextFunction) =>
     return res.status(403).json({ message: 'Truy cập bị từ chối. Chỉ dành cho Quản trị viên.' });
   }
   next();
+  return;
 };
