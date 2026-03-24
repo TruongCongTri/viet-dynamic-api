@@ -1,0 +1,54 @@
+{
+  "compilerOptions": {
+    /* =========================================
+       1. File Layout (Cấu trúc thư mục)
+       ========================================= */
+    "rootDir": "./src",
+    "outDir": "./dist",
+    
+    /* ĐÃ XÓA: "baseUrl": "." (Tránh lỗi Deprecated) */
+    "paths": {
+      "@/*": ["./src/*"] 
+    },
+
+    /* =========================================
+       2. Environment Settings (Môi trường Node.js)
+       ========================================= */
+    "module": "CommonJS",
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "types": ["node"],
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+
+    /* =========================================
+       3. Other Outputs (Kết xuất)
+       ========================================= */
+    "sourceMap": true,
+    "declaration": false, 
+
+    /* =========================================
+       4. Stricter Typechecking (Kiểm tra kiểu dữ liệu)
+       ========================================= */
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+
+    /* =========================================
+       5. Style Options (Quy chuẩn Code)
+       ========================================= */
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+
+    /* =========================================
+       6. Recommended Options (Tối ưu biên dịch)
+       ========================================= */
+    "isolatedModules": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*", "tests/**/*"],
+  "exclude": ["node_modules", "dist", "**/*.spec.ts"]
+}
