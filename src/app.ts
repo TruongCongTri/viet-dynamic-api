@@ -3,6 +3,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import { env } from '@/common/configs/env';
+import { errorHandler } from './common/middlewares/error-handler.middleware';
 
 const app = express();
 
@@ -40,5 +41,8 @@ app.get('/health', (_req: Request, res: Response) => {
 // 4. Mount Routes (Sau này sẽ thêm vào đây)
 // import router from '@/modules/router';
 // app.use('/v1', router);
+
+// global error handler
+app.use(errorHandler);
 
 export default app;
