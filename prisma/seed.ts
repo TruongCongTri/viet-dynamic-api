@@ -1,4 +1,10 @@
-import { LessonType, DiscountType } from '@prisma/client';
+import { 
+  LessonType, 
+  DiscountType, 
+  CourseStatus, 
+  VideoStatus, 
+  VoucherAudience 
+} from '../src/generated/enums';
 import bcrypt from 'bcryptjs';
 import { slugify } from '../src/common/utils/slugify.util';
 
@@ -99,15 +105,18 @@ async function main() {
       const slug = slugify(c.title);
       await prisma.course.upsert({
         where: { slug: slug },
-        update: {},
+        update: {
+          status: CourseStatus.PUBLISHED, // Đảm bảo trạng thái luôn cập nhật
+        },
         create: {
           title: c.title,
           slug: slug,
           description: c.desc,
           basePrice: c.price,
-          isPublished: true,
+          status: CourseStatus.PUBLISHED, // [CẬP NHẬT]: Dùng Enum thay cho isPublished
           categoryId: robotCat.id,
-          instructors: { create: { userId: expert.id, isOwner: true } },
+          // [CẬP NHẬT]: Thêm tỷ lệ ăn chia (revenueShare) cho Giảng viên
+          instructors: { create: { userId: expert.id, isOwner: true, revenueShare: 70 } }, 
           modules: {
             create: [
               {
@@ -115,8 +124,20 @@ async function main() {
                 order: 1,
                 lessons: {
                   create: [
-                    { title: 'An toàn trong vận hành Robot', type: LessonType.VIDEO, order: 1, duration: 600 },
-                    { title: 'Cấu trúc phần cứng và tủ điều khiển', type: LessonType.VIDEO, order: 2, duration: 1200 },
+                    { 
+                      title: 'An toàn trong vận hành Robot', 
+                      type: LessonType.VIDEO, 
+                      order: 1, 
+                      duration: 600, 
+                      videoStatus: VideoStatus.READY // [CẬP NHẬT]: Báo hiệu video đã transcode xong
+                    },
+                    { 
+                      title: 'Cấu trúc phần cứng và tủ điều khiển', 
+                      type: LessonType.VIDEO, 
+                      order: 2, 
+                      duration: 1200,
+                      videoStatus: VideoStatus.READY // [CẬP NHẬT]
+                    },
                   ]
                 }
               }
@@ -137,6 +158,7 @@ async function main() {
       value: 15,
       maxDiscountAmount: 1000000,
       minOrderValue: 2000000,
+      audience: VoucherAudience.GLOBAL, // [CẬP NHẬT]: Khai báo mã Public
       startDate: new Date(),
       expiresAt: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000),
     }

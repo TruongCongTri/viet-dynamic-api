@@ -41,7 +41,7 @@ export type CourseMinAggregateOutputType = {
   slug: string | null;
   description: string | null;
   basePrice: runtime.Decimal | null;
-  isPublished: boolean | null;
+  status: $Enums.CourseStatus | null;
   totalDuration: number | null;
   categoryId: string | null;
   createdAt: Date | null;
@@ -54,7 +54,7 @@ export type CourseMaxAggregateOutputType = {
   slug: string | null;
   description: string | null;
   basePrice: runtime.Decimal | null;
-  isPublished: boolean | null;
+  status: $Enums.CourseStatus | null;
   totalDuration: number | null;
   categoryId: string | null;
   createdAt: Date | null;
@@ -67,7 +67,7 @@ export type CourseCountAggregateOutputType = {
   slug: number;
   description: number;
   basePrice: number;
-  isPublished: number;
+  status: number;
   totalDuration: number;
   categoryId: number;
   createdAt: number;
@@ -91,7 +91,7 @@ export type CourseMinAggregateInputType = {
   slug?: true;
   description?: true;
   basePrice?: true;
-  isPublished?: true;
+  status?: true;
   totalDuration?: true;
   categoryId?: true;
   createdAt?: true;
@@ -104,7 +104,7 @@ export type CourseMaxAggregateInputType = {
   slug?: true;
   description?: true;
   basePrice?: true;
-  isPublished?: true;
+  status?: true;
   totalDuration?: true;
   categoryId?: true;
   createdAt?: true;
@@ -117,7 +117,7 @@ export type CourseCountAggregateInputType = {
   slug?: true;
   description?: true;
   basePrice?: true;
-  isPublished?: true;
+  status?: true;
   totalDuration?: true;
   categoryId?: true;
   createdAt?: true;
@@ -218,7 +218,7 @@ export type CourseGroupByOutputType = {
   slug: string;
   description: string | null;
   basePrice: runtime.Decimal;
-  isPublished: boolean;
+  status: $Enums.CourseStatus;
   totalDuration: number;
   categoryId: string | null;
   createdAt: Date;
@@ -256,7 +256,7 @@ export type CourseWhereInput = {
     | runtime.DecimalJsLike
     | number
     | string;
-  isPublished?: Prisma.BoolFilter<'Course'> | boolean;
+  status?: Prisma.EnumCourseStatusFilter<'Course'> | $Enums.CourseStatus;
   totalDuration?: Prisma.IntFilter<'Course'> | number;
   categoryId?: Prisma.StringNullableFilter<'Course'> | string | null;
   createdAt?: Prisma.DateTimeFilter<'Course'> | Date | string;
@@ -273,6 +273,7 @@ export type CourseWhereInput = {
   orderItems?: Prisma.OrderItemListRelationFilter;
   wishlist?: Prisma.WishlistListRelationFilter;
   cartItems?: Prisma.CartItemListRelationFilter;
+  recentlyViewed?: Prisma.RecentlyViewedListRelationFilter;
 };
 
 export type CourseOrderByWithRelationInput = {
@@ -281,7 +282,7 @@ export type CourseOrderByWithRelationInput = {
   slug?: Prisma.SortOrder;
   description?: Prisma.SortOrderInput | Prisma.SortOrder;
   basePrice?: Prisma.SortOrder;
-  isPublished?: Prisma.SortOrder;
+  status?: Prisma.SortOrder;
   totalDuration?: Prisma.SortOrder;
   categoryId?: Prisma.SortOrderInput | Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
@@ -295,6 +296,7 @@ export type CourseOrderByWithRelationInput = {
   orderItems?: Prisma.OrderItemOrderByRelationAggregateInput;
   wishlist?: Prisma.WishlistOrderByRelationAggregateInput;
   cartItems?: Prisma.CartItemOrderByRelationAggregateInput;
+  recentlyViewed?: Prisma.RecentlyViewedOrderByRelationAggregateInput;
 };
 
 export type CourseWhereUniqueInput = Prisma.AtLeast<
@@ -312,7 +314,7 @@ export type CourseWhereUniqueInput = Prisma.AtLeast<
       | runtime.DecimalJsLike
       | number
       | string;
-    isPublished?: Prisma.BoolFilter<'Course'> | boolean;
+    status?: Prisma.EnumCourseStatusFilter<'Course'> | $Enums.CourseStatus;
     totalDuration?: Prisma.IntFilter<'Course'> | number;
     categoryId?: Prisma.StringNullableFilter<'Course'> | string | null;
     createdAt?: Prisma.DateTimeFilter<'Course'> | Date | string;
@@ -329,6 +331,7 @@ export type CourseWhereUniqueInput = Prisma.AtLeast<
     orderItems?: Prisma.OrderItemListRelationFilter;
     wishlist?: Prisma.WishlistListRelationFilter;
     cartItems?: Prisma.CartItemListRelationFilter;
+    recentlyViewed?: Prisma.RecentlyViewedListRelationFilter;
   },
   'id' | 'slug'
 >;
@@ -339,7 +342,7 @@ export type CourseOrderByWithAggregationInput = {
   slug?: Prisma.SortOrder;
   description?: Prisma.SortOrderInput | Prisma.SortOrder;
   basePrice?: Prisma.SortOrder;
-  isPublished?: Prisma.SortOrder;
+  status?: Prisma.SortOrder;
   totalDuration?: Prisma.SortOrder;
   categoryId?: Prisma.SortOrderInput | Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
@@ -365,7 +368,7 @@ export type CourseScalarWhereWithAggregatesInput = {
     | runtime.DecimalJsLike
     | number
     | string;
-  isPublished?: Prisma.BoolWithAggregatesFilter<'Course'> | boolean;
+  status?: Prisma.EnumCourseStatusWithAggregatesFilter<'Course'> | $Enums.CourseStatus;
   totalDuration?: Prisma.IntWithAggregatesFilter<'Course'> | number;
   categoryId?: Prisma.StringNullableWithAggregatesFilter<'Course'> | string | null;
   createdAt?: Prisma.DateTimeWithAggregatesFilter<'Course'> | Date | string;
@@ -378,7 +381,7 @@ export type CourseCreateInput = {
   slug: string;
   description?: string | null;
   basePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string;
-  isPublished?: boolean;
+  status?: $Enums.CourseStatus;
   totalDuration?: number;
   createdAt?: Date | string;
   updatedAt?: Date | string;
@@ -391,6 +394,7 @@ export type CourseCreateInput = {
   orderItems?: Prisma.OrderItemCreateNestedManyWithoutCourseInput;
   wishlist?: Prisma.WishlistCreateNestedManyWithoutCourseInput;
   cartItems?: Prisma.CartItemCreateNestedManyWithoutCourseInput;
+  recentlyViewed?: Prisma.RecentlyViewedCreateNestedManyWithoutCourseInput;
 };
 
 export type CourseUncheckedCreateInput = {
@@ -399,7 +403,7 @@ export type CourseUncheckedCreateInput = {
   slug: string;
   description?: string | null;
   basePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string;
-  isPublished?: boolean;
+  status?: $Enums.CourseStatus;
   totalDuration?: number;
   categoryId?: string | null;
   createdAt?: Date | string;
@@ -412,6 +416,7 @@ export type CourseUncheckedCreateInput = {
   orderItems?: Prisma.OrderItemUncheckedCreateNestedManyWithoutCourseInput;
   wishlist?: Prisma.WishlistUncheckedCreateNestedManyWithoutCourseInput;
   cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutCourseInput;
+  recentlyViewed?: Prisma.RecentlyViewedUncheckedCreateNestedManyWithoutCourseInput;
 };
 
 export type CourseUpdateInput = {
@@ -425,7 +430,7 @@ export type CourseUpdateInput = {
     | runtime.DecimalJsLike
     | number
     | string;
-  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?: Prisma.EnumCourseStatusFieldUpdateOperationsInput | $Enums.CourseStatus;
   totalDuration?: Prisma.IntFieldUpdateOperationsInput | number;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -438,6 +443,7 @@ export type CourseUpdateInput = {
   orderItems?: Prisma.OrderItemUpdateManyWithoutCourseNestedInput;
   wishlist?: Prisma.WishlistUpdateManyWithoutCourseNestedInput;
   cartItems?: Prisma.CartItemUpdateManyWithoutCourseNestedInput;
+  recentlyViewed?: Prisma.RecentlyViewedUpdateManyWithoutCourseNestedInput;
 };
 
 export type CourseUncheckedUpdateInput = {
@@ -451,7 +457,7 @@ export type CourseUncheckedUpdateInput = {
     | runtime.DecimalJsLike
     | number
     | string;
-  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?: Prisma.EnumCourseStatusFieldUpdateOperationsInput | $Enums.CourseStatus;
   totalDuration?: Prisma.IntFieldUpdateOperationsInput | number;
   categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -464,6 +470,7 @@ export type CourseUncheckedUpdateInput = {
   orderItems?: Prisma.OrderItemUncheckedUpdateManyWithoutCourseNestedInput;
   wishlist?: Prisma.WishlistUncheckedUpdateManyWithoutCourseNestedInput;
   cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutCourseNestedInput;
+  recentlyViewed?: Prisma.RecentlyViewedUncheckedUpdateManyWithoutCourseNestedInput;
 };
 
 export type CourseCreateManyInput = {
@@ -472,7 +479,7 @@ export type CourseCreateManyInput = {
   slug: string;
   description?: string | null;
   basePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string;
-  isPublished?: boolean;
+  status?: $Enums.CourseStatus;
   totalDuration?: number;
   categoryId?: string | null;
   createdAt?: Date | string;
@@ -490,7 +497,7 @@ export type CourseUpdateManyMutationInput = {
     | runtime.DecimalJsLike
     | number
     | string;
-  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?: Prisma.EnumCourseStatusFieldUpdateOperationsInput | $Enums.CourseStatus;
   totalDuration?: Prisma.IntFieldUpdateOperationsInput | number;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -507,7 +514,7 @@ export type CourseUncheckedUpdateManyInput = {
     | runtime.DecimalJsLike
     | number
     | string;
-  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?: Prisma.EnumCourseStatusFieldUpdateOperationsInput | $Enums.CourseStatus;
   totalDuration?: Prisma.IntFieldUpdateOperationsInput | number;
   categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -530,7 +537,7 @@ export type CourseCountOrderByAggregateInput = {
   slug?: Prisma.SortOrder;
   description?: Prisma.SortOrder;
   basePrice?: Prisma.SortOrder;
-  isPublished?: Prisma.SortOrder;
+  status?: Prisma.SortOrder;
   totalDuration?: Prisma.SortOrder;
   categoryId?: Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
@@ -548,7 +555,7 @@ export type CourseMaxOrderByAggregateInput = {
   slug?: Prisma.SortOrder;
   description?: Prisma.SortOrder;
   basePrice?: Prisma.SortOrder;
-  isPublished?: Prisma.SortOrder;
+  status?: Prisma.SortOrder;
   totalDuration?: Prisma.SortOrder;
   categoryId?: Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
@@ -561,7 +568,7 @@ export type CourseMinOrderByAggregateInput = {
   slug?: Prisma.SortOrder;
   description?: Prisma.SortOrder;
   basePrice?: Prisma.SortOrder;
-  isPublished?: Prisma.SortOrder;
+  status?: Prisma.SortOrder;
   totalDuration?: Prisma.SortOrder;
   categoryId?: Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
@@ -670,6 +677,10 @@ export type DecimalFieldUpdateOperationsInput = {
   decrement?: runtime.Decimal | runtime.DecimalJsLike | number | string;
   multiply?: runtime.Decimal | runtime.DecimalJsLike | number | string;
   divide?: runtime.Decimal | runtime.DecimalJsLike | number | string;
+};
+
+export type EnumCourseStatusFieldUpdateOperationsInput = {
+  set?: $Enums.CourseStatus;
 };
 
 export type IntFieldUpdateOperationsInput = {
@@ -836,6 +847,32 @@ export type CourseUpdateOneRequiredWithoutWishlistNestedInput = {
   >;
 };
 
+export type CourseCreateNestedOneWithoutRecentlyViewedInput = {
+  create?: Prisma.XOR<
+    Prisma.CourseCreateWithoutRecentlyViewedInput,
+    Prisma.CourseUncheckedCreateWithoutRecentlyViewedInput
+  >;
+  connectOrCreate?: Prisma.CourseCreateOrConnectWithoutRecentlyViewedInput;
+  connect?: Prisma.CourseWhereUniqueInput;
+};
+
+export type CourseUpdateOneRequiredWithoutRecentlyViewedNestedInput = {
+  create?: Prisma.XOR<
+    Prisma.CourseCreateWithoutRecentlyViewedInput,
+    Prisma.CourseUncheckedCreateWithoutRecentlyViewedInput
+  >;
+  connectOrCreate?: Prisma.CourseCreateOrConnectWithoutRecentlyViewedInput;
+  upsert?: Prisma.CourseUpsertWithoutRecentlyViewedInput;
+  connect?: Prisma.CourseWhereUniqueInput;
+  update?: Prisma.XOR<
+    Prisma.XOR<
+      Prisma.CourseUpdateToOneWithWhereWithoutRecentlyViewedInput,
+      Prisma.CourseUpdateWithoutRecentlyViewedInput
+    >,
+    Prisma.CourseUncheckedUpdateWithoutRecentlyViewedInput
+  >;
+};
+
 export type CourseCreateNestedOneWithoutCartItemsInput = {
   create?: Prisma.XOR<
     Prisma.CourseCreateWithoutCartItemsInput,
@@ -894,7 +931,7 @@ export type CourseCreateWithoutCategoryInput = {
   slug: string;
   description?: string | null;
   basePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string;
-  isPublished?: boolean;
+  status?: $Enums.CourseStatus;
   totalDuration?: number;
   createdAt?: Date | string;
   updatedAt?: Date | string;
@@ -906,6 +943,7 @@ export type CourseCreateWithoutCategoryInput = {
   orderItems?: Prisma.OrderItemCreateNestedManyWithoutCourseInput;
   wishlist?: Prisma.WishlistCreateNestedManyWithoutCourseInput;
   cartItems?: Prisma.CartItemCreateNestedManyWithoutCourseInput;
+  recentlyViewed?: Prisma.RecentlyViewedCreateNestedManyWithoutCourseInput;
 };
 
 export type CourseUncheckedCreateWithoutCategoryInput = {
@@ -914,7 +952,7 @@ export type CourseUncheckedCreateWithoutCategoryInput = {
   slug: string;
   description?: string | null;
   basePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string;
-  isPublished?: boolean;
+  status?: $Enums.CourseStatus;
   totalDuration?: number;
   createdAt?: Date | string;
   updatedAt?: Date | string;
@@ -926,6 +964,7 @@ export type CourseUncheckedCreateWithoutCategoryInput = {
   orderItems?: Prisma.OrderItemUncheckedCreateNestedManyWithoutCourseInput;
   wishlist?: Prisma.WishlistUncheckedCreateNestedManyWithoutCourseInput;
   cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutCourseInput;
+  recentlyViewed?: Prisma.RecentlyViewedUncheckedCreateNestedManyWithoutCourseInput;
 };
 
 export type CourseCreateOrConnectWithoutCategoryInput = {
@@ -983,7 +1022,7 @@ export type CourseScalarWhereInput = {
     | runtime.DecimalJsLike
     | number
     | string;
-  isPublished?: Prisma.BoolFilter<'Course'> | boolean;
+  status?: Prisma.EnumCourseStatusFilter<'Course'> | $Enums.CourseStatus;
   totalDuration?: Prisma.IntFilter<'Course'> | number;
   categoryId?: Prisma.StringNullableFilter<'Course'> | string | null;
   createdAt?: Prisma.DateTimeFilter<'Course'> | Date | string;
@@ -996,7 +1035,7 @@ export type CourseCreateWithoutInstructorsInput = {
   slug: string;
   description?: string | null;
   basePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string;
-  isPublished?: boolean;
+  status?: $Enums.CourseStatus;
   totalDuration?: number;
   createdAt?: Date | string;
   updatedAt?: Date | string;
@@ -1008,6 +1047,7 @@ export type CourseCreateWithoutInstructorsInput = {
   orderItems?: Prisma.OrderItemCreateNestedManyWithoutCourseInput;
   wishlist?: Prisma.WishlistCreateNestedManyWithoutCourseInput;
   cartItems?: Prisma.CartItemCreateNestedManyWithoutCourseInput;
+  recentlyViewed?: Prisma.RecentlyViewedCreateNestedManyWithoutCourseInput;
 };
 
 export type CourseUncheckedCreateWithoutInstructorsInput = {
@@ -1016,7 +1056,7 @@ export type CourseUncheckedCreateWithoutInstructorsInput = {
   slug: string;
   description?: string | null;
   basePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string;
-  isPublished?: boolean;
+  status?: $Enums.CourseStatus;
   totalDuration?: number;
   categoryId?: string | null;
   createdAt?: Date | string;
@@ -1028,6 +1068,7 @@ export type CourseUncheckedCreateWithoutInstructorsInput = {
   orderItems?: Prisma.OrderItemUncheckedCreateNestedManyWithoutCourseInput;
   wishlist?: Prisma.WishlistUncheckedCreateNestedManyWithoutCourseInput;
   cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutCourseInput;
+  recentlyViewed?: Prisma.RecentlyViewedUncheckedCreateNestedManyWithoutCourseInput;
 };
 
 export type CourseCreateOrConnectWithoutInstructorsInput = {
@@ -1069,7 +1110,7 @@ export type CourseUpdateWithoutInstructorsInput = {
     | runtime.DecimalJsLike
     | number
     | string;
-  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?: Prisma.EnumCourseStatusFieldUpdateOperationsInput | $Enums.CourseStatus;
   totalDuration?: Prisma.IntFieldUpdateOperationsInput | number;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1081,6 +1122,7 @@ export type CourseUpdateWithoutInstructorsInput = {
   orderItems?: Prisma.OrderItemUpdateManyWithoutCourseNestedInput;
   wishlist?: Prisma.WishlistUpdateManyWithoutCourseNestedInput;
   cartItems?: Prisma.CartItemUpdateManyWithoutCourseNestedInput;
+  recentlyViewed?: Prisma.RecentlyViewedUpdateManyWithoutCourseNestedInput;
 };
 
 export type CourseUncheckedUpdateWithoutInstructorsInput = {
@@ -1094,7 +1136,7 @@ export type CourseUncheckedUpdateWithoutInstructorsInput = {
     | runtime.DecimalJsLike
     | number
     | string;
-  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?: Prisma.EnumCourseStatusFieldUpdateOperationsInput | $Enums.CourseStatus;
   totalDuration?: Prisma.IntFieldUpdateOperationsInput | number;
   categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1106,6 +1148,7 @@ export type CourseUncheckedUpdateWithoutInstructorsInput = {
   orderItems?: Prisma.OrderItemUncheckedUpdateManyWithoutCourseNestedInput;
   wishlist?: Prisma.WishlistUncheckedUpdateManyWithoutCourseNestedInput;
   cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutCourseNestedInput;
+  recentlyViewed?: Prisma.RecentlyViewedUncheckedUpdateManyWithoutCourseNestedInput;
 };
 
 export type CourseCreateWithoutModulesInput = {
@@ -1114,7 +1157,7 @@ export type CourseCreateWithoutModulesInput = {
   slug: string;
   description?: string | null;
   basePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string;
-  isPublished?: boolean;
+  status?: $Enums.CourseStatus;
   totalDuration?: number;
   createdAt?: Date | string;
   updatedAt?: Date | string;
@@ -1126,6 +1169,7 @@ export type CourseCreateWithoutModulesInput = {
   orderItems?: Prisma.OrderItemCreateNestedManyWithoutCourseInput;
   wishlist?: Prisma.WishlistCreateNestedManyWithoutCourseInput;
   cartItems?: Prisma.CartItemCreateNestedManyWithoutCourseInput;
+  recentlyViewed?: Prisma.RecentlyViewedCreateNestedManyWithoutCourseInput;
 };
 
 export type CourseUncheckedCreateWithoutModulesInput = {
@@ -1134,7 +1178,7 @@ export type CourseUncheckedCreateWithoutModulesInput = {
   slug: string;
   description?: string | null;
   basePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string;
-  isPublished?: boolean;
+  status?: $Enums.CourseStatus;
   totalDuration?: number;
   categoryId?: string | null;
   createdAt?: Date | string;
@@ -1146,6 +1190,7 @@ export type CourseUncheckedCreateWithoutModulesInput = {
   orderItems?: Prisma.OrderItemUncheckedCreateNestedManyWithoutCourseInput;
   wishlist?: Prisma.WishlistUncheckedCreateNestedManyWithoutCourseInput;
   cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutCourseInput;
+  recentlyViewed?: Prisma.RecentlyViewedUncheckedCreateNestedManyWithoutCourseInput;
 };
 
 export type CourseCreateOrConnectWithoutModulesInput = {
@@ -1187,7 +1232,7 @@ export type CourseUpdateWithoutModulesInput = {
     | runtime.DecimalJsLike
     | number
     | string;
-  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?: Prisma.EnumCourseStatusFieldUpdateOperationsInput | $Enums.CourseStatus;
   totalDuration?: Prisma.IntFieldUpdateOperationsInput | number;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1199,6 +1244,7 @@ export type CourseUpdateWithoutModulesInput = {
   orderItems?: Prisma.OrderItemUpdateManyWithoutCourseNestedInput;
   wishlist?: Prisma.WishlistUpdateManyWithoutCourseNestedInput;
   cartItems?: Prisma.CartItemUpdateManyWithoutCourseNestedInput;
+  recentlyViewed?: Prisma.RecentlyViewedUpdateManyWithoutCourseNestedInput;
 };
 
 export type CourseUncheckedUpdateWithoutModulesInput = {
@@ -1212,7 +1258,7 @@ export type CourseUncheckedUpdateWithoutModulesInput = {
     | runtime.DecimalJsLike
     | number
     | string;
-  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?: Prisma.EnumCourseStatusFieldUpdateOperationsInput | $Enums.CourseStatus;
   totalDuration?: Prisma.IntFieldUpdateOperationsInput | number;
   categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1224,6 +1270,7 @@ export type CourseUncheckedUpdateWithoutModulesInput = {
   orderItems?: Prisma.OrderItemUncheckedUpdateManyWithoutCourseNestedInput;
   wishlist?: Prisma.WishlistUncheckedUpdateManyWithoutCourseNestedInput;
   cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutCourseNestedInput;
+  recentlyViewed?: Prisma.RecentlyViewedUncheckedUpdateManyWithoutCourseNestedInput;
 };
 
 export type CourseCreateWithoutReviewsInput = {
@@ -1232,7 +1279,7 @@ export type CourseCreateWithoutReviewsInput = {
   slug: string;
   description?: string | null;
   basePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string;
-  isPublished?: boolean;
+  status?: $Enums.CourseStatus;
   totalDuration?: number;
   createdAt?: Date | string;
   updatedAt?: Date | string;
@@ -1244,6 +1291,7 @@ export type CourseCreateWithoutReviewsInput = {
   orderItems?: Prisma.OrderItemCreateNestedManyWithoutCourseInput;
   wishlist?: Prisma.WishlistCreateNestedManyWithoutCourseInput;
   cartItems?: Prisma.CartItemCreateNestedManyWithoutCourseInput;
+  recentlyViewed?: Prisma.RecentlyViewedCreateNestedManyWithoutCourseInput;
 };
 
 export type CourseUncheckedCreateWithoutReviewsInput = {
@@ -1252,7 +1300,7 @@ export type CourseUncheckedCreateWithoutReviewsInput = {
   slug: string;
   description?: string | null;
   basePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string;
-  isPublished?: boolean;
+  status?: $Enums.CourseStatus;
   totalDuration?: number;
   categoryId?: string | null;
   createdAt?: Date | string;
@@ -1264,6 +1312,7 @@ export type CourseUncheckedCreateWithoutReviewsInput = {
   orderItems?: Prisma.OrderItemUncheckedCreateNestedManyWithoutCourseInput;
   wishlist?: Prisma.WishlistUncheckedCreateNestedManyWithoutCourseInput;
   cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutCourseInput;
+  recentlyViewed?: Prisma.RecentlyViewedUncheckedCreateNestedManyWithoutCourseInput;
 };
 
 export type CourseCreateOrConnectWithoutReviewsInput = {
@@ -1305,7 +1354,7 @@ export type CourseUpdateWithoutReviewsInput = {
     | runtime.DecimalJsLike
     | number
     | string;
-  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?: Prisma.EnumCourseStatusFieldUpdateOperationsInput | $Enums.CourseStatus;
   totalDuration?: Prisma.IntFieldUpdateOperationsInput | number;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1317,6 +1366,7 @@ export type CourseUpdateWithoutReviewsInput = {
   orderItems?: Prisma.OrderItemUpdateManyWithoutCourseNestedInput;
   wishlist?: Prisma.WishlistUpdateManyWithoutCourseNestedInput;
   cartItems?: Prisma.CartItemUpdateManyWithoutCourseNestedInput;
+  recentlyViewed?: Prisma.RecentlyViewedUpdateManyWithoutCourseNestedInput;
 };
 
 export type CourseUncheckedUpdateWithoutReviewsInput = {
@@ -1330,7 +1380,7 @@ export type CourseUncheckedUpdateWithoutReviewsInput = {
     | runtime.DecimalJsLike
     | number
     | string;
-  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?: Prisma.EnumCourseStatusFieldUpdateOperationsInput | $Enums.CourseStatus;
   totalDuration?: Prisma.IntFieldUpdateOperationsInput | number;
   categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1342,6 +1392,7 @@ export type CourseUncheckedUpdateWithoutReviewsInput = {
   orderItems?: Prisma.OrderItemUncheckedUpdateManyWithoutCourseNestedInput;
   wishlist?: Prisma.WishlistUncheckedUpdateManyWithoutCourseNestedInput;
   cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutCourseNestedInput;
+  recentlyViewed?: Prisma.RecentlyViewedUncheckedUpdateManyWithoutCourseNestedInput;
 };
 
 export type CourseCreateWithoutDiscountsInput = {
@@ -1350,7 +1401,7 @@ export type CourseCreateWithoutDiscountsInput = {
   slug: string;
   description?: string | null;
   basePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string;
-  isPublished?: boolean;
+  status?: $Enums.CourseStatus;
   totalDuration?: number;
   createdAt?: Date | string;
   updatedAt?: Date | string;
@@ -1362,6 +1413,7 @@ export type CourseCreateWithoutDiscountsInput = {
   orderItems?: Prisma.OrderItemCreateNestedManyWithoutCourseInput;
   wishlist?: Prisma.WishlistCreateNestedManyWithoutCourseInput;
   cartItems?: Prisma.CartItemCreateNestedManyWithoutCourseInput;
+  recentlyViewed?: Prisma.RecentlyViewedCreateNestedManyWithoutCourseInput;
 };
 
 export type CourseUncheckedCreateWithoutDiscountsInput = {
@@ -1370,7 +1422,7 @@ export type CourseUncheckedCreateWithoutDiscountsInput = {
   slug: string;
   description?: string | null;
   basePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string;
-  isPublished?: boolean;
+  status?: $Enums.CourseStatus;
   totalDuration?: number;
   categoryId?: string | null;
   createdAt?: Date | string;
@@ -1382,6 +1434,7 @@ export type CourseUncheckedCreateWithoutDiscountsInput = {
   orderItems?: Prisma.OrderItemUncheckedCreateNestedManyWithoutCourseInput;
   wishlist?: Prisma.WishlistUncheckedCreateNestedManyWithoutCourseInput;
   cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutCourseInput;
+  recentlyViewed?: Prisma.RecentlyViewedUncheckedCreateNestedManyWithoutCourseInput;
 };
 
 export type CourseCreateOrConnectWithoutDiscountsInput = {
@@ -1423,7 +1476,7 @@ export type CourseUpdateWithoutDiscountsInput = {
     | runtime.DecimalJsLike
     | number
     | string;
-  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?: Prisma.EnumCourseStatusFieldUpdateOperationsInput | $Enums.CourseStatus;
   totalDuration?: Prisma.IntFieldUpdateOperationsInput | number;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1435,6 +1488,7 @@ export type CourseUpdateWithoutDiscountsInput = {
   orderItems?: Prisma.OrderItemUpdateManyWithoutCourseNestedInput;
   wishlist?: Prisma.WishlistUpdateManyWithoutCourseNestedInput;
   cartItems?: Prisma.CartItemUpdateManyWithoutCourseNestedInput;
+  recentlyViewed?: Prisma.RecentlyViewedUpdateManyWithoutCourseNestedInput;
 };
 
 export type CourseUncheckedUpdateWithoutDiscountsInput = {
@@ -1448,7 +1502,7 @@ export type CourseUncheckedUpdateWithoutDiscountsInput = {
     | runtime.DecimalJsLike
     | number
     | string;
-  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?: Prisma.EnumCourseStatusFieldUpdateOperationsInput | $Enums.CourseStatus;
   totalDuration?: Prisma.IntFieldUpdateOperationsInput | number;
   categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1460,6 +1514,7 @@ export type CourseUncheckedUpdateWithoutDiscountsInput = {
   orderItems?: Prisma.OrderItemUncheckedUpdateManyWithoutCourseNestedInput;
   wishlist?: Prisma.WishlistUncheckedUpdateManyWithoutCourseNestedInput;
   cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutCourseNestedInput;
+  recentlyViewed?: Prisma.RecentlyViewedUncheckedUpdateManyWithoutCourseNestedInput;
 };
 
 export type CourseCreateWithoutOrderItemsInput = {
@@ -1468,7 +1523,7 @@ export type CourseCreateWithoutOrderItemsInput = {
   slug: string;
   description?: string | null;
   basePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string;
-  isPublished?: boolean;
+  status?: $Enums.CourseStatus;
   totalDuration?: number;
   createdAt?: Date | string;
   updatedAt?: Date | string;
@@ -1480,6 +1535,7 @@ export type CourseCreateWithoutOrderItemsInput = {
   discounts?: Prisma.CourseDiscountCreateNestedManyWithoutCourseInput;
   wishlist?: Prisma.WishlistCreateNestedManyWithoutCourseInput;
   cartItems?: Prisma.CartItemCreateNestedManyWithoutCourseInput;
+  recentlyViewed?: Prisma.RecentlyViewedCreateNestedManyWithoutCourseInput;
 };
 
 export type CourseUncheckedCreateWithoutOrderItemsInput = {
@@ -1488,7 +1544,7 @@ export type CourseUncheckedCreateWithoutOrderItemsInput = {
   slug: string;
   description?: string | null;
   basePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string;
-  isPublished?: boolean;
+  status?: $Enums.CourseStatus;
   totalDuration?: number;
   categoryId?: string | null;
   createdAt?: Date | string;
@@ -1500,6 +1556,7 @@ export type CourseUncheckedCreateWithoutOrderItemsInput = {
   discounts?: Prisma.CourseDiscountUncheckedCreateNestedManyWithoutCourseInput;
   wishlist?: Prisma.WishlistUncheckedCreateNestedManyWithoutCourseInput;
   cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutCourseInput;
+  recentlyViewed?: Prisma.RecentlyViewedUncheckedCreateNestedManyWithoutCourseInput;
 };
 
 export type CourseCreateOrConnectWithoutOrderItemsInput = {
@@ -1541,7 +1598,7 @@ export type CourseUpdateWithoutOrderItemsInput = {
     | runtime.DecimalJsLike
     | number
     | string;
-  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?: Prisma.EnumCourseStatusFieldUpdateOperationsInput | $Enums.CourseStatus;
   totalDuration?: Prisma.IntFieldUpdateOperationsInput | number;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1553,6 +1610,7 @@ export type CourseUpdateWithoutOrderItemsInput = {
   discounts?: Prisma.CourseDiscountUpdateManyWithoutCourseNestedInput;
   wishlist?: Prisma.WishlistUpdateManyWithoutCourseNestedInput;
   cartItems?: Prisma.CartItemUpdateManyWithoutCourseNestedInput;
+  recentlyViewed?: Prisma.RecentlyViewedUpdateManyWithoutCourseNestedInput;
 };
 
 export type CourseUncheckedUpdateWithoutOrderItemsInput = {
@@ -1566,7 +1624,7 @@ export type CourseUncheckedUpdateWithoutOrderItemsInput = {
     | runtime.DecimalJsLike
     | number
     | string;
-  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?: Prisma.EnumCourseStatusFieldUpdateOperationsInput | $Enums.CourseStatus;
   totalDuration?: Prisma.IntFieldUpdateOperationsInput | number;
   categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1578,6 +1636,7 @@ export type CourseUncheckedUpdateWithoutOrderItemsInput = {
   discounts?: Prisma.CourseDiscountUncheckedUpdateManyWithoutCourseNestedInput;
   wishlist?: Prisma.WishlistUncheckedUpdateManyWithoutCourseNestedInput;
   cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutCourseNestedInput;
+  recentlyViewed?: Prisma.RecentlyViewedUncheckedUpdateManyWithoutCourseNestedInput;
 };
 
 export type CourseCreateWithoutWishlistInput = {
@@ -1586,7 +1645,7 @@ export type CourseCreateWithoutWishlistInput = {
   slug: string;
   description?: string | null;
   basePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string;
-  isPublished?: boolean;
+  status?: $Enums.CourseStatus;
   totalDuration?: number;
   createdAt?: Date | string;
   updatedAt?: Date | string;
@@ -1598,6 +1657,7 @@ export type CourseCreateWithoutWishlistInput = {
   discounts?: Prisma.CourseDiscountCreateNestedManyWithoutCourseInput;
   orderItems?: Prisma.OrderItemCreateNestedManyWithoutCourseInput;
   cartItems?: Prisma.CartItemCreateNestedManyWithoutCourseInput;
+  recentlyViewed?: Prisma.RecentlyViewedCreateNestedManyWithoutCourseInput;
 };
 
 export type CourseUncheckedCreateWithoutWishlistInput = {
@@ -1606,7 +1666,7 @@ export type CourseUncheckedCreateWithoutWishlistInput = {
   slug: string;
   description?: string | null;
   basePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string;
-  isPublished?: boolean;
+  status?: $Enums.CourseStatus;
   totalDuration?: number;
   categoryId?: string | null;
   createdAt?: Date | string;
@@ -1618,6 +1678,7 @@ export type CourseUncheckedCreateWithoutWishlistInput = {
   discounts?: Prisma.CourseDiscountUncheckedCreateNestedManyWithoutCourseInput;
   orderItems?: Prisma.OrderItemUncheckedCreateNestedManyWithoutCourseInput;
   cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutCourseInput;
+  recentlyViewed?: Prisma.RecentlyViewedUncheckedCreateNestedManyWithoutCourseInput;
 };
 
 export type CourseCreateOrConnectWithoutWishlistInput = {
@@ -1659,7 +1720,7 @@ export type CourseUpdateWithoutWishlistInput = {
     | runtime.DecimalJsLike
     | number
     | string;
-  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?: Prisma.EnumCourseStatusFieldUpdateOperationsInput | $Enums.CourseStatus;
   totalDuration?: Prisma.IntFieldUpdateOperationsInput | number;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1671,6 +1732,7 @@ export type CourseUpdateWithoutWishlistInput = {
   discounts?: Prisma.CourseDiscountUpdateManyWithoutCourseNestedInput;
   orderItems?: Prisma.OrderItemUpdateManyWithoutCourseNestedInput;
   cartItems?: Prisma.CartItemUpdateManyWithoutCourseNestedInput;
+  recentlyViewed?: Prisma.RecentlyViewedUpdateManyWithoutCourseNestedInput;
 };
 
 export type CourseUncheckedUpdateWithoutWishlistInput = {
@@ -1684,7 +1746,7 @@ export type CourseUncheckedUpdateWithoutWishlistInput = {
     | runtime.DecimalJsLike
     | number
     | string;
-  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?: Prisma.EnumCourseStatusFieldUpdateOperationsInput | $Enums.CourseStatus;
   totalDuration?: Prisma.IntFieldUpdateOperationsInput | number;
   categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1696,15 +1758,16 @@ export type CourseUncheckedUpdateWithoutWishlistInput = {
   discounts?: Prisma.CourseDiscountUncheckedUpdateManyWithoutCourseNestedInput;
   orderItems?: Prisma.OrderItemUncheckedUpdateManyWithoutCourseNestedInput;
   cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutCourseNestedInput;
+  recentlyViewed?: Prisma.RecentlyViewedUncheckedUpdateManyWithoutCourseNestedInput;
 };
 
-export type CourseCreateWithoutCartItemsInput = {
+export type CourseCreateWithoutRecentlyViewedInput = {
   id?: string;
   title: string;
   slug: string;
   description?: string | null;
   basePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string;
-  isPublished?: boolean;
+  status?: $Enums.CourseStatus;
   totalDuration?: number;
   createdAt?: Date | string;
   updatedAt?: Date | string;
@@ -1716,15 +1779,16 @@ export type CourseCreateWithoutCartItemsInput = {
   discounts?: Prisma.CourseDiscountCreateNestedManyWithoutCourseInput;
   orderItems?: Prisma.OrderItemCreateNestedManyWithoutCourseInput;
   wishlist?: Prisma.WishlistCreateNestedManyWithoutCourseInput;
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutCourseInput;
 };
 
-export type CourseUncheckedCreateWithoutCartItemsInput = {
+export type CourseUncheckedCreateWithoutRecentlyViewedInput = {
   id?: string;
   title: string;
   slug: string;
   description?: string | null;
   basePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string;
-  isPublished?: boolean;
+  status?: $Enums.CourseStatus;
   totalDuration?: number;
   categoryId?: string | null;
   createdAt?: Date | string;
@@ -1736,6 +1800,129 @@ export type CourseUncheckedCreateWithoutCartItemsInput = {
   discounts?: Prisma.CourseDiscountUncheckedCreateNestedManyWithoutCourseInput;
   orderItems?: Prisma.OrderItemUncheckedCreateNestedManyWithoutCourseInput;
   wishlist?: Prisma.WishlistUncheckedCreateNestedManyWithoutCourseInput;
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutCourseInput;
+};
+
+export type CourseCreateOrConnectWithoutRecentlyViewedInput = {
+  where: Prisma.CourseWhereUniqueInput;
+  create: Prisma.XOR<
+    Prisma.CourseCreateWithoutRecentlyViewedInput,
+    Prisma.CourseUncheckedCreateWithoutRecentlyViewedInput
+  >;
+};
+
+export type CourseUpsertWithoutRecentlyViewedInput = {
+  update: Prisma.XOR<
+    Prisma.CourseUpdateWithoutRecentlyViewedInput,
+    Prisma.CourseUncheckedUpdateWithoutRecentlyViewedInput
+  >;
+  create: Prisma.XOR<
+    Prisma.CourseCreateWithoutRecentlyViewedInput,
+    Prisma.CourseUncheckedCreateWithoutRecentlyViewedInput
+  >;
+  where?: Prisma.CourseWhereInput;
+};
+
+export type CourseUpdateToOneWithWhereWithoutRecentlyViewedInput = {
+  where?: Prisma.CourseWhereInput;
+  data: Prisma.XOR<
+    Prisma.CourseUpdateWithoutRecentlyViewedInput,
+    Prisma.CourseUncheckedUpdateWithoutRecentlyViewedInput
+  >;
+};
+
+export type CourseUpdateWithoutRecentlyViewedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  title?: Prisma.StringFieldUpdateOperationsInput | string;
+  slug?: Prisma.StringFieldUpdateOperationsInput | string;
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  basePrice?:
+    | Prisma.DecimalFieldUpdateOperationsInput
+    | runtime.Decimal
+    | runtime.DecimalJsLike
+    | number
+    | string;
+  status?: Prisma.EnumCourseStatusFieldUpdateOperationsInput | $Enums.CourseStatus;
+  totalDuration?: Prisma.IntFieldUpdateOperationsInput | number;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  category?: Prisma.CategoryUpdateOneWithoutCoursesNestedInput;
+  instructors?: Prisma.CourseInstructorUpdateManyWithoutCourseNestedInput;
+  modules?: Prisma.ModuleUpdateManyWithoutCourseNestedInput;
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutCourseNestedInput;
+  reviews?: Prisma.CourseReviewUpdateManyWithoutCourseNestedInput;
+  discounts?: Prisma.CourseDiscountUpdateManyWithoutCourseNestedInput;
+  orderItems?: Prisma.OrderItemUpdateManyWithoutCourseNestedInput;
+  wishlist?: Prisma.WishlistUpdateManyWithoutCourseNestedInput;
+  cartItems?: Prisma.CartItemUpdateManyWithoutCourseNestedInput;
+};
+
+export type CourseUncheckedUpdateWithoutRecentlyViewedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  title?: Prisma.StringFieldUpdateOperationsInput | string;
+  slug?: Prisma.StringFieldUpdateOperationsInput | string;
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  basePrice?:
+    | Prisma.DecimalFieldUpdateOperationsInput
+    | runtime.Decimal
+    | runtime.DecimalJsLike
+    | number
+    | string;
+  status?: Prisma.EnumCourseStatusFieldUpdateOperationsInput | $Enums.CourseStatus;
+  totalDuration?: Prisma.IntFieldUpdateOperationsInput | number;
+  categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  instructors?: Prisma.CourseInstructorUncheckedUpdateManyWithoutCourseNestedInput;
+  modules?: Prisma.ModuleUncheckedUpdateManyWithoutCourseNestedInput;
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutCourseNestedInput;
+  reviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutCourseNestedInput;
+  discounts?: Prisma.CourseDiscountUncheckedUpdateManyWithoutCourseNestedInput;
+  orderItems?: Prisma.OrderItemUncheckedUpdateManyWithoutCourseNestedInput;
+  wishlist?: Prisma.WishlistUncheckedUpdateManyWithoutCourseNestedInput;
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutCourseNestedInput;
+};
+
+export type CourseCreateWithoutCartItemsInput = {
+  id?: string;
+  title: string;
+  slug: string;
+  description?: string | null;
+  basePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string;
+  status?: $Enums.CourseStatus;
+  totalDuration?: number;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  category?: Prisma.CategoryCreateNestedOneWithoutCoursesInput;
+  instructors?: Prisma.CourseInstructorCreateNestedManyWithoutCourseInput;
+  modules?: Prisma.ModuleCreateNestedManyWithoutCourseInput;
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutCourseInput;
+  reviews?: Prisma.CourseReviewCreateNestedManyWithoutCourseInput;
+  discounts?: Prisma.CourseDiscountCreateNestedManyWithoutCourseInput;
+  orderItems?: Prisma.OrderItemCreateNestedManyWithoutCourseInput;
+  wishlist?: Prisma.WishlistCreateNestedManyWithoutCourseInput;
+  recentlyViewed?: Prisma.RecentlyViewedCreateNestedManyWithoutCourseInput;
+};
+
+export type CourseUncheckedCreateWithoutCartItemsInput = {
+  id?: string;
+  title: string;
+  slug: string;
+  description?: string | null;
+  basePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string;
+  status?: $Enums.CourseStatus;
+  totalDuration?: number;
+  categoryId?: string | null;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  instructors?: Prisma.CourseInstructorUncheckedCreateNestedManyWithoutCourseInput;
+  modules?: Prisma.ModuleUncheckedCreateNestedManyWithoutCourseInput;
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutCourseInput;
+  reviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutCourseInput;
+  discounts?: Prisma.CourseDiscountUncheckedCreateNestedManyWithoutCourseInput;
+  orderItems?: Prisma.OrderItemUncheckedCreateNestedManyWithoutCourseInput;
+  wishlist?: Prisma.WishlistUncheckedCreateNestedManyWithoutCourseInput;
+  recentlyViewed?: Prisma.RecentlyViewedUncheckedCreateNestedManyWithoutCourseInput;
 };
 
 export type CourseCreateOrConnectWithoutCartItemsInput = {
@@ -1777,7 +1964,7 @@ export type CourseUpdateWithoutCartItemsInput = {
     | runtime.DecimalJsLike
     | number
     | string;
-  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?: Prisma.EnumCourseStatusFieldUpdateOperationsInput | $Enums.CourseStatus;
   totalDuration?: Prisma.IntFieldUpdateOperationsInput | number;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1789,6 +1976,7 @@ export type CourseUpdateWithoutCartItemsInput = {
   discounts?: Prisma.CourseDiscountUpdateManyWithoutCourseNestedInput;
   orderItems?: Prisma.OrderItemUpdateManyWithoutCourseNestedInput;
   wishlist?: Prisma.WishlistUpdateManyWithoutCourseNestedInput;
+  recentlyViewed?: Prisma.RecentlyViewedUpdateManyWithoutCourseNestedInput;
 };
 
 export type CourseUncheckedUpdateWithoutCartItemsInput = {
@@ -1802,7 +1990,7 @@ export type CourseUncheckedUpdateWithoutCartItemsInput = {
     | runtime.DecimalJsLike
     | number
     | string;
-  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?: Prisma.EnumCourseStatusFieldUpdateOperationsInput | $Enums.CourseStatus;
   totalDuration?: Prisma.IntFieldUpdateOperationsInput | number;
   categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1814,6 +2002,7 @@ export type CourseUncheckedUpdateWithoutCartItemsInput = {
   discounts?: Prisma.CourseDiscountUncheckedUpdateManyWithoutCourseNestedInput;
   orderItems?: Prisma.OrderItemUncheckedUpdateManyWithoutCourseNestedInput;
   wishlist?: Prisma.WishlistUncheckedUpdateManyWithoutCourseNestedInput;
+  recentlyViewed?: Prisma.RecentlyViewedUncheckedUpdateManyWithoutCourseNestedInput;
 };
 
 export type CourseCreateWithoutEnrollmentsInput = {
@@ -1822,7 +2011,7 @@ export type CourseCreateWithoutEnrollmentsInput = {
   slug: string;
   description?: string | null;
   basePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string;
-  isPublished?: boolean;
+  status?: $Enums.CourseStatus;
   totalDuration?: number;
   createdAt?: Date | string;
   updatedAt?: Date | string;
@@ -1834,6 +2023,7 @@ export type CourseCreateWithoutEnrollmentsInput = {
   orderItems?: Prisma.OrderItemCreateNestedManyWithoutCourseInput;
   wishlist?: Prisma.WishlistCreateNestedManyWithoutCourseInput;
   cartItems?: Prisma.CartItemCreateNestedManyWithoutCourseInput;
+  recentlyViewed?: Prisma.RecentlyViewedCreateNestedManyWithoutCourseInput;
 };
 
 export type CourseUncheckedCreateWithoutEnrollmentsInput = {
@@ -1842,7 +2032,7 @@ export type CourseUncheckedCreateWithoutEnrollmentsInput = {
   slug: string;
   description?: string | null;
   basePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string;
-  isPublished?: boolean;
+  status?: $Enums.CourseStatus;
   totalDuration?: number;
   categoryId?: string | null;
   createdAt?: Date | string;
@@ -1854,6 +2044,7 @@ export type CourseUncheckedCreateWithoutEnrollmentsInput = {
   orderItems?: Prisma.OrderItemUncheckedCreateNestedManyWithoutCourseInput;
   wishlist?: Prisma.WishlistUncheckedCreateNestedManyWithoutCourseInput;
   cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutCourseInput;
+  recentlyViewed?: Prisma.RecentlyViewedUncheckedCreateNestedManyWithoutCourseInput;
 };
 
 export type CourseCreateOrConnectWithoutEnrollmentsInput = {
@@ -1895,7 +2086,7 @@ export type CourseUpdateWithoutEnrollmentsInput = {
     | runtime.DecimalJsLike
     | number
     | string;
-  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?: Prisma.EnumCourseStatusFieldUpdateOperationsInput | $Enums.CourseStatus;
   totalDuration?: Prisma.IntFieldUpdateOperationsInput | number;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1907,6 +2098,7 @@ export type CourseUpdateWithoutEnrollmentsInput = {
   orderItems?: Prisma.OrderItemUpdateManyWithoutCourseNestedInput;
   wishlist?: Prisma.WishlistUpdateManyWithoutCourseNestedInput;
   cartItems?: Prisma.CartItemUpdateManyWithoutCourseNestedInput;
+  recentlyViewed?: Prisma.RecentlyViewedUpdateManyWithoutCourseNestedInput;
 };
 
 export type CourseUncheckedUpdateWithoutEnrollmentsInput = {
@@ -1920,7 +2112,7 @@ export type CourseUncheckedUpdateWithoutEnrollmentsInput = {
     | runtime.DecimalJsLike
     | number
     | string;
-  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?: Prisma.EnumCourseStatusFieldUpdateOperationsInput | $Enums.CourseStatus;
   totalDuration?: Prisma.IntFieldUpdateOperationsInput | number;
   categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1932,6 +2124,7 @@ export type CourseUncheckedUpdateWithoutEnrollmentsInput = {
   orderItems?: Prisma.OrderItemUncheckedUpdateManyWithoutCourseNestedInput;
   wishlist?: Prisma.WishlistUncheckedUpdateManyWithoutCourseNestedInput;
   cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutCourseNestedInput;
+  recentlyViewed?: Prisma.RecentlyViewedUncheckedUpdateManyWithoutCourseNestedInput;
 };
 
 export type CourseCreateManyCategoryInput = {
@@ -1940,7 +2133,7 @@ export type CourseCreateManyCategoryInput = {
   slug: string;
   description?: string | null;
   basePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string;
-  isPublished?: boolean;
+  status?: $Enums.CourseStatus;
   totalDuration?: number;
   createdAt?: Date | string;
   updatedAt?: Date | string;
@@ -1957,7 +2150,7 @@ export type CourseUpdateWithoutCategoryInput = {
     | runtime.DecimalJsLike
     | number
     | string;
-  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?: Prisma.EnumCourseStatusFieldUpdateOperationsInput | $Enums.CourseStatus;
   totalDuration?: Prisma.IntFieldUpdateOperationsInput | number;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1969,6 +2162,7 @@ export type CourseUpdateWithoutCategoryInput = {
   orderItems?: Prisma.OrderItemUpdateManyWithoutCourseNestedInput;
   wishlist?: Prisma.WishlistUpdateManyWithoutCourseNestedInput;
   cartItems?: Prisma.CartItemUpdateManyWithoutCourseNestedInput;
+  recentlyViewed?: Prisma.RecentlyViewedUpdateManyWithoutCourseNestedInput;
 };
 
 export type CourseUncheckedUpdateWithoutCategoryInput = {
@@ -1982,7 +2176,7 @@ export type CourseUncheckedUpdateWithoutCategoryInput = {
     | runtime.DecimalJsLike
     | number
     | string;
-  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?: Prisma.EnumCourseStatusFieldUpdateOperationsInput | $Enums.CourseStatus;
   totalDuration?: Prisma.IntFieldUpdateOperationsInput | number;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1994,6 +2188,7 @@ export type CourseUncheckedUpdateWithoutCategoryInput = {
   orderItems?: Prisma.OrderItemUncheckedUpdateManyWithoutCourseNestedInput;
   wishlist?: Prisma.WishlistUncheckedUpdateManyWithoutCourseNestedInput;
   cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutCourseNestedInput;
+  recentlyViewed?: Prisma.RecentlyViewedUncheckedUpdateManyWithoutCourseNestedInput;
 };
 
 export type CourseUncheckedUpdateManyWithoutCategoryInput = {
@@ -2007,7 +2202,7 @@ export type CourseUncheckedUpdateManyWithoutCategoryInput = {
     | runtime.DecimalJsLike
     | number
     | string;
-  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?: Prisma.EnumCourseStatusFieldUpdateOperationsInput | $Enums.CourseStatus;
   totalDuration?: Prisma.IntFieldUpdateOperationsInput | number;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -2026,6 +2221,7 @@ export type CourseCountOutputType = {
   orderItems: number;
   wishlist: number;
   cartItems: number;
+  recentlyViewed: number;
 };
 
 export type CourseCountOutputTypeSelect<
@@ -2039,6 +2235,7 @@ export type CourseCountOutputTypeSelect<
   orderItems?: boolean | CourseCountOutputTypeCountOrderItemsArgs;
   wishlist?: boolean | CourseCountOutputTypeCountWishlistArgs;
   cartItems?: boolean | CourseCountOutputTypeCountCartItemsArgs;
+  recentlyViewed?: boolean | CourseCountOutputTypeCountRecentlyViewedArgs;
 };
 
 /**
@@ -2125,6 +2322,15 @@ export type CourseCountOutputTypeCountCartItemsArgs<
   where?: Prisma.CartItemWhereInput;
 };
 
+/**
+ * CourseCountOutputType without action
+ */
+export type CourseCountOutputTypeCountRecentlyViewedArgs<
+  ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
+> = {
+  where?: Prisma.RecentlyViewedWhereInput;
+};
+
 export type CourseSelect<
   ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
 > = runtime.Types.Extensions.GetSelect<
@@ -2134,7 +2340,7 @@ export type CourseSelect<
     slug?: boolean;
     description?: boolean;
     basePrice?: boolean;
-    isPublished?: boolean;
+    status?: boolean;
     totalDuration?: boolean;
     categoryId?: boolean;
     createdAt?: boolean;
@@ -2148,6 +2354,7 @@ export type CourseSelect<
     orderItems?: boolean | Prisma.Course$orderItemsArgs<ExtArgs>;
     wishlist?: boolean | Prisma.Course$wishlistArgs<ExtArgs>;
     cartItems?: boolean | Prisma.Course$cartItemsArgs<ExtArgs>;
+    recentlyViewed?: boolean | Prisma.Course$recentlyViewedArgs<ExtArgs>;
     _count?: boolean | Prisma.CourseCountOutputTypeDefaultArgs<ExtArgs>;
   },
   ExtArgs['result']['course']
@@ -2162,7 +2369,7 @@ export type CourseSelectCreateManyAndReturn<
     slug?: boolean;
     description?: boolean;
     basePrice?: boolean;
-    isPublished?: boolean;
+    status?: boolean;
     totalDuration?: boolean;
     categoryId?: boolean;
     createdAt?: boolean;
@@ -2181,7 +2388,7 @@ export type CourseSelectUpdateManyAndReturn<
     slug?: boolean;
     description?: boolean;
     basePrice?: boolean;
-    isPublished?: boolean;
+    status?: boolean;
     totalDuration?: boolean;
     categoryId?: boolean;
     createdAt?: boolean;
@@ -2197,7 +2404,7 @@ export type CourseSelectScalar = {
   slug?: boolean;
   description?: boolean;
   basePrice?: boolean;
-  isPublished?: boolean;
+  status?: boolean;
   totalDuration?: boolean;
   categoryId?: boolean;
   createdAt?: boolean;
@@ -2212,7 +2419,7 @@ export type CourseOmit<
   | 'slug'
   | 'description'
   | 'basePrice'
-  | 'isPublished'
+  | 'status'
   | 'totalDuration'
   | 'categoryId'
   | 'createdAt'
@@ -2231,6 +2438,7 @@ export type CourseInclude<
   orderItems?: boolean | Prisma.Course$orderItemsArgs<ExtArgs>;
   wishlist?: boolean | Prisma.Course$wishlistArgs<ExtArgs>;
   cartItems?: boolean | Prisma.Course$cartItemsArgs<ExtArgs>;
+  recentlyViewed?: boolean | Prisma.Course$recentlyViewedArgs<ExtArgs>;
   _count?: boolean | Prisma.CourseCountOutputTypeDefaultArgs<ExtArgs>;
 };
 export type CourseIncludeCreateManyAndReturn<
@@ -2258,6 +2466,7 @@ export type $CoursePayload<
     orderItems: Prisma.$OrderItemPayload<ExtArgs>[];
     wishlist: Prisma.$WishlistPayload<ExtArgs>[];
     cartItems: Prisma.$CartItemPayload<ExtArgs>[];
+    recentlyViewed: Prisma.$RecentlyViewedPayload<ExtArgs>[];
   };
   scalars: runtime.Types.Extensions.GetPayloadResult<
     {
@@ -2266,7 +2475,7 @@ export type $CoursePayload<
       slug: string;
       description: string | null;
       basePrice: runtime.Decimal;
-      isPublished: boolean;
+      status: $Enums.CourseStatus;
       totalDuration: number;
       categoryId: string | null;
       createdAt: Date;
@@ -2882,6 +3091,17 @@ export interface Prisma__CourseClient<
       >
     | Null
   >;
+  recentlyViewed<T extends Prisma.Course$recentlyViewedArgs<ExtArgs> = {}>(
+    args?: Prisma.Subset<T, Prisma.Course$recentlyViewedArgs<ExtArgs>>
+  ): Prisma.PrismaPromise<
+    | runtime.Types.Result.GetResult<
+        Prisma.$RecentlyViewedPayload<ExtArgs>,
+        T,
+        'findMany',
+        GlobalOmitOptions
+      >
+    | Null
+  >;
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2918,7 +3138,7 @@ export interface CourseFieldRefs {
   readonly slug: Prisma.FieldRef<'Course', 'String'>;
   readonly description: Prisma.FieldRef<'Course', 'String'>;
   readonly basePrice: Prisma.FieldRef<'Course', 'Decimal'>;
-  readonly isPublished: Prisma.FieldRef<'Course', 'Boolean'>;
+  readonly status: Prisma.FieldRef<'Course', 'CourseStatus'>;
   readonly totalDuration: Prisma.FieldRef<'Course', 'Int'>;
   readonly categoryId: Prisma.FieldRef<'Course', 'String'>;
   readonly createdAt: Prisma.FieldRef<'Course', 'DateTime'>;
@@ -3583,6 +3803,34 @@ export type Course$cartItemsArgs<
   take?: number;
   skip?: number;
   distinct?: Prisma.CartItemScalarFieldEnum | Prisma.CartItemScalarFieldEnum[];
+};
+
+/**
+ * Course.recentlyViewed
+ */
+export type Course$recentlyViewedArgs<
+  ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
+> = {
+  /**
+   * Select specific fields to fetch from the RecentlyViewed
+   */
+  select?: Prisma.RecentlyViewedSelect<ExtArgs> | null;
+  /**
+   * Omit specific fields from the RecentlyViewed
+   */
+  omit?: Prisma.RecentlyViewedOmit<ExtArgs> | null;
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RecentlyViewedInclude<ExtArgs> | null;
+  where?: Prisma.RecentlyViewedWhereInput;
+  orderBy?:
+    | Prisma.RecentlyViewedOrderByWithRelationInput
+    | Prisma.RecentlyViewedOrderByWithRelationInput[];
+  cursor?: Prisma.RecentlyViewedWhereUniqueInput;
+  take?: number;
+  skip?: number;
+  distinct?: Prisma.RecentlyViewedScalarFieldEnum | Prisma.RecentlyViewedScalarFieldEnum[];
 };
 
 /**

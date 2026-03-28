@@ -135,6 +135,11 @@ export type CourseDiscount = Prisma.CourseDiscountModel;
  */
 export type Voucher = Prisma.VoucherModel;
 /**
+ * Model UserVoucher
+ *
+ */
+export type UserVoucher = Prisma.UserVoucherModel;
+/**
  * Model VoucherUsage
  *
  */
@@ -159,6 +164,11 @@ export type OrderItem = Prisma.OrderItemModel;
  *
  */
 export type Wishlist = Prisma.WishlistModel;
+/**
+ * Model RecentlyViewed
+ *
+ */
+export type RecentlyViewed = Prisma.RecentlyViewedModel;
 /**
  * Model Cart
  *

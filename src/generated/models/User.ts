@@ -231,8 +231,10 @@ export type UserWhereInput = {
   orders?: Prisma.OrderListRelationFilter;
   reviews?: Prisma.CourseReviewListRelationFilter;
   comments?: Prisma.LessonCommentListRelationFilter;
+  savedVouchers?: Prisma.UserVoucherListRelationFilter;
   vouchersUsed?: Prisma.VoucherUsageListRelationFilter;
   wishlist?: Prisma.WishlistListRelationFilter;
+  recentlyViewed?: Prisma.RecentlyViewedListRelationFilter;
   cart?: Prisma.XOR<Prisma.CartNullableScalarRelationFilter, Prisma.CartWhereInput> | null;
 };
 
@@ -257,8 +259,10 @@ export type UserOrderByWithRelationInput = {
   orders?: Prisma.OrderOrderByRelationAggregateInput;
   reviews?: Prisma.CourseReviewOrderByRelationAggregateInput;
   comments?: Prisma.LessonCommentOrderByRelationAggregateInput;
+  savedVouchers?: Prisma.UserVoucherOrderByRelationAggregateInput;
   vouchersUsed?: Prisma.VoucherUsageOrderByRelationAggregateInput;
   wishlist?: Prisma.WishlistOrderByRelationAggregateInput;
+  recentlyViewed?: Prisma.RecentlyViewedOrderByRelationAggregateInput;
   cart?: Prisma.CartOrderByWithRelationInput;
 };
 
@@ -290,8 +294,10 @@ export type UserWhereUniqueInput = Prisma.AtLeast<
     orders?: Prisma.OrderListRelationFilter;
     reviews?: Prisma.CourseReviewListRelationFilter;
     comments?: Prisma.LessonCommentListRelationFilter;
+    savedVouchers?: Prisma.UserVoucherListRelationFilter;
     vouchersUsed?: Prisma.VoucherUsageListRelationFilter;
     wishlist?: Prisma.WishlistListRelationFilter;
+    recentlyViewed?: Prisma.RecentlyViewedListRelationFilter;
     cart?: Prisma.XOR<Prisma.CartNullableScalarRelationFilter, Prisma.CartWhereInput> | null;
   },
   'id' | 'email'
@@ -349,8 +355,10 @@ export type UserCreateInput = {
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput;
   reviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput;
   comments?: Prisma.LessonCommentCreateNestedManyWithoutUserInput;
+  savedVouchers?: Prisma.UserVoucherCreateNestedManyWithoutUserInput;
   vouchersUsed?: Prisma.VoucherUsageCreateNestedManyWithoutUserInput;
   wishlist?: Prisma.WishlistCreateNestedManyWithoutUserInput;
+  recentlyViewed?: Prisma.RecentlyViewedCreateNestedManyWithoutUserInput;
   cart?: Prisma.CartCreateNestedOneWithoutUserInput;
 };
 
@@ -374,8 +382,10 @@ export type UserUncheckedCreateInput = {
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput;
   reviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput;
   comments?: Prisma.LessonCommentUncheckedCreateNestedManyWithoutUserInput;
+  savedVouchers?: Prisma.UserVoucherUncheckedCreateNestedManyWithoutUserInput;
   vouchersUsed?: Prisma.VoucherUsageUncheckedCreateNestedManyWithoutUserInput;
   wishlist?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput;
+  recentlyViewed?: Prisma.RecentlyViewedUncheckedCreateNestedManyWithoutUserInput;
   cart?: Prisma.CartUncheckedCreateNestedOneWithoutUserInput;
 };
 
@@ -399,8 +409,10 @@ export type UserUpdateInput = {
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput;
   reviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput;
   comments?: Prisma.LessonCommentUpdateManyWithoutUserNestedInput;
+  savedVouchers?: Prisma.UserVoucherUpdateManyWithoutUserNestedInput;
   vouchersUsed?: Prisma.VoucherUsageUpdateManyWithoutUserNestedInput;
   wishlist?: Prisma.WishlistUpdateManyWithoutUserNestedInput;
+  recentlyViewed?: Prisma.RecentlyViewedUpdateManyWithoutUserNestedInput;
   cart?: Prisma.CartUpdateOneWithoutUserNestedInput;
 };
 
@@ -424,8 +436,10 @@ export type UserUncheckedUpdateInput = {
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput;
   reviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput;
   comments?: Prisma.LessonCommentUncheckedUpdateManyWithoutUserNestedInput;
+  savedVouchers?: Prisma.UserVoucherUncheckedUpdateManyWithoutUserNestedInput;
   vouchersUsed?: Prisma.VoucherUsageUncheckedUpdateManyWithoutUserNestedInput;
   wishlist?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput;
+  recentlyViewed?: Prisma.RecentlyViewedUncheckedUpdateManyWithoutUserNestedInput;
   cart?: Prisma.CartUncheckedUpdateOneWithoutUserNestedInput;
 };
 
@@ -763,6 +777,32 @@ export type UserUpdateOneRequiredWithoutReviewsNestedInput = {
   >;
 };
 
+export type UserCreateNestedOneWithoutSavedVouchersInput = {
+  create?: Prisma.XOR<
+    Prisma.UserCreateWithoutSavedVouchersInput,
+    Prisma.UserUncheckedCreateWithoutSavedVouchersInput
+  >;
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSavedVouchersInput;
+  connect?: Prisma.UserWhereUniqueInput;
+};
+
+export type UserUpdateOneRequiredWithoutSavedVouchersNestedInput = {
+  create?: Prisma.XOR<
+    Prisma.UserCreateWithoutSavedVouchersInput,
+    Prisma.UserUncheckedCreateWithoutSavedVouchersInput
+  >;
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSavedVouchersInput;
+  upsert?: Prisma.UserUpsertWithoutSavedVouchersInput;
+  connect?: Prisma.UserWhereUniqueInput;
+  update?: Prisma.XOR<
+    Prisma.XOR<
+      Prisma.UserUpdateToOneWithWhereWithoutSavedVouchersInput,
+      Prisma.UserUpdateWithoutSavedVouchersInput
+    >,
+    Prisma.UserUncheckedUpdateWithoutSavedVouchersInput
+  >;
+};
+
 export type UserCreateNestedOneWithoutVouchersUsedInput = {
   create?: Prisma.XOR<
     Prisma.UserCreateWithoutVouchersUsedInput,
@@ -838,6 +878,32 @@ export type UserUpdateOneRequiredWithoutWishlistNestedInput = {
       Prisma.UserUpdateWithoutWishlistInput
     >,
     Prisma.UserUncheckedUpdateWithoutWishlistInput
+  >;
+};
+
+export type UserCreateNestedOneWithoutRecentlyViewedInput = {
+  create?: Prisma.XOR<
+    Prisma.UserCreateWithoutRecentlyViewedInput,
+    Prisma.UserUncheckedCreateWithoutRecentlyViewedInput
+  >;
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutRecentlyViewedInput;
+  connect?: Prisma.UserWhereUniqueInput;
+};
+
+export type UserUpdateOneRequiredWithoutRecentlyViewedNestedInput = {
+  create?: Prisma.XOR<
+    Prisma.UserCreateWithoutRecentlyViewedInput,
+    Prisma.UserUncheckedCreateWithoutRecentlyViewedInput
+  >;
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutRecentlyViewedInput;
+  upsert?: Prisma.UserUpsertWithoutRecentlyViewedInput;
+  connect?: Prisma.UserWhereUniqueInput;
+  update?: Prisma.XOR<
+    Prisma.XOR<
+      Prisma.UserUpdateToOneWithWhereWithoutRecentlyViewedInput,
+      Prisma.UserUpdateWithoutRecentlyViewedInput
+    >,
+    Prisma.UserUncheckedUpdateWithoutRecentlyViewedInput
   >;
 };
 
@@ -935,8 +1001,10 @@ export type UserCreateWithoutRoleInput = {
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput;
   reviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput;
   comments?: Prisma.LessonCommentCreateNestedManyWithoutUserInput;
+  savedVouchers?: Prisma.UserVoucherCreateNestedManyWithoutUserInput;
   vouchersUsed?: Prisma.VoucherUsageCreateNestedManyWithoutUserInput;
   wishlist?: Prisma.WishlistCreateNestedManyWithoutUserInput;
+  recentlyViewed?: Prisma.RecentlyViewedCreateNestedManyWithoutUserInput;
   cart?: Prisma.CartCreateNestedOneWithoutUserInput;
 };
 
@@ -959,8 +1027,10 @@ export type UserUncheckedCreateWithoutRoleInput = {
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput;
   reviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput;
   comments?: Prisma.LessonCommentUncheckedCreateNestedManyWithoutUserInput;
+  savedVouchers?: Prisma.UserVoucherUncheckedCreateNestedManyWithoutUserInput;
   vouchersUsed?: Prisma.VoucherUsageUncheckedCreateNestedManyWithoutUserInput;
   wishlist?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput;
+  recentlyViewed?: Prisma.RecentlyViewedUncheckedCreateNestedManyWithoutUserInput;
   cart?: Prisma.CartUncheckedCreateNestedOneWithoutUserInput;
 };
 
@@ -1028,8 +1098,10 @@ export type UserCreateWithoutExtraPermissionsInput = {
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput;
   reviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput;
   comments?: Prisma.LessonCommentCreateNestedManyWithoutUserInput;
+  savedVouchers?: Prisma.UserVoucherCreateNestedManyWithoutUserInput;
   vouchersUsed?: Prisma.VoucherUsageCreateNestedManyWithoutUserInput;
   wishlist?: Prisma.WishlistCreateNestedManyWithoutUserInput;
+  recentlyViewed?: Prisma.RecentlyViewedCreateNestedManyWithoutUserInput;
   cart?: Prisma.CartCreateNestedOneWithoutUserInput;
 };
 
@@ -1052,8 +1124,10 @@ export type UserUncheckedCreateWithoutExtraPermissionsInput = {
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput;
   reviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput;
   comments?: Prisma.LessonCommentUncheckedCreateNestedManyWithoutUserInput;
+  savedVouchers?: Prisma.UserVoucherUncheckedCreateNestedManyWithoutUserInput;
   vouchersUsed?: Prisma.VoucherUsageUncheckedCreateNestedManyWithoutUserInput;
   wishlist?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput;
+  recentlyViewed?: Prisma.RecentlyViewedUncheckedCreateNestedManyWithoutUserInput;
   cart?: Prisma.CartUncheckedCreateNestedOneWithoutUserInput;
 };
 
@@ -1104,8 +1178,10 @@ export type UserUpdateWithoutExtraPermissionsInput = {
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput;
   reviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput;
   comments?: Prisma.LessonCommentUpdateManyWithoutUserNestedInput;
+  savedVouchers?: Prisma.UserVoucherUpdateManyWithoutUserNestedInput;
   vouchersUsed?: Prisma.VoucherUsageUpdateManyWithoutUserNestedInput;
   wishlist?: Prisma.WishlistUpdateManyWithoutUserNestedInput;
+  recentlyViewed?: Prisma.RecentlyViewedUpdateManyWithoutUserNestedInput;
   cart?: Prisma.CartUpdateOneWithoutUserNestedInput;
 };
 
@@ -1128,8 +1204,10 @@ export type UserUncheckedUpdateWithoutExtraPermissionsInput = {
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput;
   reviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput;
   comments?: Prisma.LessonCommentUncheckedUpdateManyWithoutUserNestedInput;
+  savedVouchers?: Prisma.UserVoucherUncheckedUpdateManyWithoutUserNestedInput;
   vouchersUsed?: Prisma.VoucherUsageUncheckedUpdateManyWithoutUserNestedInput;
   wishlist?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput;
+  recentlyViewed?: Prisma.RecentlyViewedUncheckedUpdateManyWithoutUserNestedInput;
   cart?: Prisma.CartUncheckedUpdateOneWithoutUserNestedInput;
 };
 
@@ -1152,8 +1230,10 @@ export type UserCreateWithoutProfileInput = {
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput;
   reviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput;
   comments?: Prisma.LessonCommentCreateNestedManyWithoutUserInput;
+  savedVouchers?: Prisma.UserVoucherCreateNestedManyWithoutUserInput;
   vouchersUsed?: Prisma.VoucherUsageCreateNestedManyWithoutUserInput;
   wishlist?: Prisma.WishlistCreateNestedManyWithoutUserInput;
+  recentlyViewed?: Prisma.RecentlyViewedCreateNestedManyWithoutUserInput;
   cart?: Prisma.CartCreateNestedOneWithoutUserInput;
 };
 
@@ -1176,8 +1256,10 @@ export type UserUncheckedCreateWithoutProfileInput = {
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput;
   reviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput;
   comments?: Prisma.LessonCommentUncheckedCreateNestedManyWithoutUserInput;
+  savedVouchers?: Prisma.UserVoucherUncheckedCreateNestedManyWithoutUserInput;
   vouchersUsed?: Prisma.VoucherUsageUncheckedCreateNestedManyWithoutUserInput;
   wishlist?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput;
+  recentlyViewed?: Prisma.RecentlyViewedUncheckedCreateNestedManyWithoutUserInput;
   cart?: Prisma.CartUncheckedCreateNestedOneWithoutUserInput;
 };
 
@@ -1228,8 +1310,10 @@ export type UserUpdateWithoutProfileInput = {
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput;
   reviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput;
   comments?: Prisma.LessonCommentUpdateManyWithoutUserNestedInput;
+  savedVouchers?: Prisma.UserVoucherUpdateManyWithoutUserNestedInput;
   vouchersUsed?: Prisma.VoucherUsageUpdateManyWithoutUserNestedInput;
   wishlist?: Prisma.WishlistUpdateManyWithoutUserNestedInput;
+  recentlyViewed?: Prisma.RecentlyViewedUpdateManyWithoutUserNestedInput;
   cart?: Prisma.CartUpdateOneWithoutUserNestedInput;
 };
 
@@ -1252,8 +1336,10 @@ export type UserUncheckedUpdateWithoutProfileInput = {
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput;
   reviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput;
   comments?: Prisma.LessonCommentUncheckedUpdateManyWithoutUserNestedInput;
+  savedVouchers?: Prisma.UserVoucherUncheckedUpdateManyWithoutUserNestedInput;
   vouchersUsed?: Prisma.VoucherUsageUncheckedUpdateManyWithoutUserNestedInput;
   wishlist?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput;
+  recentlyViewed?: Prisma.RecentlyViewedUncheckedUpdateManyWithoutUserNestedInput;
   cart?: Prisma.CartUncheckedUpdateOneWithoutUserNestedInput;
 };
 
@@ -1276,8 +1362,10 @@ export type UserCreateWithoutSessionsInput = {
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput;
   reviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput;
   comments?: Prisma.LessonCommentCreateNestedManyWithoutUserInput;
+  savedVouchers?: Prisma.UserVoucherCreateNestedManyWithoutUserInput;
   vouchersUsed?: Prisma.VoucherUsageCreateNestedManyWithoutUserInput;
   wishlist?: Prisma.WishlistCreateNestedManyWithoutUserInput;
+  recentlyViewed?: Prisma.RecentlyViewedCreateNestedManyWithoutUserInput;
   cart?: Prisma.CartCreateNestedOneWithoutUserInput;
 };
 
@@ -1300,8 +1388,10 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput;
   reviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput;
   comments?: Prisma.LessonCommentUncheckedCreateNestedManyWithoutUserInput;
+  savedVouchers?: Prisma.UserVoucherUncheckedCreateNestedManyWithoutUserInput;
   vouchersUsed?: Prisma.VoucherUsageUncheckedCreateNestedManyWithoutUserInput;
   wishlist?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput;
+  recentlyViewed?: Prisma.RecentlyViewedUncheckedCreateNestedManyWithoutUserInput;
   cart?: Prisma.CartUncheckedCreateNestedOneWithoutUserInput;
 };
 
@@ -1352,8 +1442,10 @@ export type UserUpdateWithoutSessionsInput = {
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput;
   reviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput;
   comments?: Prisma.LessonCommentUpdateManyWithoutUserNestedInput;
+  savedVouchers?: Prisma.UserVoucherUpdateManyWithoutUserNestedInput;
   vouchersUsed?: Prisma.VoucherUsageUpdateManyWithoutUserNestedInput;
   wishlist?: Prisma.WishlistUpdateManyWithoutUserNestedInput;
+  recentlyViewed?: Prisma.RecentlyViewedUpdateManyWithoutUserNestedInput;
   cart?: Prisma.CartUpdateOneWithoutUserNestedInput;
 };
 
@@ -1376,8 +1468,10 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput;
   reviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput;
   comments?: Prisma.LessonCommentUncheckedUpdateManyWithoutUserNestedInput;
+  savedVouchers?: Prisma.UserVoucherUncheckedUpdateManyWithoutUserNestedInput;
   vouchersUsed?: Prisma.VoucherUsageUncheckedUpdateManyWithoutUserNestedInput;
   wishlist?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput;
+  recentlyViewed?: Prisma.RecentlyViewedUncheckedUpdateManyWithoutUserNestedInput;
   cart?: Prisma.CartUncheckedUpdateOneWithoutUserNestedInput;
 };
 
@@ -1400,8 +1494,10 @@ export type UserCreateWithoutTaughtCoursesInput = {
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput;
   reviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput;
   comments?: Prisma.LessonCommentCreateNestedManyWithoutUserInput;
+  savedVouchers?: Prisma.UserVoucherCreateNestedManyWithoutUserInput;
   vouchersUsed?: Prisma.VoucherUsageCreateNestedManyWithoutUserInput;
   wishlist?: Prisma.WishlistCreateNestedManyWithoutUserInput;
+  recentlyViewed?: Prisma.RecentlyViewedCreateNestedManyWithoutUserInput;
   cart?: Prisma.CartCreateNestedOneWithoutUserInput;
 };
 
@@ -1424,8 +1520,10 @@ export type UserUncheckedCreateWithoutTaughtCoursesInput = {
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput;
   reviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput;
   comments?: Prisma.LessonCommentUncheckedCreateNestedManyWithoutUserInput;
+  savedVouchers?: Prisma.UserVoucherUncheckedCreateNestedManyWithoutUserInput;
   vouchersUsed?: Prisma.VoucherUsageUncheckedCreateNestedManyWithoutUserInput;
   wishlist?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput;
+  recentlyViewed?: Prisma.RecentlyViewedUncheckedCreateNestedManyWithoutUserInput;
   cart?: Prisma.CartUncheckedCreateNestedOneWithoutUserInput;
 };
 
@@ -1476,8 +1574,10 @@ export type UserUpdateWithoutTaughtCoursesInput = {
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput;
   reviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput;
   comments?: Prisma.LessonCommentUpdateManyWithoutUserNestedInput;
+  savedVouchers?: Prisma.UserVoucherUpdateManyWithoutUserNestedInput;
   vouchersUsed?: Prisma.VoucherUsageUpdateManyWithoutUserNestedInput;
   wishlist?: Prisma.WishlistUpdateManyWithoutUserNestedInput;
+  recentlyViewed?: Prisma.RecentlyViewedUpdateManyWithoutUserNestedInput;
   cart?: Prisma.CartUpdateOneWithoutUserNestedInput;
 };
 
@@ -1500,8 +1600,10 @@ export type UserUncheckedUpdateWithoutTaughtCoursesInput = {
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput;
   reviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput;
   comments?: Prisma.LessonCommentUncheckedUpdateManyWithoutUserNestedInput;
+  savedVouchers?: Prisma.UserVoucherUncheckedUpdateManyWithoutUserNestedInput;
   vouchersUsed?: Prisma.VoucherUsageUncheckedUpdateManyWithoutUserNestedInput;
   wishlist?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput;
+  recentlyViewed?: Prisma.RecentlyViewedUncheckedUpdateManyWithoutUserNestedInput;
   cart?: Prisma.CartUncheckedUpdateOneWithoutUserNestedInput;
 };
 
@@ -1524,8 +1626,10 @@ export type UserCreateWithoutCommentsInput = {
   progress?: Prisma.LessonProgressCreateNestedManyWithoutUserInput;
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput;
   reviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput;
+  savedVouchers?: Prisma.UserVoucherCreateNestedManyWithoutUserInput;
   vouchersUsed?: Prisma.VoucherUsageCreateNestedManyWithoutUserInput;
   wishlist?: Prisma.WishlistCreateNestedManyWithoutUserInput;
+  recentlyViewed?: Prisma.RecentlyViewedCreateNestedManyWithoutUserInput;
   cart?: Prisma.CartCreateNestedOneWithoutUserInput;
 };
 
@@ -1548,8 +1652,10 @@ export type UserUncheckedCreateWithoutCommentsInput = {
   progress?: Prisma.LessonProgressUncheckedCreateNestedManyWithoutUserInput;
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput;
   reviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput;
+  savedVouchers?: Prisma.UserVoucherUncheckedCreateNestedManyWithoutUserInput;
   vouchersUsed?: Prisma.VoucherUsageUncheckedCreateNestedManyWithoutUserInput;
   wishlist?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput;
+  recentlyViewed?: Prisma.RecentlyViewedUncheckedCreateNestedManyWithoutUserInput;
   cart?: Prisma.CartUncheckedCreateNestedOneWithoutUserInput;
 };
 
@@ -1600,8 +1706,10 @@ export type UserUpdateWithoutCommentsInput = {
   progress?: Prisma.LessonProgressUpdateManyWithoutUserNestedInput;
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput;
   reviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput;
+  savedVouchers?: Prisma.UserVoucherUpdateManyWithoutUserNestedInput;
   vouchersUsed?: Prisma.VoucherUsageUpdateManyWithoutUserNestedInput;
   wishlist?: Prisma.WishlistUpdateManyWithoutUserNestedInput;
+  recentlyViewed?: Prisma.RecentlyViewedUpdateManyWithoutUserNestedInput;
   cart?: Prisma.CartUpdateOneWithoutUserNestedInput;
 };
 
@@ -1624,8 +1732,10 @@ export type UserUncheckedUpdateWithoutCommentsInput = {
   progress?: Prisma.LessonProgressUncheckedUpdateManyWithoutUserNestedInput;
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput;
   reviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput;
+  savedVouchers?: Prisma.UserVoucherUncheckedUpdateManyWithoutUserNestedInput;
   vouchersUsed?: Prisma.VoucherUsageUncheckedUpdateManyWithoutUserNestedInput;
   wishlist?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput;
+  recentlyViewed?: Prisma.RecentlyViewedUncheckedUpdateManyWithoutUserNestedInput;
   cart?: Prisma.CartUncheckedUpdateOneWithoutUserNestedInput;
 };
 
@@ -1648,8 +1758,10 @@ export type UserCreateWithoutReviewsInput = {
   progress?: Prisma.LessonProgressCreateNestedManyWithoutUserInput;
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput;
   comments?: Prisma.LessonCommentCreateNestedManyWithoutUserInput;
+  savedVouchers?: Prisma.UserVoucherCreateNestedManyWithoutUserInput;
   vouchersUsed?: Prisma.VoucherUsageCreateNestedManyWithoutUserInput;
   wishlist?: Prisma.WishlistCreateNestedManyWithoutUserInput;
+  recentlyViewed?: Prisma.RecentlyViewedCreateNestedManyWithoutUserInput;
   cart?: Prisma.CartCreateNestedOneWithoutUserInput;
 };
 
@@ -1672,8 +1784,10 @@ export type UserUncheckedCreateWithoutReviewsInput = {
   progress?: Prisma.LessonProgressUncheckedCreateNestedManyWithoutUserInput;
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput;
   comments?: Prisma.LessonCommentUncheckedCreateNestedManyWithoutUserInput;
+  savedVouchers?: Prisma.UserVoucherUncheckedCreateNestedManyWithoutUserInput;
   vouchersUsed?: Prisma.VoucherUsageUncheckedCreateNestedManyWithoutUserInput;
   wishlist?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput;
+  recentlyViewed?: Prisma.RecentlyViewedUncheckedCreateNestedManyWithoutUserInput;
   cart?: Prisma.CartUncheckedCreateNestedOneWithoutUserInput;
 };
 
@@ -1724,8 +1838,10 @@ export type UserUpdateWithoutReviewsInput = {
   progress?: Prisma.LessonProgressUpdateManyWithoutUserNestedInput;
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput;
   comments?: Prisma.LessonCommentUpdateManyWithoutUserNestedInput;
+  savedVouchers?: Prisma.UserVoucherUpdateManyWithoutUserNestedInput;
   vouchersUsed?: Prisma.VoucherUsageUpdateManyWithoutUserNestedInput;
   wishlist?: Prisma.WishlistUpdateManyWithoutUserNestedInput;
+  recentlyViewed?: Prisma.RecentlyViewedUpdateManyWithoutUserNestedInput;
   cart?: Prisma.CartUpdateOneWithoutUserNestedInput;
 };
 
@@ -1748,8 +1864,142 @@ export type UserUncheckedUpdateWithoutReviewsInput = {
   progress?: Prisma.LessonProgressUncheckedUpdateManyWithoutUserNestedInput;
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput;
   comments?: Prisma.LessonCommentUncheckedUpdateManyWithoutUserNestedInput;
+  savedVouchers?: Prisma.UserVoucherUncheckedUpdateManyWithoutUserNestedInput;
   vouchersUsed?: Prisma.VoucherUsageUncheckedUpdateManyWithoutUserNestedInput;
   wishlist?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput;
+  recentlyViewed?: Prisma.RecentlyViewedUncheckedUpdateManyWithoutUserNestedInput;
+  cart?: Prisma.CartUncheckedUpdateOneWithoutUserNestedInput;
+};
+
+export type UserCreateWithoutSavedVouchersInput = {
+  id?: string;
+  email: string;
+  password?: string | null;
+  isEmailVerified?: boolean;
+  authProvider?: $Enums.AuthProvider;
+  providerId?: string | null;
+  isActive?: boolean;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  role: Prisma.RoleCreateNestedOneWithoutUsersInput;
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput;
+  profile?: Prisma.UserProfileCreateNestedOneWithoutUserInput;
+  extraPermissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput;
+  taughtCourses?: Prisma.CourseInstructorCreateNestedManyWithoutUserInput;
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutUserInput;
+  progress?: Prisma.LessonProgressCreateNestedManyWithoutUserInput;
+  orders?: Prisma.OrderCreateNestedManyWithoutUserInput;
+  reviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput;
+  comments?: Prisma.LessonCommentCreateNestedManyWithoutUserInput;
+  vouchersUsed?: Prisma.VoucherUsageCreateNestedManyWithoutUserInput;
+  wishlist?: Prisma.WishlistCreateNestedManyWithoutUserInput;
+  recentlyViewed?: Prisma.RecentlyViewedCreateNestedManyWithoutUserInput;
+  cart?: Prisma.CartCreateNestedOneWithoutUserInput;
+};
+
+export type UserUncheckedCreateWithoutSavedVouchersInput = {
+  id?: string;
+  email: string;
+  password?: string | null;
+  isEmailVerified?: boolean;
+  authProvider?: $Enums.AuthProvider;
+  providerId?: string | null;
+  isActive?: boolean;
+  roleId: string;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput;
+  profile?: Prisma.UserProfileUncheckedCreateNestedOneWithoutUserInput;
+  extraPermissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput;
+  taughtCourses?: Prisma.CourseInstructorUncheckedCreateNestedManyWithoutUserInput;
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutUserInput;
+  progress?: Prisma.LessonProgressUncheckedCreateNestedManyWithoutUserInput;
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput;
+  reviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput;
+  comments?: Prisma.LessonCommentUncheckedCreateNestedManyWithoutUserInput;
+  vouchersUsed?: Prisma.VoucherUsageUncheckedCreateNestedManyWithoutUserInput;
+  wishlist?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput;
+  recentlyViewed?: Prisma.RecentlyViewedUncheckedCreateNestedManyWithoutUserInput;
+  cart?: Prisma.CartUncheckedCreateNestedOneWithoutUserInput;
+};
+
+export type UserCreateOrConnectWithoutSavedVouchersInput = {
+  where: Prisma.UserWhereUniqueInput;
+  create: Prisma.XOR<
+    Prisma.UserCreateWithoutSavedVouchersInput,
+    Prisma.UserUncheckedCreateWithoutSavedVouchersInput
+  >;
+};
+
+export type UserUpsertWithoutSavedVouchersInput = {
+  update: Prisma.XOR<
+    Prisma.UserUpdateWithoutSavedVouchersInput,
+    Prisma.UserUncheckedUpdateWithoutSavedVouchersInput
+  >;
+  create: Prisma.XOR<
+    Prisma.UserCreateWithoutSavedVouchersInput,
+    Prisma.UserUncheckedCreateWithoutSavedVouchersInput
+  >;
+  where?: Prisma.UserWhereInput;
+};
+
+export type UserUpdateToOneWithWhereWithoutSavedVouchersInput = {
+  where?: Prisma.UserWhereInput;
+  data: Prisma.XOR<
+    Prisma.UserUpdateWithoutSavedVouchersInput,
+    Prisma.UserUncheckedUpdateWithoutSavedVouchersInput
+  >;
+};
+
+export type UserUpdateWithoutSavedVouchersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  email?: Prisma.StringFieldUpdateOperationsInput | string;
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  isEmailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  authProvider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider;
+  providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  role?: Prisma.RoleUpdateOneRequiredWithoutUsersNestedInput;
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput;
+  profile?: Prisma.UserProfileUpdateOneWithoutUserNestedInput;
+  extraPermissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput;
+  taughtCourses?: Prisma.CourseInstructorUpdateManyWithoutUserNestedInput;
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutUserNestedInput;
+  progress?: Prisma.LessonProgressUpdateManyWithoutUserNestedInput;
+  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput;
+  reviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput;
+  comments?: Prisma.LessonCommentUpdateManyWithoutUserNestedInput;
+  vouchersUsed?: Prisma.VoucherUsageUpdateManyWithoutUserNestedInput;
+  wishlist?: Prisma.WishlistUpdateManyWithoutUserNestedInput;
+  recentlyViewed?: Prisma.RecentlyViewedUpdateManyWithoutUserNestedInput;
+  cart?: Prisma.CartUpdateOneWithoutUserNestedInput;
+};
+
+export type UserUncheckedUpdateWithoutSavedVouchersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  email?: Prisma.StringFieldUpdateOperationsInput | string;
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  isEmailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  authProvider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider;
+  providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  roleId?: Prisma.StringFieldUpdateOperationsInput | string;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput;
+  profile?: Prisma.UserProfileUncheckedUpdateOneWithoutUserNestedInput;
+  extraPermissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput;
+  taughtCourses?: Prisma.CourseInstructorUncheckedUpdateManyWithoutUserNestedInput;
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutUserNestedInput;
+  progress?: Prisma.LessonProgressUncheckedUpdateManyWithoutUserNestedInput;
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput;
+  reviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput;
+  comments?: Prisma.LessonCommentUncheckedUpdateManyWithoutUserNestedInput;
+  vouchersUsed?: Prisma.VoucherUsageUncheckedUpdateManyWithoutUserNestedInput;
+  wishlist?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput;
+  recentlyViewed?: Prisma.RecentlyViewedUncheckedUpdateManyWithoutUserNestedInput;
   cart?: Prisma.CartUncheckedUpdateOneWithoutUserNestedInput;
 };
 
@@ -1773,7 +2023,9 @@ export type UserCreateWithoutVouchersUsedInput = {
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput;
   reviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput;
   comments?: Prisma.LessonCommentCreateNestedManyWithoutUserInput;
+  savedVouchers?: Prisma.UserVoucherCreateNestedManyWithoutUserInput;
   wishlist?: Prisma.WishlistCreateNestedManyWithoutUserInput;
+  recentlyViewed?: Prisma.RecentlyViewedCreateNestedManyWithoutUserInput;
   cart?: Prisma.CartCreateNestedOneWithoutUserInput;
 };
 
@@ -1797,7 +2049,9 @@ export type UserUncheckedCreateWithoutVouchersUsedInput = {
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput;
   reviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput;
   comments?: Prisma.LessonCommentUncheckedCreateNestedManyWithoutUserInput;
+  savedVouchers?: Prisma.UserVoucherUncheckedCreateNestedManyWithoutUserInput;
   wishlist?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput;
+  recentlyViewed?: Prisma.RecentlyViewedUncheckedCreateNestedManyWithoutUserInput;
   cart?: Prisma.CartUncheckedCreateNestedOneWithoutUserInput;
 };
 
@@ -1849,7 +2103,9 @@ export type UserUpdateWithoutVouchersUsedInput = {
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput;
   reviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput;
   comments?: Prisma.LessonCommentUpdateManyWithoutUserNestedInput;
+  savedVouchers?: Prisma.UserVoucherUpdateManyWithoutUserNestedInput;
   wishlist?: Prisma.WishlistUpdateManyWithoutUserNestedInput;
+  recentlyViewed?: Prisma.RecentlyViewedUpdateManyWithoutUserNestedInput;
   cart?: Prisma.CartUpdateOneWithoutUserNestedInput;
 };
 
@@ -1873,7 +2129,9 @@ export type UserUncheckedUpdateWithoutVouchersUsedInput = {
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput;
   reviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput;
   comments?: Prisma.LessonCommentUncheckedUpdateManyWithoutUserNestedInput;
+  savedVouchers?: Prisma.UserVoucherUncheckedUpdateManyWithoutUserNestedInput;
   wishlist?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput;
+  recentlyViewed?: Prisma.RecentlyViewedUncheckedUpdateManyWithoutUserNestedInput;
   cart?: Prisma.CartUncheckedUpdateOneWithoutUserNestedInput;
 };
 
@@ -1896,8 +2154,10 @@ export type UserCreateWithoutOrdersInput = {
   progress?: Prisma.LessonProgressCreateNestedManyWithoutUserInput;
   reviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput;
   comments?: Prisma.LessonCommentCreateNestedManyWithoutUserInput;
+  savedVouchers?: Prisma.UserVoucherCreateNestedManyWithoutUserInput;
   vouchersUsed?: Prisma.VoucherUsageCreateNestedManyWithoutUserInput;
   wishlist?: Prisma.WishlistCreateNestedManyWithoutUserInput;
+  recentlyViewed?: Prisma.RecentlyViewedCreateNestedManyWithoutUserInput;
   cart?: Prisma.CartCreateNestedOneWithoutUserInput;
 };
 
@@ -1920,8 +2180,10 @@ export type UserUncheckedCreateWithoutOrdersInput = {
   progress?: Prisma.LessonProgressUncheckedCreateNestedManyWithoutUserInput;
   reviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput;
   comments?: Prisma.LessonCommentUncheckedCreateNestedManyWithoutUserInput;
+  savedVouchers?: Prisma.UserVoucherUncheckedCreateNestedManyWithoutUserInput;
   vouchersUsed?: Prisma.VoucherUsageUncheckedCreateNestedManyWithoutUserInput;
   wishlist?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput;
+  recentlyViewed?: Prisma.RecentlyViewedUncheckedCreateNestedManyWithoutUserInput;
   cart?: Prisma.CartUncheckedCreateNestedOneWithoutUserInput;
 };
 
@@ -1972,8 +2234,10 @@ export type UserUpdateWithoutOrdersInput = {
   progress?: Prisma.LessonProgressUpdateManyWithoutUserNestedInput;
   reviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput;
   comments?: Prisma.LessonCommentUpdateManyWithoutUserNestedInput;
+  savedVouchers?: Prisma.UserVoucherUpdateManyWithoutUserNestedInput;
   vouchersUsed?: Prisma.VoucherUsageUpdateManyWithoutUserNestedInput;
   wishlist?: Prisma.WishlistUpdateManyWithoutUserNestedInput;
+  recentlyViewed?: Prisma.RecentlyViewedUpdateManyWithoutUserNestedInput;
   cart?: Prisma.CartUpdateOneWithoutUserNestedInput;
 };
 
@@ -1996,8 +2260,10 @@ export type UserUncheckedUpdateWithoutOrdersInput = {
   progress?: Prisma.LessonProgressUncheckedUpdateManyWithoutUserNestedInput;
   reviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput;
   comments?: Prisma.LessonCommentUncheckedUpdateManyWithoutUserNestedInput;
+  savedVouchers?: Prisma.UserVoucherUncheckedUpdateManyWithoutUserNestedInput;
   vouchersUsed?: Prisma.VoucherUsageUncheckedUpdateManyWithoutUserNestedInput;
   wishlist?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput;
+  recentlyViewed?: Prisma.RecentlyViewedUncheckedUpdateManyWithoutUserNestedInput;
   cart?: Prisma.CartUncheckedUpdateOneWithoutUserNestedInput;
 };
 
@@ -2021,7 +2287,9 @@ export type UserCreateWithoutWishlistInput = {
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput;
   reviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput;
   comments?: Prisma.LessonCommentCreateNestedManyWithoutUserInput;
+  savedVouchers?: Prisma.UserVoucherCreateNestedManyWithoutUserInput;
   vouchersUsed?: Prisma.VoucherUsageCreateNestedManyWithoutUserInput;
+  recentlyViewed?: Prisma.RecentlyViewedCreateNestedManyWithoutUserInput;
   cart?: Prisma.CartCreateNestedOneWithoutUserInput;
 };
 
@@ -2045,7 +2313,9 @@ export type UserUncheckedCreateWithoutWishlistInput = {
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput;
   reviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput;
   comments?: Prisma.LessonCommentUncheckedCreateNestedManyWithoutUserInput;
+  savedVouchers?: Prisma.UserVoucherUncheckedCreateNestedManyWithoutUserInput;
   vouchersUsed?: Prisma.VoucherUsageUncheckedCreateNestedManyWithoutUserInput;
+  recentlyViewed?: Prisma.RecentlyViewedUncheckedCreateNestedManyWithoutUserInput;
   cart?: Prisma.CartUncheckedCreateNestedOneWithoutUserInput;
 };
 
@@ -2097,7 +2367,9 @@ export type UserUpdateWithoutWishlistInput = {
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput;
   reviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput;
   comments?: Prisma.LessonCommentUpdateManyWithoutUserNestedInput;
+  savedVouchers?: Prisma.UserVoucherUpdateManyWithoutUserNestedInput;
   vouchersUsed?: Prisma.VoucherUsageUpdateManyWithoutUserNestedInput;
+  recentlyViewed?: Prisma.RecentlyViewedUpdateManyWithoutUserNestedInput;
   cart?: Prisma.CartUpdateOneWithoutUserNestedInput;
 };
 
@@ -2121,7 +2393,141 @@ export type UserUncheckedUpdateWithoutWishlistInput = {
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput;
   reviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput;
   comments?: Prisma.LessonCommentUncheckedUpdateManyWithoutUserNestedInput;
+  savedVouchers?: Prisma.UserVoucherUncheckedUpdateManyWithoutUserNestedInput;
   vouchersUsed?: Prisma.VoucherUsageUncheckedUpdateManyWithoutUserNestedInput;
+  recentlyViewed?: Prisma.RecentlyViewedUncheckedUpdateManyWithoutUserNestedInput;
+  cart?: Prisma.CartUncheckedUpdateOneWithoutUserNestedInput;
+};
+
+export type UserCreateWithoutRecentlyViewedInput = {
+  id?: string;
+  email: string;
+  password?: string | null;
+  isEmailVerified?: boolean;
+  authProvider?: $Enums.AuthProvider;
+  providerId?: string | null;
+  isActive?: boolean;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  role: Prisma.RoleCreateNestedOneWithoutUsersInput;
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput;
+  profile?: Prisma.UserProfileCreateNestedOneWithoutUserInput;
+  extraPermissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput;
+  taughtCourses?: Prisma.CourseInstructorCreateNestedManyWithoutUserInput;
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutUserInput;
+  progress?: Prisma.LessonProgressCreateNestedManyWithoutUserInput;
+  orders?: Prisma.OrderCreateNestedManyWithoutUserInput;
+  reviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput;
+  comments?: Prisma.LessonCommentCreateNestedManyWithoutUserInput;
+  savedVouchers?: Prisma.UserVoucherCreateNestedManyWithoutUserInput;
+  vouchersUsed?: Prisma.VoucherUsageCreateNestedManyWithoutUserInput;
+  wishlist?: Prisma.WishlistCreateNestedManyWithoutUserInput;
+  cart?: Prisma.CartCreateNestedOneWithoutUserInput;
+};
+
+export type UserUncheckedCreateWithoutRecentlyViewedInput = {
+  id?: string;
+  email: string;
+  password?: string | null;
+  isEmailVerified?: boolean;
+  authProvider?: $Enums.AuthProvider;
+  providerId?: string | null;
+  isActive?: boolean;
+  roleId: string;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput;
+  profile?: Prisma.UserProfileUncheckedCreateNestedOneWithoutUserInput;
+  extraPermissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput;
+  taughtCourses?: Prisma.CourseInstructorUncheckedCreateNestedManyWithoutUserInput;
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutUserInput;
+  progress?: Prisma.LessonProgressUncheckedCreateNestedManyWithoutUserInput;
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput;
+  reviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput;
+  comments?: Prisma.LessonCommentUncheckedCreateNestedManyWithoutUserInput;
+  savedVouchers?: Prisma.UserVoucherUncheckedCreateNestedManyWithoutUserInput;
+  vouchersUsed?: Prisma.VoucherUsageUncheckedCreateNestedManyWithoutUserInput;
+  wishlist?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput;
+  cart?: Prisma.CartUncheckedCreateNestedOneWithoutUserInput;
+};
+
+export type UserCreateOrConnectWithoutRecentlyViewedInput = {
+  where: Prisma.UserWhereUniqueInput;
+  create: Prisma.XOR<
+    Prisma.UserCreateWithoutRecentlyViewedInput,
+    Prisma.UserUncheckedCreateWithoutRecentlyViewedInput
+  >;
+};
+
+export type UserUpsertWithoutRecentlyViewedInput = {
+  update: Prisma.XOR<
+    Prisma.UserUpdateWithoutRecentlyViewedInput,
+    Prisma.UserUncheckedUpdateWithoutRecentlyViewedInput
+  >;
+  create: Prisma.XOR<
+    Prisma.UserCreateWithoutRecentlyViewedInput,
+    Prisma.UserUncheckedCreateWithoutRecentlyViewedInput
+  >;
+  where?: Prisma.UserWhereInput;
+};
+
+export type UserUpdateToOneWithWhereWithoutRecentlyViewedInput = {
+  where?: Prisma.UserWhereInput;
+  data: Prisma.XOR<
+    Prisma.UserUpdateWithoutRecentlyViewedInput,
+    Prisma.UserUncheckedUpdateWithoutRecentlyViewedInput
+  >;
+};
+
+export type UserUpdateWithoutRecentlyViewedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  email?: Prisma.StringFieldUpdateOperationsInput | string;
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  isEmailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  authProvider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider;
+  providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  role?: Prisma.RoleUpdateOneRequiredWithoutUsersNestedInput;
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput;
+  profile?: Prisma.UserProfileUpdateOneWithoutUserNestedInput;
+  extraPermissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput;
+  taughtCourses?: Prisma.CourseInstructorUpdateManyWithoutUserNestedInput;
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutUserNestedInput;
+  progress?: Prisma.LessonProgressUpdateManyWithoutUserNestedInput;
+  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput;
+  reviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput;
+  comments?: Prisma.LessonCommentUpdateManyWithoutUserNestedInput;
+  savedVouchers?: Prisma.UserVoucherUpdateManyWithoutUserNestedInput;
+  vouchersUsed?: Prisma.VoucherUsageUpdateManyWithoutUserNestedInput;
+  wishlist?: Prisma.WishlistUpdateManyWithoutUserNestedInput;
+  cart?: Prisma.CartUpdateOneWithoutUserNestedInput;
+};
+
+export type UserUncheckedUpdateWithoutRecentlyViewedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  email?: Prisma.StringFieldUpdateOperationsInput | string;
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  isEmailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  authProvider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider;
+  providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  roleId?: Prisma.StringFieldUpdateOperationsInput | string;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput;
+  profile?: Prisma.UserProfileUncheckedUpdateOneWithoutUserNestedInput;
+  extraPermissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput;
+  taughtCourses?: Prisma.CourseInstructorUncheckedUpdateManyWithoutUserNestedInput;
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutUserNestedInput;
+  progress?: Prisma.LessonProgressUncheckedUpdateManyWithoutUserNestedInput;
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput;
+  reviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput;
+  comments?: Prisma.LessonCommentUncheckedUpdateManyWithoutUserNestedInput;
+  savedVouchers?: Prisma.UserVoucherUncheckedUpdateManyWithoutUserNestedInput;
+  vouchersUsed?: Prisma.VoucherUsageUncheckedUpdateManyWithoutUserNestedInput;
+  wishlist?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput;
   cart?: Prisma.CartUncheckedUpdateOneWithoutUserNestedInput;
 };
 
@@ -2145,8 +2551,10 @@ export type UserCreateWithoutCartInput = {
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput;
   reviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput;
   comments?: Prisma.LessonCommentCreateNestedManyWithoutUserInput;
+  savedVouchers?: Prisma.UserVoucherCreateNestedManyWithoutUserInput;
   vouchersUsed?: Prisma.VoucherUsageCreateNestedManyWithoutUserInput;
   wishlist?: Prisma.WishlistCreateNestedManyWithoutUserInput;
+  recentlyViewed?: Prisma.RecentlyViewedCreateNestedManyWithoutUserInput;
 };
 
 export type UserUncheckedCreateWithoutCartInput = {
@@ -2169,8 +2577,10 @@ export type UserUncheckedCreateWithoutCartInput = {
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput;
   reviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput;
   comments?: Prisma.LessonCommentUncheckedCreateNestedManyWithoutUserInput;
+  savedVouchers?: Prisma.UserVoucherUncheckedCreateNestedManyWithoutUserInput;
   vouchersUsed?: Prisma.VoucherUsageUncheckedCreateNestedManyWithoutUserInput;
   wishlist?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput;
+  recentlyViewed?: Prisma.RecentlyViewedUncheckedCreateNestedManyWithoutUserInput;
 };
 
 export type UserCreateOrConnectWithoutCartInput = {
@@ -2209,8 +2619,10 @@ export type UserUpdateWithoutCartInput = {
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput;
   reviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput;
   comments?: Prisma.LessonCommentUpdateManyWithoutUserNestedInput;
+  savedVouchers?: Prisma.UserVoucherUpdateManyWithoutUserNestedInput;
   vouchersUsed?: Prisma.VoucherUsageUpdateManyWithoutUserNestedInput;
   wishlist?: Prisma.WishlistUpdateManyWithoutUserNestedInput;
+  recentlyViewed?: Prisma.RecentlyViewedUpdateManyWithoutUserNestedInput;
 };
 
 export type UserUncheckedUpdateWithoutCartInput = {
@@ -2233,8 +2645,10 @@ export type UserUncheckedUpdateWithoutCartInput = {
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput;
   reviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput;
   comments?: Prisma.LessonCommentUncheckedUpdateManyWithoutUserNestedInput;
+  savedVouchers?: Prisma.UserVoucherUncheckedUpdateManyWithoutUserNestedInput;
   vouchersUsed?: Prisma.VoucherUsageUncheckedUpdateManyWithoutUserNestedInput;
   wishlist?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput;
+  recentlyViewed?: Prisma.RecentlyViewedUncheckedUpdateManyWithoutUserNestedInput;
 };
 
 export type UserCreateWithoutEnrollmentsInput = {
@@ -2256,8 +2670,10 @@ export type UserCreateWithoutEnrollmentsInput = {
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput;
   reviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput;
   comments?: Prisma.LessonCommentCreateNestedManyWithoutUserInput;
+  savedVouchers?: Prisma.UserVoucherCreateNestedManyWithoutUserInput;
   vouchersUsed?: Prisma.VoucherUsageCreateNestedManyWithoutUserInput;
   wishlist?: Prisma.WishlistCreateNestedManyWithoutUserInput;
+  recentlyViewed?: Prisma.RecentlyViewedCreateNestedManyWithoutUserInput;
   cart?: Prisma.CartCreateNestedOneWithoutUserInput;
 };
 
@@ -2280,8 +2696,10 @@ export type UserUncheckedCreateWithoutEnrollmentsInput = {
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput;
   reviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput;
   comments?: Prisma.LessonCommentUncheckedCreateNestedManyWithoutUserInput;
+  savedVouchers?: Prisma.UserVoucherUncheckedCreateNestedManyWithoutUserInput;
   vouchersUsed?: Prisma.VoucherUsageUncheckedCreateNestedManyWithoutUserInput;
   wishlist?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput;
+  recentlyViewed?: Prisma.RecentlyViewedUncheckedCreateNestedManyWithoutUserInput;
   cart?: Prisma.CartUncheckedCreateNestedOneWithoutUserInput;
 };
 
@@ -2332,8 +2750,10 @@ export type UserUpdateWithoutEnrollmentsInput = {
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput;
   reviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput;
   comments?: Prisma.LessonCommentUpdateManyWithoutUserNestedInput;
+  savedVouchers?: Prisma.UserVoucherUpdateManyWithoutUserNestedInput;
   vouchersUsed?: Prisma.VoucherUsageUpdateManyWithoutUserNestedInput;
   wishlist?: Prisma.WishlistUpdateManyWithoutUserNestedInput;
+  recentlyViewed?: Prisma.RecentlyViewedUpdateManyWithoutUserNestedInput;
   cart?: Prisma.CartUpdateOneWithoutUserNestedInput;
 };
 
@@ -2356,8 +2776,10 @@ export type UserUncheckedUpdateWithoutEnrollmentsInput = {
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput;
   reviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput;
   comments?: Prisma.LessonCommentUncheckedUpdateManyWithoutUserNestedInput;
+  savedVouchers?: Prisma.UserVoucherUncheckedUpdateManyWithoutUserNestedInput;
   vouchersUsed?: Prisma.VoucherUsageUncheckedUpdateManyWithoutUserNestedInput;
   wishlist?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput;
+  recentlyViewed?: Prisma.RecentlyViewedUncheckedUpdateManyWithoutUserNestedInput;
   cart?: Prisma.CartUncheckedUpdateOneWithoutUserNestedInput;
 };
 
@@ -2380,8 +2802,10 @@ export type UserCreateWithoutProgressInput = {
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput;
   reviews?: Prisma.CourseReviewCreateNestedManyWithoutUserInput;
   comments?: Prisma.LessonCommentCreateNestedManyWithoutUserInput;
+  savedVouchers?: Prisma.UserVoucherCreateNestedManyWithoutUserInput;
   vouchersUsed?: Prisma.VoucherUsageCreateNestedManyWithoutUserInput;
   wishlist?: Prisma.WishlistCreateNestedManyWithoutUserInput;
+  recentlyViewed?: Prisma.RecentlyViewedCreateNestedManyWithoutUserInput;
   cart?: Prisma.CartCreateNestedOneWithoutUserInput;
 };
 
@@ -2404,8 +2828,10 @@ export type UserUncheckedCreateWithoutProgressInput = {
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput;
   reviews?: Prisma.CourseReviewUncheckedCreateNestedManyWithoutUserInput;
   comments?: Prisma.LessonCommentUncheckedCreateNestedManyWithoutUserInput;
+  savedVouchers?: Prisma.UserVoucherUncheckedCreateNestedManyWithoutUserInput;
   vouchersUsed?: Prisma.VoucherUsageUncheckedCreateNestedManyWithoutUserInput;
   wishlist?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput;
+  recentlyViewed?: Prisma.RecentlyViewedUncheckedCreateNestedManyWithoutUserInput;
   cart?: Prisma.CartUncheckedCreateNestedOneWithoutUserInput;
 };
 
@@ -2456,8 +2882,10 @@ export type UserUpdateWithoutProgressInput = {
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput;
   reviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput;
   comments?: Prisma.LessonCommentUpdateManyWithoutUserNestedInput;
+  savedVouchers?: Prisma.UserVoucherUpdateManyWithoutUserNestedInput;
   vouchersUsed?: Prisma.VoucherUsageUpdateManyWithoutUserNestedInput;
   wishlist?: Prisma.WishlistUpdateManyWithoutUserNestedInput;
+  recentlyViewed?: Prisma.RecentlyViewedUpdateManyWithoutUserNestedInput;
   cart?: Prisma.CartUpdateOneWithoutUserNestedInput;
 };
 
@@ -2480,8 +2908,10 @@ export type UserUncheckedUpdateWithoutProgressInput = {
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput;
   reviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput;
   comments?: Prisma.LessonCommentUncheckedUpdateManyWithoutUserNestedInput;
+  savedVouchers?: Prisma.UserVoucherUncheckedUpdateManyWithoutUserNestedInput;
   vouchersUsed?: Prisma.VoucherUsageUncheckedUpdateManyWithoutUserNestedInput;
   wishlist?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput;
+  recentlyViewed?: Prisma.RecentlyViewedUncheckedUpdateManyWithoutUserNestedInput;
   cart?: Prisma.CartUncheckedUpdateOneWithoutUserNestedInput;
 };
 
@@ -2516,8 +2946,10 @@ export type UserUpdateWithoutRoleInput = {
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput;
   reviews?: Prisma.CourseReviewUpdateManyWithoutUserNestedInput;
   comments?: Prisma.LessonCommentUpdateManyWithoutUserNestedInput;
+  savedVouchers?: Prisma.UserVoucherUpdateManyWithoutUserNestedInput;
   vouchersUsed?: Prisma.VoucherUsageUpdateManyWithoutUserNestedInput;
   wishlist?: Prisma.WishlistUpdateManyWithoutUserNestedInput;
+  recentlyViewed?: Prisma.RecentlyViewedUpdateManyWithoutUserNestedInput;
   cart?: Prisma.CartUpdateOneWithoutUserNestedInput;
 };
 
@@ -2540,8 +2972,10 @@ export type UserUncheckedUpdateWithoutRoleInput = {
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput;
   reviews?: Prisma.CourseReviewUncheckedUpdateManyWithoutUserNestedInput;
   comments?: Prisma.LessonCommentUncheckedUpdateManyWithoutUserNestedInput;
+  savedVouchers?: Prisma.UserVoucherUncheckedUpdateManyWithoutUserNestedInput;
   vouchersUsed?: Prisma.VoucherUsageUncheckedUpdateManyWithoutUserNestedInput;
   wishlist?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput;
+  recentlyViewed?: Prisma.RecentlyViewedUncheckedUpdateManyWithoutUserNestedInput;
   cart?: Prisma.CartUncheckedUpdateOneWithoutUserNestedInput;
 };
 
@@ -2570,8 +3004,10 @@ export type UserCountOutputType = {
   orders: number;
   reviews: number;
   comments: number;
+  savedVouchers: number;
   vouchersUsed: number;
   wishlist: number;
+  recentlyViewed: number;
 };
 
 export type UserCountOutputTypeSelect<
@@ -2585,8 +3021,10 @@ export type UserCountOutputTypeSelect<
   orders?: boolean | UserCountOutputTypeCountOrdersArgs;
   reviews?: boolean | UserCountOutputTypeCountReviewsArgs;
   comments?: boolean | UserCountOutputTypeCountCommentsArgs;
+  savedVouchers?: boolean | UserCountOutputTypeCountSavedVouchersArgs;
   vouchersUsed?: boolean | UserCountOutputTypeCountVouchersUsedArgs;
   wishlist?: boolean | UserCountOutputTypeCountWishlistArgs;
+  recentlyViewed?: boolean | UserCountOutputTypeCountRecentlyViewedArgs;
 };
 
 /**
@@ -2676,6 +3114,15 @@ export type UserCountOutputTypeCountCommentsArgs<
 /**
  * UserCountOutputType without action
  */
+export type UserCountOutputTypeCountSavedVouchersArgs<
+  ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
+> = {
+  where?: Prisma.UserVoucherWhereInput;
+};
+
+/**
+ * UserCountOutputType without action
+ */
 export type UserCountOutputTypeCountVouchersUsedArgs<
   ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
 > = {
@@ -2689,6 +3136,15 @@ export type UserCountOutputTypeCountWishlistArgs<
   ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
 > = {
   where?: Prisma.WishlistWhereInput;
+};
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountRecentlyViewedArgs<
+  ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
+> = {
+  where?: Prisma.RecentlyViewedWhereInput;
 };
 
 export type UserSelect<
@@ -2715,8 +3171,10 @@ export type UserSelect<
     orders?: boolean | Prisma.User$ordersArgs<ExtArgs>;
     reviews?: boolean | Prisma.User$reviewsArgs<ExtArgs>;
     comments?: boolean | Prisma.User$commentsArgs<ExtArgs>;
+    savedVouchers?: boolean | Prisma.User$savedVouchersArgs<ExtArgs>;
     vouchersUsed?: boolean | Prisma.User$vouchersUsedArgs<ExtArgs>;
     wishlist?: boolean | Prisma.User$wishlistArgs<ExtArgs>;
+    recentlyViewed?: boolean | Prisma.User$recentlyViewedArgs<ExtArgs>;
     cart?: boolean | Prisma.User$cartArgs<ExtArgs>;
     _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>;
   },
@@ -2802,8 +3260,10 @@ export type UserInclude<
   orders?: boolean | Prisma.User$ordersArgs<ExtArgs>;
   reviews?: boolean | Prisma.User$reviewsArgs<ExtArgs>;
   comments?: boolean | Prisma.User$commentsArgs<ExtArgs>;
+  savedVouchers?: boolean | Prisma.User$savedVouchersArgs<ExtArgs>;
   vouchersUsed?: boolean | Prisma.User$vouchersUsedArgs<ExtArgs>;
   wishlist?: boolean | Prisma.User$wishlistArgs<ExtArgs>;
+  recentlyViewed?: boolean | Prisma.User$recentlyViewedArgs<ExtArgs>;
   cart?: boolean | Prisma.User$cartArgs<ExtArgs>;
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>;
 };
@@ -2833,8 +3293,10 @@ export type $UserPayload<
     orders: Prisma.$OrderPayload<ExtArgs>[];
     reviews: Prisma.$CourseReviewPayload<ExtArgs>[];
     comments: Prisma.$LessonCommentPayload<ExtArgs>[];
+    savedVouchers: Prisma.$UserVoucherPayload<ExtArgs>[];
     vouchersUsed: Prisma.$VoucherUsagePayload<ExtArgs>[];
     wishlist: Prisma.$WishlistPayload<ExtArgs>[];
+    recentlyViewed: Prisma.$RecentlyViewedPayload<ExtArgs>[];
     cart: Prisma.$CartPayload<ExtArgs> | null;
   };
   scalars: runtime.Types.Extensions.GetPayloadResult<
@@ -3474,6 +3936,17 @@ export interface Prisma__UserClient<
       >
     | Null
   >;
+  savedVouchers<T extends Prisma.User$savedVouchersArgs<ExtArgs> = {}>(
+    args?: Prisma.Subset<T, Prisma.User$savedVouchersArgs<ExtArgs>>
+  ): Prisma.PrismaPromise<
+    | runtime.Types.Result.GetResult<
+        Prisma.$UserVoucherPayload<ExtArgs>,
+        T,
+        'findMany',
+        GlobalOmitOptions
+      >
+    | Null
+  >;
   vouchersUsed<T extends Prisma.User$vouchersUsedArgs<ExtArgs> = {}>(
     args?: Prisma.Subset<T, Prisma.User$vouchersUsedArgs<ExtArgs>>
   ): Prisma.PrismaPromise<
@@ -3490,6 +3963,17 @@ export interface Prisma__UserClient<
   ): Prisma.PrismaPromise<
     | runtime.Types.Result.GetResult<
         Prisma.$WishlistPayload<ExtArgs>,
+        T,
+        'findMany',
+        GlobalOmitOptions
+      >
+    | Null
+  >;
+  recentlyViewed<T extends Prisma.User$recentlyViewedArgs<ExtArgs> = {}>(
+    args?: Prisma.Subset<T, Prisma.User$recentlyViewedArgs<ExtArgs>>
+  ): Prisma.PrismaPromise<
+    | runtime.Types.Result.GetResult<
+        Prisma.$RecentlyViewedPayload<ExtArgs>,
         T,
         'findMany',
         GlobalOmitOptions
@@ -4217,6 +4701,34 @@ export type User$commentsArgs<
 };
 
 /**
+ * User.savedVouchers
+ */
+export type User$savedVouchersArgs<
+  ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
+> = {
+  /**
+   * Select specific fields to fetch from the UserVoucher
+   */
+  select?: Prisma.UserVoucherSelect<ExtArgs> | null;
+  /**
+   * Omit specific fields from the UserVoucher
+   */
+  omit?: Prisma.UserVoucherOmit<ExtArgs> | null;
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserVoucherInclude<ExtArgs> | null;
+  where?: Prisma.UserVoucherWhereInput;
+  orderBy?:
+    | Prisma.UserVoucherOrderByWithRelationInput
+    | Prisma.UserVoucherOrderByWithRelationInput[];
+  cursor?: Prisma.UserVoucherWhereUniqueInput;
+  take?: number;
+  skip?: number;
+  distinct?: Prisma.UserVoucherScalarFieldEnum | Prisma.UserVoucherScalarFieldEnum[];
+};
+
+/**
  * User.vouchersUsed
  */
 export type User$vouchersUsedArgs<
@@ -4268,6 +4780,34 @@ export type User$wishlistArgs<
   take?: number;
   skip?: number;
   distinct?: Prisma.WishlistScalarFieldEnum | Prisma.WishlistScalarFieldEnum[];
+};
+
+/**
+ * User.recentlyViewed
+ */
+export type User$recentlyViewedArgs<
+  ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
+> = {
+  /**
+   * Select specific fields to fetch from the RecentlyViewed
+   */
+  select?: Prisma.RecentlyViewedSelect<ExtArgs> | null;
+  /**
+   * Omit specific fields from the RecentlyViewed
+   */
+  omit?: Prisma.RecentlyViewedOmit<ExtArgs> | null;
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RecentlyViewedInclude<ExtArgs> | null;
+  where?: Prisma.RecentlyViewedWhereInput;
+  orderBy?:
+    | Prisma.RecentlyViewedOrderByWithRelationInput
+    | Prisma.RecentlyViewedOrderByWithRelationInput[];
+  cursor?: Prisma.RecentlyViewedWhereUniqueInput;
+  take?: number;
+  skip?: number;
+  distinct?: Prisma.RecentlyViewedScalarFieldEnum | Prisma.RecentlyViewedScalarFieldEnum[];
 };
 
 /**

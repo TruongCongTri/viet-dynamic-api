@@ -23,6 +23,16 @@ export const OtpType = {
 
 export type OtpType = (typeof OtpType)[keyof typeof OtpType];
 
+export const CourseStatus = {
+  DRAFT: 'DRAFT',
+  PENDING: 'PENDING',
+  PUBLISHED: 'PUBLISHED',
+  REJECTED: 'REJECTED',
+  HIDDEN: 'HIDDEN',
+} as const;
+
+export type CourseStatus = (typeof CourseStatus)[keyof typeof CourseStatus];
+
 export const LessonType = {
   VIDEO: 'VIDEO',
   TEXT: 'TEXT',
@@ -31,12 +41,36 @@ export const LessonType = {
 
 export type LessonType = (typeof LessonType)[keyof typeof LessonType];
 
+export const VideoStatus = {
+  NONE: 'NONE',
+  UPLOADING: 'UPLOADING',
+  PROCESSING: 'PROCESSING',
+  READY: 'READY',
+  FAILED: 'FAILED',
+} as const;
+
+export type VideoStatus = (typeof VideoStatus)[keyof typeof VideoStatus];
+
 export const DiscountType = {
   PERCENTAGE: 'PERCENTAGE',
   FIXED_AMOUNT: 'FIXED_AMOUNT',
 } as const;
 
 export type DiscountType = (typeof DiscountType)[keyof typeof DiscountType];
+
+export const VoucherAudience = {
+  GLOBAL: 'GLOBAL',
+  SPECIFIC_USERS: 'SPECIFIC_USERS',
+} as const;
+
+export type VoucherAudience = (typeof VoucherAudience)[keyof typeof VoucherAudience];
+
+export const VoucherSource = {
+  SAVED_BY_USER: 'SAVED_BY_USER',
+  ASSIGNED_BY_ADMIN: 'ASSIGNED_BY_ADMIN',
+} as const;
+
+export type VoucherSource = (typeof VoucherSource)[keyof typeof VoucherSource];
 
 export const OrderStatus = {
   PENDING: 'PENDING',

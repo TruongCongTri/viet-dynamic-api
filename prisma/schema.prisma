@@ -88,8 +88,12 @@ model User {
   orders           Order[]
   reviews          CourseReview[]
   comments         LessonComment[]
+
+  savedVouchers    UserVoucher[]
   vouchersUsed     VoucherUsage[]
+
   wishlist         Wishlist[]
+  recentlyViewed RecentlyViewed[]
   cart             Cart?
 
   createdAt        DateTime         @default(now())
@@ -164,13 +168,21 @@ model Category {
   updatedAt   DateTime @updatedAt
 }
 
+enum CourseStatus {
+  DRAFT       // Giảng viên đang soạn, chưa xong
+  PENDING     // Giảng viên gửi yêu cầu lên Admin duyệt
+  PUBLISHED   // Admin đã duyệt, xuất hiện trên Trang chủ
+  REJECTED    // Admin từ chối (kèm lý do)
+  HIDDEN      // Admin buộc gỡ xuống vì vi phạm
+}
+
 model Course {
   id          String   @id @default(uuid())
   title       String
   slug        String   @unique
   description String?  @db.Text
   basePrice   Decimal  @db.Decimal(10, 2) @default(0)
-  isPublished Boolean  @default(false)
+  status CourseStatus @default(DRAFT)
 
   totalDuration Int      @default(0)
 
@@ -185,6 +197,7 @@ model Course {
   orderItems  OrderItem[]
   wishlist    Wishlist[]
   cartItems   CartItem[]
+  recentlyViewed RecentlyViewed[]
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -226,6 +239,14 @@ enum LessonType {
   QUIZ
 }
 
+enum VideoStatus {
+  NONE        // Bài học dạng Text, không có video
+  UPLOADING   // Đang tải lên
+  PROCESSING  // Cloudflare đang xử lý (Transcoding)
+  READY       // Đã sẵn sàng phát
+  FAILED      // Lỗi xử lý
+}
+
 model Lesson {
   id          String   @id @default(uuid())
   title       String
@@ -251,6 +272,7 @@ model Lesson {
   // Quan hệ ngược cho tính năng Resume Learning
   resumedBy   Enrollment[] @relation("ResumeLearning")
 
+  videoStatus VideoStatus @default(NONE)
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
 
@@ -330,31 +352,62 @@ model CourseDiscount {
 }
 
 // VOUCHER: Mã giảm giá người dùng phải tự nhập ở màn hình Thanh toán (Checkout)
+// 1. Khai báo đối tượng được phép sử dụng Voucher
+enum VoucherAudience {
+  GLOBAL          // Ai cũng dùng được (Mã Public)
+  SPECIFIC_USERS  // Chỉ những người có trong "Ví Voucher" mới được dùng
+}
+
+// 2. Nguồn gốc Voucher chui vào ví (Để thống kê Marketing)
+enum VoucherSource {
+  SAVED_BY_USER     // Học viên tự thấy mã trên web và bấm "Lưu vào ví"
+  ASSIGNED_BY_ADMIN // Hệ thống/Admin chủ động tặng (Bắn thẳng vào ví)
+}
+
 model Voucher {
-  id             String       @id @default(uuid())
-  code           String       @unique 
-  type           DiscountType
-  value          Decimal      @db.Decimal(10, 2)
+  id                String          @id @default(uuid())
+  code              String          @unique 
+  type              DiscountType
+  value             Decimal         @db.Decimal(10, 2)
 
-  // Bảo vệ tài chính
-  maxDiscountAmount Decimal?       @db.Decimal(10, 2) // Giảm 50% (tối đa 200k)
-  minOrderValue     Decimal?       @db.Decimal(10, 2) // Chỉ áp dụng cho đơn từ 500k trở lên
+  maxDiscountAmount Decimal?        @db.Decimal(10, 2)
+  minOrderValue     Decimal?        @db.Decimal(10, 2)
 
-  maxUsesTotal   Int?         
-  currentUses    Int          @default(0)
-  maxUsesPerUser Int          @default(1) 
+  maxUsesTotal      Int?          
+  currentUses       Int             @default(0)
+  maxUsesPerUser    Int             @default(1) 
 
-  // Lên lịch & Công tắc khẩn cấp
-  isActive          Boolean        @default(true)
-  startDate         DateTime       // Từ ngày (Có thể set trước 1 tháng)
-  expiresAt         DateTime?      // Đến ngày (Bỏ trống = không bao giờ hết hạn)
+  // Phân loại mã Public hay Private
+  audience          VoucherAudience @default(GLOBAL)
 
-  // Trường version để xử lý Concurrency (Optimistic Locking)
-  // Mỗi lần user dùng voucher thành công, version tự động + 1
-  version        Int          @default(1)
+  isActive          Boolean         @default(true)
+  startDate         DateTime
+  expiresAt         DateTime?
+  version           Int             @default(1)
 
-  usages         VoucherUsage[]
-  orders         Order[]
+  usages            VoucherUsage[]
+  orders            Order[]
+  
+  // [BỔ SUNG]: Liên kết tới Ví của người dùng
+  wallets           UserVoucher[]   
+}
+
+// Bảng "Ví Voucher" (Đóng vai trò là bảng trung gian N-N)
+model UserVoucher {
+  userId    String
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  voucherId String
+  voucher   Voucher       @relation(fields: [voucherId], references: [id], onDelete: Cascade)
+  
+  source    VoucherSource @default(SAVED_BY_USER) // Biết được mã này do user tự lưu hay admin tặng
+  
+  isUsed    Boolean       @default(false)
+  usedAt    DateTime?     // Thời điểm sử dụng
+
+  createdAt DateTime      @default(now())
+
+  // Đảm bảo 1 user không được gán/lưu 1 mã voucher 2 lần
+  @@id([userId, voucherId]) 
 }
 
 model VoucherUsage {
@@ -445,6 +498,19 @@ model Wishlist {
 
   createdAt DateTime @default(now())
 
+  @@id([userId, courseId])
+}
+
+// Lịch sử xem khóa học của User
+model RecentlyViewed {
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  
+  viewedAt  DateTime @default(now())
+
+  // Đảm bảo 1 user - 1 khóa học chỉ có 1 record lịch sử
   @@id([userId, courseId])
 }
 

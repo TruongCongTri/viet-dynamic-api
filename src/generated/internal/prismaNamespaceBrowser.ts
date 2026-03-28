@@ -66,11 +66,13 @@ export const ModelName = {
   Discount: 'Discount',
   CourseDiscount: 'CourseDiscount',
   Voucher: 'Voucher',
+  UserVoucher: 'UserVoucher',
   VoucherUsage: 'VoucherUsage',
   Order: 'Order',
   Payment: 'Payment',
   OrderItem: 'OrderItem',
   Wishlist: 'Wishlist',
+  RecentlyViewed: 'RecentlyViewed',
   Cart: 'Cart',
   CartItem: 'CartItem',
   Enrollment: 'Enrollment',
@@ -201,7 +203,7 @@ export const CourseScalarFieldEnum = {
   slug: 'slug',
   description: 'description',
   basePrice: 'basePrice',
-  isPublished: 'isPublished',
+  status: 'status',
   totalDuration: 'totalDuration',
   categoryId: 'categoryId',
   createdAt: 'createdAt',
@@ -243,6 +245,7 @@ export const LessonScalarFieldEnum = {
   duration: 'duration',
   order: 'order',
   moduleId: 'moduleId',
+  videoStatus: 'videoStatus',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
 } as const;
@@ -309,6 +312,7 @@ export const VoucherScalarFieldEnum = {
   maxUsesTotal: 'maxUsesTotal',
   currentUses: 'currentUses',
   maxUsesPerUser: 'maxUsesPerUser',
+  audience: 'audience',
   isActive: 'isActive',
   startDate: 'startDate',
   expiresAt: 'expiresAt',
@@ -317,6 +321,18 @@ export const VoucherScalarFieldEnum = {
 
 export type VoucherScalarFieldEnum =
   (typeof VoucherScalarFieldEnum)[keyof typeof VoucherScalarFieldEnum];
+
+export const UserVoucherScalarFieldEnum = {
+  userId: 'userId',
+  voucherId: 'voucherId',
+  source: 'source',
+  isUsed: 'isUsed',
+  usedAt: 'usedAt',
+  createdAt: 'createdAt',
+} as const;
+
+export type UserVoucherScalarFieldEnum =
+  (typeof UserVoucherScalarFieldEnum)[keyof typeof UserVoucherScalarFieldEnum];
 
 export const VoucherUsageScalarFieldEnum = {
   userId: 'userId',
@@ -373,6 +389,15 @@ export const WishlistScalarFieldEnum = {
 
 export type WishlistScalarFieldEnum =
   (typeof WishlistScalarFieldEnum)[keyof typeof WishlistScalarFieldEnum];
+
+export const RecentlyViewedScalarFieldEnum = {
+  userId: 'userId',
+  courseId: 'courseId',
+  viewedAt: 'viewedAt',
+} as const;
+
+export type RecentlyViewedScalarFieldEnum =
+  (typeof RecentlyViewedScalarFieldEnum)[keyof typeof RecentlyViewedScalarFieldEnum];
 
 export const CartScalarFieldEnum = {
   id: 'id',

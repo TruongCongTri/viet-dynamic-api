@@ -275,6 +275,13 @@ export type DecimalFilter<$PrismaModel = never> = {
     | string;
 };
 
+export type EnumCourseStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.CourseStatus | Prisma.EnumCourseStatusFieldRefInput<$PrismaModel>;
+  in?: $Enums.CourseStatus[] | Prisma.ListEnumCourseStatusFieldRefInput<$PrismaModel>;
+  notIn?: $Enums.CourseStatus[] | Prisma.ListEnumCourseStatusFieldRefInput<$PrismaModel>;
+  not?: Prisma.NestedEnumCourseStatusFilter<$PrismaModel> | $Enums.CourseStatus;
+};
+
 export type IntFilter<$PrismaModel = never> = {
   equals?: number | Prisma.IntFieldRefInput<$PrismaModel>;
   in?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>;
@@ -342,6 +349,16 @@ export type DecimalWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedDecimalFilter<$PrismaModel>;
 };
 
+export type EnumCourseStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.CourseStatus | Prisma.EnumCourseStatusFieldRefInput<$PrismaModel>;
+  in?: $Enums.CourseStatus[] | Prisma.ListEnumCourseStatusFieldRefInput<$PrismaModel>;
+  notIn?: $Enums.CourseStatus[] | Prisma.ListEnumCourseStatusFieldRefInput<$PrismaModel>;
+  not?: Prisma.NestedEnumCourseStatusWithAggregatesFilter<$PrismaModel> | $Enums.CourseStatus;
+  _count?: Prisma.NestedIntFilter<$PrismaModel>;
+  _min?: Prisma.NestedEnumCourseStatusFilter<$PrismaModel>;
+  _max?: Prisma.NestedEnumCourseStatusFilter<$PrismaModel>;
+};
+
 export type IntWithAggregatesFilter<$PrismaModel = never> = {
   equals?: number | Prisma.IntFieldRefInput<$PrismaModel>;
   in?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>;
@@ -365,6 +382,13 @@ export type EnumLessonTypeFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumLessonTypeFilter<$PrismaModel> | $Enums.LessonType;
 };
 
+export type EnumVideoStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.VideoStatus | Prisma.EnumVideoStatusFieldRefInput<$PrismaModel>;
+  in?: $Enums.VideoStatus[] | Prisma.ListEnumVideoStatusFieldRefInput<$PrismaModel>;
+  notIn?: $Enums.VideoStatus[] | Prisma.ListEnumVideoStatusFieldRefInput<$PrismaModel>;
+  not?: Prisma.NestedEnumVideoStatusFilter<$PrismaModel> | $Enums.VideoStatus;
+};
+
 export type EnumLessonTypeWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.LessonType | Prisma.EnumLessonTypeFieldRefInput<$PrismaModel>;
   in?: $Enums.LessonType[] | Prisma.ListEnumLessonTypeFieldRefInput<$PrismaModel>;
@@ -373,6 +397,16 @@ export type EnumLessonTypeWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>;
   _min?: Prisma.NestedEnumLessonTypeFilter<$PrismaModel>;
   _max?: Prisma.NestedEnumLessonTypeFilter<$PrismaModel>;
+};
+
+export type EnumVideoStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.VideoStatus | Prisma.EnumVideoStatusFieldRefInput<$PrismaModel>;
+  in?: $Enums.VideoStatus[] | Prisma.ListEnumVideoStatusFieldRefInput<$PrismaModel>;
+  notIn?: $Enums.VideoStatus[] | Prisma.ListEnumVideoStatusFieldRefInput<$PrismaModel>;
+  not?: Prisma.NestedEnumVideoStatusWithAggregatesFilter<$PrismaModel> | $Enums.VideoStatus;
+  _count?: Prisma.NestedIntFilter<$PrismaModel>;
+  _min?: Prisma.NestedEnumVideoStatusFilter<$PrismaModel>;
+  _max?: Prisma.NestedEnumVideoStatusFilter<$PrismaModel>;
 };
 
 export type EnumDiscountTypeFilter<$PrismaModel = never> = {
@@ -518,6 +552,13 @@ export type IntNullableFilter<$PrismaModel = never> = {
   not?: Prisma.NestedIntNullableFilter<$PrismaModel> | number | null;
 };
 
+export type EnumVoucherAudienceFilter<$PrismaModel = never> = {
+  equals?: $Enums.VoucherAudience | Prisma.EnumVoucherAudienceFieldRefInput<$PrismaModel>;
+  in?: $Enums.VoucherAudience[] | Prisma.ListEnumVoucherAudienceFieldRefInput<$PrismaModel>;
+  notIn?: $Enums.VoucherAudience[] | Prisma.ListEnumVoucherAudienceFieldRefInput<$PrismaModel>;
+  not?: Prisma.NestedEnumVoucherAudienceFilter<$PrismaModel> | $Enums.VoucherAudience;
+};
+
 export type DateTimeNullableFilter<$PrismaModel = never> = {
   equals?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel> | null;
   in?: Date[] | string[] | Prisma.ListDateTimeFieldRefInput<$PrismaModel> | null;
@@ -545,6 +586,16 @@ export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedIntNullableFilter<$PrismaModel>;
 };
 
+export type EnumVoucherAudienceWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.VoucherAudience | Prisma.EnumVoucherAudienceFieldRefInput<$PrismaModel>;
+  in?: $Enums.VoucherAudience[] | Prisma.ListEnumVoucherAudienceFieldRefInput<$PrismaModel>;
+  notIn?: $Enums.VoucherAudience[] | Prisma.ListEnumVoucherAudienceFieldRefInput<$PrismaModel>;
+  not?: Prisma.NestedEnumVoucherAudienceWithAggregatesFilter<$PrismaModel> | $Enums.VoucherAudience;
+  _count?: Prisma.NestedIntFilter<$PrismaModel>;
+  _min?: Prisma.NestedEnumVoucherAudienceFilter<$PrismaModel>;
+  _max?: Prisma.NestedEnumVoucherAudienceFilter<$PrismaModel>;
+};
+
 export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
   equals?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel> | null;
   in?: Date[] | string[] | Prisma.ListDateTimeFieldRefInput<$PrismaModel> | null;
@@ -557,6 +608,23 @@ export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntNullableFilter<$PrismaModel>;
   _min?: Prisma.NestedDateTimeNullableFilter<$PrismaModel>;
   _max?: Prisma.NestedDateTimeNullableFilter<$PrismaModel>;
+};
+
+export type EnumVoucherSourceFilter<$PrismaModel = never> = {
+  equals?: $Enums.VoucherSource | Prisma.EnumVoucherSourceFieldRefInput<$PrismaModel>;
+  in?: $Enums.VoucherSource[] | Prisma.ListEnumVoucherSourceFieldRefInput<$PrismaModel>;
+  notIn?: $Enums.VoucherSource[] | Prisma.ListEnumVoucherSourceFieldRefInput<$PrismaModel>;
+  not?: Prisma.NestedEnumVoucherSourceFilter<$PrismaModel> | $Enums.VoucherSource;
+};
+
+export type EnumVoucherSourceWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.VoucherSource | Prisma.EnumVoucherSourceFieldRefInput<$PrismaModel>;
+  in?: $Enums.VoucherSource[] | Prisma.ListEnumVoucherSourceFieldRefInput<$PrismaModel>;
+  notIn?: $Enums.VoucherSource[] | Prisma.ListEnumVoucherSourceFieldRefInput<$PrismaModel>;
+  not?: Prisma.NestedEnumVoucherSourceWithAggregatesFilter<$PrismaModel> | $Enums.VoucherSource;
+  _count?: Prisma.NestedIntFilter<$PrismaModel>;
+  _min?: Prisma.NestedEnumVoucherSourceFilter<$PrismaModel>;
+  _max?: Prisma.NestedEnumVoucherSourceFilter<$PrismaModel>;
 };
 
 export type EnumOrderStatusFilter<$PrismaModel = never> = {
@@ -833,6 +901,13 @@ export type NestedDecimalFilter<$PrismaModel = never> = {
     | string;
 };
 
+export type NestedEnumCourseStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.CourseStatus | Prisma.EnumCourseStatusFieldRefInput<$PrismaModel>;
+  in?: $Enums.CourseStatus[] | Prisma.ListEnumCourseStatusFieldRefInput<$PrismaModel>;
+  notIn?: $Enums.CourseStatus[] | Prisma.ListEnumCourseStatusFieldRefInput<$PrismaModel>;
+  not?: Prisma.NestedEnumCourseStatusFilter<$PrismaModel> | $Enums.CourseStatus;
+};
+
 export type NestedDecimalWithAggregatesFilter<$PrismaModel = never> = {
   equals?:
     | runtime.Decimal
@@ -889,6 +964,16 @@ export type NestedDecimalWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedDecimalFilter<$PrismaModel>;
 };
 
+export type NestedEnumCourseStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.CourseStatus | Prisma.EnumCourseStatusFieldRefInput<$PrismaModel>;
+  in?: $Enums.CourseStatus[] | Prisma.ListEnumCourseStatusFieldRefInput<$PrismaModel>;
+  notIn?: $Enums.CourseStatus[] | Prisma.ListEnumCourseStatusFieldRefInput<$PrismaModel>;
+  not?: Prisma.NestedEnumCourseStatusWithAggregatesFilter<$PrismaModel> | $Enums.CourseStatus;
+  _count?: Prisma.NestedIntFilter<$PrismaModel>;
+  _min?: Prisma.NestedEnumCourseStatusFilter<$PrismaModel>;
+  _max?: Prisma.NestedEnumCourseStatusFilter<$PrismaModel>;
+};
+
 export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
   equals?: number | Prisma.IntFieldRefInput<$PrismaModel>;
   in?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>;
@@ -923,6 +1008,13 @@ export type NestedEnumLessonTypeFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumLessonTypeFilter<$PrismaModel> | $Enums.LessonType;
 };
 
+export type NestedEnumVideoStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.VideoStatus | Prisma.EnumVideoStatusFieldRefInput<$PrismaModel>;
+  in?: $Enums.VideoStatus[] | Prisma.ListEnumVideoStatusFieldRefInput<$PrismaModel>;
+  notIn?: $Enums.VideoStatus[] | Prisma.ListEnumVideoStatusFieldRefInput<$PrismaModel>;
+  not?: Prisma.NestedEnumVideoStatusFilter<$PrismaModel> | $Enums.VideoStatus;
+};
+
 export type NestedEnumLessonTypeWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.LessonType | Prisma.EnumLessonTypeFieldRefInput<$PrismaModel>;
   in?: $Enums.LessonType[] | Prisma.ListEnumLessonTypeFieldRefInput<$PrismaModel>;
@@ -931,6 +1023,16 @@ export type NestedEnumLessonTypeWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>;
   _min?: Prisma.NestedEnumLessonTypeFilter<$PrismaModel>;
   _max?: Prisma.NestedEnumLessonTypeFilter<$PrismaModel>;
+};
+
+export type NestedEnumVideoStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.VideoStatus | Prisma.EnumVideoStatusFieldRefInput<$PrismaModel>;
+  in?: $Enums.VideoStatus[] | Prisma.ListEnumVideoStatusFieldRefInput<$PrismaModel>;
+  notIn?: $Enums.VideoStatus[] | Prisma.ListEnumVideoStatusFieldRefInput<$PrismaModel>;
+  not?: Prisma.NestedEnumVideoStatusWithAggregatesFilter<$PrismaModel> | $Enums.VideoStatus;
+  _count?: Prisma.NestedIntFilter<$PrismaModel>;
+  _min?: Prisma.NestedEnumVideoStatusFilter<$PrismaModel>;
+  _max?: Prisma.NestedEnumVideoStatusFilter<$PrismaModel>;
 };
 
 export type NestedEnumDiscountTypeFilter<$PrismaModel = never> = {
@@ -1065,6 +1167,13 @@ export type NestedDecimalNullableWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedDecimalNullableFilter<$PrismaModel>;
 };
 
+export type NestedEnumVoucherAudienceFilter<$PrismaModel = never> = {
+  equals?: $Enums.VoucherAudience | Prisma.EnumVoucherAudienceFieldRefInput<$PrismaModel>;
+  in?: $Enums.VoucherAudience[] | Prisma.ListEnumVoucherAudienceFieldRefInput<$PrismaModel>;
+  notIn?: $Enums.VoucherAudience[] | Prisma.ListEnumVoucherAudienceFieldRefInput<$PrismaModel>;
+  not?: Prisma.NestedEnumVoucherAudienceFilter<$PrismaModel> | $Enums.VoucherAudience;
+};
+
 export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
   equals?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel> | null;
   in?: Date[] | string[] | Prisma.ListDateTimeFieldRefInput<$PrismaModel> | null;
@@ -1103,6 +1212,16 @@ export type NestedFloatNullableFilter<$PrismaModel = never> = {
   not?: Prisma.NestedFloatNullableFilter<$PrismaModel> | number | null;
 };
 
+export type NestedEnumVoucherAudienceWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.VoucherAudience | Prisma.EnumVoucherAudienceFieldRefInput<$PrismaModel>;
+  in?: $Enums.VoucherAudience[] | Prisma.ListEnumVoucherAudienceFieldRefInput<$PrismaModel>;
+  notIn?: $Enums.VoucherAudience[] | Prisma.ListEnumVoucherAudienceFieldRefInput<$PrismaModel>;
+  not?: Prisma.NestedEnumVoucherAudienceWithAggregatesFilter<$PrismaModel> | $Enums.VoucherAudience;
+  _count?: Prisma.NestedIntFilter<$PrismaModel>;
+  _min?: Prisma.NestedEnumVoucherAudienceFilter<$PrismaModel>;
+  _max?: Prisma.NestedEnumVoucherAudienceFilter<$PrismaModel>;
+};
+
 export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
   equals?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel> | null;
   in?: Date[] | string[] | Prisma.ListDateTimeFieldRefInput<$PrismaModel> | null;
@@ -1115,6 +1234,23 @@ export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntNullableFilter<$PrismaModel>;
   _min?: Prisma.NestedDateTimeNullableFilter<$PrismaModel>;
   _max?: Prisma.NestedDateTimeNullableFilter<$PrismaModel>;
+};
+
+export type NestedEnumVoucherSourceFilter<$PrismaModel = never> = {
+  equals?: $Enums.VoucherSource | Prisma.EnumVoucherSourceFieldRefInput<$PrismaModel>;
+  in?: $Enums.VoucherSource[] | Prisma.ListEnumVoucherSourceFieldRefInput<$PrismaModel>;
+  notIn?: $Enums.VoucherSource[] | Prisma.ListEnumVoucherSourceFieldRefInput<$PrismaModel>;
+  not?: Prisma.NestedEnumVoucherSourceFilter<$PrismaModel> | $Enums.VoucherSource;
+};
+
+export type NestedEnumVoucherSourceWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.VoucherSource | Prisma.EnumVoucherSourceFieldRefInput<$PrismaModel>;
+  in?: $Enums.VoucherSource[] | Prisma.ListEnumVoucherSourceFieldRefInput<$PrismaModel>;
+  notIn?: $Enums.VoucherSource[] | Prisma.ListEnumVoucherSourceFieldRefInput<$PrismaModel>;
+  not?: Prisma.NestedEnumVoucherSourceWithAggregatesFilter<$PrismaModel> | $Enums.VoucherSource;
+  _count?: Prisma.NestedIntFilter<$PrismaModel>;
+  _min?: Prisma.NestedEnumVoucherSourceFilter<$PrismaModel>;
+  _max?: Prisma.NestedEnumVoucherSourceFilter<$PrismaModel>;
 };
 
 export type NestedEnumOrderStatusFilter<$PrismaModel = never> = {

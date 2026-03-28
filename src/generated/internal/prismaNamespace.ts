@@ -393,11 +393,13 @@ export const ModelName = {
   Discount: 'Discount',
   CourseDiscount: 'CourseDiscount',
   Voucher: 'Voucher',
+  UserVoucher: 'UserVoucher',
   VoucherUsage: 'VoucherUsage',
   Order: 'Order',
   Payment: 'Payment',
   OrderItem: 'OrderItem',
   Wishlist: 'Wishlist',
+  RecentlyViewed: 'RecentlyViewed',
   Cart: 'Cart',
   CartItem: 'CartItem',
   Enrollment: 'Enrollment',
@@ -441,11 +443,13 @@ export type TypeMap<
       | 'discount'
       | 'courseDiscount'
       | 'voucher'
+      | 'userVoucher'
       | 'voucherUsage'
       | 'order'
       | 'payment'
       | 'orderItem'
       | 'wishlist'
+      | 'recentlyViewed'
       | 'cart'
       | 'cartItem'
       | 'enrollment'
@@ -1798,6 +1802,80 @@ export type TypeMap<
         };
       };
     };
+    UserVoucher: {
+      payload: Prisma.$UserVoucherPayload<ExtArgs>;
+      fields: Prisma.UserVoucherFieldRefs;
+      operations: {
+        findUnique: {
+          args: Prisma.UserVoucherFindUniqueArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserVoucherPayload> | null;
+        };
+        findUniqueOrThrow: {
+          args: Prisma.UserVoucherFindUniqueOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserVoucherPayload>;
+        };
+        findFirst: {
+          args: Prisma.UserVoucherFindFirstArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserVoucherPayload> | null;
+        };
+        findFirstOrThrow: {
+          args: Prisma.UserVoucherFindFirstOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserVoucherPayload>;
+        };
+        findMany: {
+          args: Prisma.UserVoucherFindManyArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserVoucherPayload>[];
+        };
+        create: {
+          args: Prisma.UserVoucherCreateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserVoucherPayload>;
+        };
+        createMany: {
+          args: Prisma.UserVoucherCreateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        createManyAndReturn: {
+          args: Prisma.UserVoucherCreateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserVoucherPayload>[];
+        };
+        delete: {
+          args: Prisma.UserVoucherDeleteArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserVoucherPayload>;
+        };
+        update: {
+          args: Prisma.UserVoucherUpdateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserVoucherPayload>;
+        };
+        deleteMany: {
+          args: Prisma.UserVoucherDeleteManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateMany: {
+          args: Prisma.UserVoucherUpdateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateManyAndReturn: {
+          args: Prisma.UserVoucherUpdateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserVoucherPayload>[];
+        };
+        upsert: {
+          args: Prisma.UserVoucherUpsertArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserVoucherPayload>;
+        };
+        aggregate: {
+          args: Prisma.UserVoucherAggregateArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.AggregateUserVoucher>;
+        };
+        groupBy: {
+          args: Prisma.UserVoucherGroupByArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.UserVoucherGroupByOutputType>[];
+        };
+        count: {
+          args: Prisma.UserVoucherCountArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.UserVoucherCountAggregateOutputType> | number;
+        };
+      };
+    };
     VoucherUsage: {
       payload: Prisma.$VoucherUsagePayload<ExtArgs>;
       fields: Prisma.VoucherUsageFieldRefs;
@@ -2167,6 +2245,82 @@ export type TypeMap<
         count: {
           args: Prisma.WishlistCountArgs<ExtArgs>;
           result: runtime.Types.Utils.Optional<Prisma.WishlistCountAggregateOutputType> | number;
+        };
+      };
+    };
+    RecentlyViewed: {
+      payload: Prisma.$RecentlyViewedPayload<ExtArgs>;
+      fields: Prisma.RecentlyViewedFieldRefs;
+      operations: {
+        findUnique: {
+          args: Prisma.RecentlyViewedFindUniqueArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecentlyViewedPayload> | null;
+        };
+        findUniqueOrThrow: {
+          args: Prisma.RecentlyViewedFindUniqueOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecentlyViewedPayload>;
+        };
+        findFirst: {
+          args: Prisma.RecentlyViewedFindFirstArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecentlyViewedPayload> | null;
+        };
+        findFirstOrThrow: {
+          args: Prisma.RecentlyViewedFindFirstOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecentlyViewedPayload>;
+        };
+        findMany: {
+          args: Prisma.RecentlyViewedFindManyArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecentlyViewedPayload>[];
+        };
+        create: {
+          args: Prisma.RecentlyViewedCreateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecentlyViewedPayload>;
+        };
+        createMany: {
+          args: Prisma.RecentlyViewedCreateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        createManyAndReturn: {
+          args: Prisma.RecentlyViewedCreateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecentlyViewedPayload>[];
+        };
+        delete: {
+          args: Prisma.RecentlyViewedDeleteArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecentlyViewedPayload>;
+        };
+        update: {
+          args: Prisma.RecentlyViewedUpdateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecentlyViewedPayload>;
+        };
+        deleteMany: {
+          args: Prisma.RecentlyViewedDeleteManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateMany: {
+          args: Prisma.RecentlyViewedUpdateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateManyAndReturn: {
+          args: Prisma.RecentlyViewedUpdateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecentlyViewedPayload>[];
+        };
+        upsert: {
+          args: Prisma.RecentlyViewedUpsertArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecentlyViewedPayload>;
+        };
+        aggregate: {
+          args: Prisma.RecentlyViewedAggregateArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.AggregateRecentlyViewed>;
+        };
+        groupBy: {
+          args: Prisma.RecentlyViewedGroupByArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.RecentlyViewedGroupByOutputType>[];
+        };
+        count: {
+          args: Prisma.RecentlyViewedCountArgs<ExtArgs>;
+          result:
+            | runtime.Types.Utils.Optional<Prisma.RecentlyViewedCountAggregateOutputType>
+            | number;
         };
       };
     };
@@ -2690,7 +2844,7 @@ export const CourseScalarFieldEnum = {
   slug: 'slug',
   description: 'description',
   basePrice: 'basePrice',
-  isPublished: 'isPublished',
+  status: 'status',
   totalDuration: 'totalDuration',
   categoryId: 'categoryId',
   createdAt: 'createdAt',
@@ -2732,6 +2886,7 @@ export const LessonScalarFieldEnum = {
   duration: 'duration',
   order: 'order',
   moduleId: 'moduleId',
+  videoStatus: 'videoStatus',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
 } as const;
@@ -2798,6 +2953,7 @@ export const VoucherScalarFieldEnum = {
   maxUsesTotal: 'maxUsesTotal',
   currentUses: 'currentUses',
   maxUsesPerUser: 'maxUsesPerUser',
+  audience: 'audience',
   isActive: 'isActive',
   startDate: 'startDate',
   expiresAt: 'expiresAt',
@@ -2806,6 +2962,18 @@ export const VoucherScalarFieldEnum = {
 
 export type VoucherScalarFieldEnum =
   (typeof VoucherScalarFieldEnum)[keyof typeof VoucherScalarFieldEnum];
+
+export const UserVoucherScalarFieldEnum = {
+  userId: 'userId',
+  voucherId: 'voucherId',
+  source: 'source',
+  isUsed: 'isUsed',
+  usedAt: 'usedAt',
+  createdAt: 'createdAt',
+} as const;
+
+export type UserVoucherScalarFieldEnum =
+  (typeof UserVoucherScalarFieldEnum)[keyof typeof UserVoucherScalarFieldEnum];
 
 export const VoucherUsageScalarFieldEnum = {
   userId: 'userId',
@@ -2862,6 +3030,15 @@ export const WishlistScalarFieldEnum = {
 
 export type WishlistScalarFieldEnum =
   (typeof WishlistScalarFieldEnum)[keyof typeof WishlistScalarFieldEnum];
+
+export const RecentlyViewedScalarFieldEnum = {
+  userId: 'userId',
+  courseId: 'courseId',
+  viewedAt: 'viewedAt',
+} as const;
+
+export type RecentlyViewedScalarFieldEnum =
+  (typeof RecentlyViewedScalarFieldEnum)[keyof typeof RecentlyViewedScalarFieldEnum];
 
 export const CartScalarFieldEnum = {
   id: 'id',
@@ -3033,6 +3210,22 @@ export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel,
 export type ListDecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal[]'>;
 
 /**
+ * Reference to a field of type 'CourseStatus'
+ */
+export type EnumCourseStatusFieldRefInput<$PrismaModel> = FieldRefInputType<
+  $PrismaModel,
+  'CourseStatus'
+>;
+
+/**
+ * Reference to a field of type 'CourseStatus[]'
+ */
+export type ListEnumCourseStatusFieldRefInput<$PrismaModel> = FieldRefInputType<
+  $PrismaModel,
+  'CourseStatus[]'
+>;
+
+/**
  * Reference to a field of type 'Int'
  */
 export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>;
@@ -3059,6 +3252,22 @@ export type ListEnumLessonTypeFieldRefInput<$PrismaModel> = FieldRefInputType<
 >;
 
 /**
+ * Reference to a field of type 'VideoStatus'
+ */
+export type EnumVideoStatusFieldRefInput<$PrismaModel> = FieldRefInputType<
+  $PrismaModel,
+  'VideoStatus'
+>;
+
+/**
+ * Reference to a field of type 'VideoStatus[]'
+ */
+export type ListEnumVideoStatusFieldRefInput<$PrismaModel> = FieldRefInputType<
+  $PrismaModel,
+  'VideoStatus[]'
+>;
+
+/**
  * Reference to a field of type 'DiscountType'
  */
 export type EnumDiscountTypeFieldRefInput<$PrismaModel> = FieldRefInputType<
@@ -3072,6 +3281,38 @@ export type EnumDiscountTypeFieldRefInput<$PrismaModel> = FieldRefInputType<
 export type ListEnumDiscountTypeFieldRefInput<$PrismaModel> = FieldRefInputType<
   $PrismaModel,
   'DiscountType[]'
+>;
+
+/**
+ * Reference to a field of type 'VoucherAudience'
+ */
+export type EnumVoucherAudienceFieldRefInput<$PrismaModel> = FieldRefInputType<
+  $PrismaModel,
+  'VoucherAudience'
+>;
+
+/**
+ * Reference to a field of type 'VoucherAudience[]'
+ */
+export type ListEnumVoucherAudienceFieldRefInput<$PrismaModel> = FieldRefInputType<
+  $PrismaModel,
+  'VoucherAudience[]'
+>;
+
+/**
+ * Reference to a field of type 'VoucherSource'
+ */
+export type EnumVoucherSourceFieldRefInput<$PrismaModel> = FieldRefInputType<
+  $PrismaModel,
+  'VoucherSource'
+>;
+
+/**
+ * Reference to a field of type 'VoucherSource[]'
+ */
+export type ListEnumVoucherSourceFieldRefInput<$PrismaModel> = FieldRefInputType<
+  $PrismaModel,
+  'VoucherSource[]'
 >;
 
 /**
@@ -3237,11 +3478,13 @@ export type GlobalOmitConfig = {
   discount?: Prisma.DiscountOmit;
   courseDiscount?: Prisma.CourseDiscountOmit;
   voucher?: Prisma.VoucherOmit;
+  userVoucher?: Prisma.UserVoucherOmit;
   voucherUsage?: Prisma.VoucherUsageOmit;
   order?: Prisma.OrderOmit;
   payment?: Prisma.PaymentOmit;
   orderItem?: Prisma.OrderItemOmit;
   wishlist?: Prisma.WishlistOmit;
+  recentlyViewed?: Prisma.RecentlyViewedOmit;
   cart?: Prisma.CartOmit;
   cartItem?: Prisma.CartItemOmit;
   enrollment?: Prisma.EnrollmentOmit;

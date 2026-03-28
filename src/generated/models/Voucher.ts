@@ -55,6 +55,7 @@ export type VoucherMinAggregateOutputType = {
   maxUsesTotal: number | null;
   currentUses: number | null;
   maxUsesPerUser: number | null;
+  audience: $Enums.VoucherAudience | null;
   isActive: boolean | null;
   startDate: Date | null;
   expiresAt: Date | null;
@@ -71,6 +72,7 @@ export type VoucherMaxAggregateOutputType = {
   maxUsesTotal: number | null;
   currentUses: number | null;
   maxUsesPerUser: number | null;
+  audience: $Enums.VoucherAudience | null;
   isActive: boolean | null;
   startDate: Date | null;
   expiresAt: Date | null;
@@ -87,6 +89,7 @@ export type VoucherCountAggregateOutputType = {
   maxUsesTotal: number;
   currentUses: number;
   maxUsesPerUser: number;
+  audience: number;
   isActive: number;
   startDate: number;
   expiresAt: number;
@@ -124,6 +127,7 @@ export type VoucherMinAggregateInputType = {
   maxUsesTotal?: true;
   currentUses?: true;
   maxUsesPerUser?: true;
+  audience?: true;
   isActive?: true;
   startDate?: true;
   expiresAt?: true;
@@ -140,6 +144,7 @@ export type VoucherMaxAggregateInputType = {
   maxUsesTotal?: true;
   currentUses?: true;
   maxUsesPerUser?: true;
+  audience?: true;
   isActive?: true;
   startDate?: true;
   expiresAt?: true;
@@ -156,6 +161,7 @@ export type VoucherCountAggregateInputType = {
   maxUsesTotal?: true;
   currentUses?: true;
   maxUsesPerUser?: true;
+  audience?: true;
   isActive?: true;
   startDate?: true;
   expiresAt?: true;
@@ -260,6 +266,7 @@ export type VoucherGroupByOutputType = {
   maxUsesTotal: number | null;
   currentUses: number;
   maxUsesPerUser: number;
+  audience: $Enums.VoucherAudience;
   isActive: boolean;
   startDate: Date;
   expiresAt: Date | null;
@@ -313,12 +320,14 @@ export type VoucherWhereInput = {
   maxUsesTotal?: Prisma.IntNullableFilter<'Voucher'> | number | null;
   currentUses?: Prisma.IntFilter<'Voucher'> | number;
   maxUsesPerUser?: Prisma.IntFilter<'Voucher'> | number;
+  audience?: Prisma.EnumVoucherAudienceFilter<'Voucher'> | $Enums.VoucherAudience;
   isActive?: Prisma.BoolFilter<'Voucher'> | boolean;
   startDate?: Prisma.DateTimeFilter<'Voucher'> | Date | string;
   expiresAt?: Prisma.DateTimeNullableFilter<'Voucher'> | Date | string | null;
   version?: Prisma.IntFilter<'Voucher'> | number;
   usages?: Prisma.VoucherUsageListRelationFilter;
   orders?: Prisma.OrderListRelationFilter;
+  wallets?: Prisma.UserVoucherListRelationFilter;
 };
 
 export type VoucherOrderByWithRelationInput = {
@@ -331,12 +340,14 @@ export type VoucherOrderByWithRelationInput = {
   maxUsesTotal?: Prisma.SortOrderInput | Prisma.SortOrder;
   currentUses?: Prisma.SortOrder;
   maxUsesPerUser?: Prisma.SortOrder;
+  audience?: Prisma.SortOrder;
   isActive?: Prisma.SortOrder;
   startDate?: Prisma.SortOrder;
   expiresAt?: Prisma.SortOrderInput | Prisma.SortOrder;
   version?: Prisma.SortOrder;
   usages?: Prisma.VoucherUsageOrderByRelationAggregateInput;
   orders?: Prisma.OrderOrderByRelationAggregateInput;
+  wallets?: Prisma.UserVoucherOrderByRelationAggregateInput;
 };
 
 export type VoucherWhereUniqueInput = Prisma.AtLeast<
@@ -370,12 +381,14 @@ export type VoucherWhereUniqueInput = Prisma.AtLeast<
     maxUsesTotal?: Prisma.IntNullableFilter<'Voucher'> | number | null;
     currentUses?: Prisma.IntFilter<'Voucher'> | number;
     maxUsesPerUser?: Prisma.IntFilter<'Voucher'> | number;
+    audience?: Prisma.EnumVoucherAudienceFilter<'Voucher'> | $Enums.VoucherAudience;
     isActive?: Prisma.BoolFilter<'Voucher'> | boolean;
     startDate?: Prisma.DateTimeFilter<'Voucher'> | Date | string;
     expiresAt?: Prisma.DateTimeNullableFilter<'Voucher'> | Date | string | null;
     version?: Prisma.IntFilter<'Voucher'> | number;
     usages?: Prisma.VoucherUsageListRelationFilter;
     orders?: Prisma.OrderListRelationFilter;
+    wallets?: Prisma.UserVoucherListRelationFilter;
   },
   'id' | 'code'
 >;
@@ -390,6 +403,7 @@ export type VoucherOrderByWithAggregationInput = {
   maxUsesTotal?: Prisma.SortOrderInput | Prisma.SortOrder;
   currentUses?: Prisma.SortOrder;
   maxUsesPerUser?: Prisma.SortOrder;
+  audience?: Prisma.SortOrder;
   isActive?: Prisma.SortOrder;
   startDate?: Prisma.SortOrder;
   expiresAt?: Prisma.SortOrderInput | Prisma.SortOrder;
@@ -435,6 +449,7 @@ export type VoucherScalarWhereWithAggregatesInput = {
   maxUsesTotal?: Prisma.IntNullableWithAggregatesFilter<'Voucher'> | number | null;
   currentUses?: Prisma.IntWithAggregatesFilter<'Voucher'> | number;
   maxUsesPerUser?: Prisma.IntWithAggregatesFilter<'Voucher'> | number;
+  audience?: Prisma.EnumVoucherAudienceWithAggregatesFilter<'Voucher'> | $Enums.VoucherAudience;
   isActive?: Prisma.BoolWithAggregatesFilter<'Voucher'> | boolean;
   startDate?: Prisma.DateTimeWithAggregatesFilter<'Voucher'> | Date | string;
   expiresAt?: Prisma.DateTimeNullableWithAggregatesFilter<'Voucher'> | Date | string | null;
@@ -451,12 +466,14 @@ export type VoucherCreateInput = {
   maxUsesTotal?: number | null;
   currentUses?: number;
   maxUsesPerUser?: number;
+  audience?: $Enums.VoucherAudience;
   isActive?: boolean;
   startDate: Date | string;
   expiresAt?: Date | string | null;
   version?: number;
   usages?: Prisma.VoucherUsageCreateNestedManyWithoutVoucherInput;
   orders?: Prisma.OrderCreateNestedManyWithoutVoucherInput;
+  wallets?: Prisma.UserVoucherCreateNestedManyWithoutVoucherInput;
 };
 
 export type VoucherUncheckedCreateInput = {
@@ -469,12 +486,14 @@ export type VoucherUncheckedCreateInput = {
   maxUsesTotal?: number | null;
   currentUses?: number;
   maxUsesPerUser?: number;
+  audience?: $Enums.VoucherAudience;
   isActive?: boolean;
   startDate: Date | string;
   expiresAt?: Date | string | null;
   version?: number;
   usages?: Prisma.VoucherUsageUncheckedCreateNestedManyWithoutVoucherInput;
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutVoucherInput;
+  wallets?: Prisma.UserVoucherUncheckedCreateNestedManyWithoutVoucherInput;
 };
 
 export type VoucherUpdateInput = {
@@ -504,12 +523,14 @@ export type VoucherUpdateInput = {
   maxUsesTotal?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
   currentUses?: Prisma.IntFieldUpdateOperationsInput | number;
   maxUsesPerUser?: Prisma.IntFieldUpdateOperationsInput | number;
+  audience?: Prisma.EnumVoucherAudienceFieldUpdateOperationsInput | $Enums.VoucherAudience;
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   version?: Prisma.IntFieldUpdateOperationsInput | number;
   usages?: Prisma.VoucherUsageUpdateManyWithoutVoucherNestedInput;
   orders?: Prisma.OrderUpdateManyWithoutVoucherNestedInput;
+  wallets?: Prisma.UserVoucherUpdateManyWithoutVoucherNestedInput;
 };
 
 export type VoucherUncheckedUpdateInput = {
@@ -539,12 +560,14 @@ export type VoucherUncheckedUpdateInput = {
   maxUsesTotal?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
   currentUses?: Prisma.IntFieldUpdateOperationsInput | number;
   maxUsesPerUser?: Prisma.IntFieldUpdateOperationsInput | number;
+  audience?: Prisma.EnumVoucherAudienceFieldUpdateOperationsInput | $Enums.VoucherAudience;
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   version?: Prisma.IntFieldUpdateOperationsInput | number;
   usages?: Prisma.VoucherUsageUncheckedUpdateManyWithoutVoucherNestedInput;
   orders?: Prisma.OrderUncheckedUpdateManyWithoutVoucherNestedInput;
+  wallets?: Prisma.UserVoucherUncheckedUpdateManyWithoutVoucherNestedInput;
 };
 
 export type VoucherCreateManyInput = {
@@ -557,6 +580,7 @@ export type VoucherCreateManyInput = {
   maxUsesTotal?: number | null;
   currentUses?: number;
   maxUsesPerUser?: number;
+  audience?: $Enums.VoucherAudience;
   isActive?: boolean;
   startDate: Date | string;
   expiresAt?: Date | string | null;
@@ -590,6 +614,7 @@ export type VoucherUpdateManyMutationInput = {
   maxUsesTotal?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
   currentUses?: Prisma.IntFieldUpdateOperationsInput | number;
   maxUsesPerUser?: Prisma.IntFieldUpdateOperationsInput | number;
+  audience?: Prisma.EnumVoucherAudienceFieldUpdateOperationsInput | $Enums.VoucherAudience;
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
@@ -623,6 +648,7 @@ export type VoucherUncheckedUpdateManyInput = {
   maxUsesTotal?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
   currentUses?: Prisma.IntFieldUpdateOperationsInput | number;
   maxUsesPerUser?: Prisma.IntFieldUpdateOperationsInput | number;
+  audience?: Prisma.EnumVoucherAudienceFieldUpdateOperationsInput | $Enums.VoucherAudience;
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
@@ -639,6 +665,7 @@ export type VoucherCountOrderByAggregateInput = {
   maxUsesTotal?: Prisma.SortOrder;
   currentUses?: Prisma.SortOrder;
   maxUsesPerUser?: Prisma.SortOrder;
+  audience?: Prisma.SortOrder;
   isActive?: Prisma.SortOrder;
   startDate?: Prisma.SortOrder;
   expiresAt?: Prisma.SortOrder;
@@ -665,6 +692,7 @@ export type VoucherMaxOrderByAggregateInput = {
   maxUsesTotal?: Prisma.SortOrder;
   currentUses?: Prisma.SortOrder;
   maxUsesPerUser?: Prisma.SortOrder;
+  audience?: Prisma.SortOrder;
   isActive?: Prisma.SortOrder;
   startDate?: Prisma.SortOrder;
   expiresAt?: Prisma.SortOrder;
@@ -681,6 +709,7 @@ export type VoucherMinOrderByAggregateInput = {
   maxUsesTotal?: Prisma.SortOrder;
   currentUses?: Prisma.SortOrder;
   maxUsesPerUser?: Prisma.SortOrder;
+  audience?: Prisma.SortOrder;
   isActive?: Prisma.SortOrder;
   startDate?: Prisma.SortOrder;
   expiresAt?: Prisma.SortOrder;
@@ -715,8 +744,38 @@ export type NullableIntFieldUpdateOperationsInput = {
   divide?: number;
 };
 
+export type EnumVoucherAudienceFieldUpdateOperationsInput = {
+  set?: $Enums.VoucherAudience;
+};
+
 export type NullableDateTimeFieldUpdateOperationsInput = {
   set?: Date | string | null;
+};
+
+export type VoucherCreateNestedOneWithoutWalletsInput = {
+  create?: Prisma.XOR<
+    Prisma.VoucherCreateWithoutWalletsInput,
+    Prisma.VoucherUncheckedCreateWithoutWalletsInput
+  >;
+  connectOrCreate?: Prisma.VoucherCreateOrConnectWithoutWalletsInput;
+  connect?: Prisma.VoucherWhereUniqueInput;
+};
+
+export type VoucherUpdateOneRequiredWithoutWalletsNestedInput = {
+  create?: Prisma.XOR<
+    Prisma.VoucherCreateWithoutWalletsInput,
+    Prisma.VoucherUncheckedCreateWithoutWalletsInput
+  >;
+  connectOrCreate?: Prisma.VoucherCreateOrConnectWithoutWalletsInput;
+  upsert?: Prisma.VoucherUpsertWithoutWalletsInput;
+  connect?: Prisma.VoucherWhereUniqueInput;
+  update?: Prisma.XOR<
+    Prisma.XOR<
+      Prisma.VoucherUpdateToOneWithWhereWithoutWalletsInput,
+      Prisma.VoucherUpdateWithoutWalletsInput
+    >,
+    Prisma.VoucherUncheckedUpdateWithoutWalletsInput
+  >;
 };
 
 export type VoucherCreateNestedOneWithoutUsagesInput = {
@@ -773,6 +832,144 @@ export type VoucherUpdateOneWithoutOrdersNestedInput = {
   >;
 };
 
+export type VoucherCreateWithoutWalletsInput = {
+  id?: string;
+  code: string;
+  type: $Enums.DiscountType;
+  value: runtime.Decimal | runtime.DecimalJsLike | number | string;
+  maxDiscountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
+  minOrderValue?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
+  maxUsesTotal?: number | null;
+  currentUses?: number;
+  maxUsesPerUser?: number;
+  audience?: $Enums.VoucherAudience;
+  isActive?: boolean;
+  startDate: Date | string;
+  expiresAt?: Date | string | null;
+  version?: number;
+  usages?: Prisma.VoucherUsageCreateNestedManyWithoutVoucherInput;
+  orders?: Prisma.OrderCreateNestedManyWithoutVoucherInput;
+};
+
+export type VoucherUncheckedCreateWithoutWalletsInput = {
+  id?: string;
+  code: string;
+  type: $Enums.DiscountType;
+  value: runtime.Decimal | runtime.DecimalJsLike | number | string;
+  maxDiscountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
+  minOrderValue?: runtime.Decimal | runtime.DecimalJsLike | number | string | null;
+  maxUsesTotal?: number | null;
+  currentUses?: number;
+  maxUsesPerUser?: number;
+  audience?: $Enums.VoucherAudience;
+  isActive?: boolean;
+  startDate: Date | string;
+  expiresAt?: Date | string | null;
+  version?: number;
+  usages?: Prisma.VoucherUsageUncheckedCreateNestedManyWithoutVoucherInput;
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutVoucherInput;
+};
+
+export type VoucherCreateOrConnectWithoutWalletsInput = {
+  where: Prisma.VoucherWhereUniqueInput;
+  create: Prisma.XOR<
+    Prisma.VoucherCreateWithoutWalletsInput,
+    Prisma.VoucherUncheckedCreateWithoutWalletsInput
+  >;
+};
+
+export type VoucherUpsertWithoutWalletsInput = {
+  update: Prisma.XOR<
+    Prisma.VoucherUpdateWithoutWalletsInput,
+    Prisma.VoucherUncheckedUpdateWithoutWalletsInput
+  >;
+  create: Prisma.XOR<
+    Prisma.VoucherCreateWithoutWalletsInput,
+    Prisma.VoucherUncheckedCreateWithoutWalletsInput
+  >;
+  where?: Prisma.VoucherWhereInput;
+};
+
+export type VoucherUpdateToOneWithWhereWithoutWalletsInput = {
+  where?: Prisma.VoucherWhereInput;
+  data: Prisma.XOR<
+    Prisma.VoucherUpdateWithoutWalletsInput,
+    Prisma.VoucherUncheckedUpdateWithoutWalletsInput
+  >;
+};
+
+export type VoucherUpdateWithoutWalletsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  code?: Prisma.StringFieldUpdateOperationsInput | string;
+  type?: Prisma.EnumDiscountTypeFieldUpdateOperationsInput | $Enums.DiscountType;
+  value?:
+    | Prisma.DecimalFieldUpdateOperationsInput
+    | runtime.Decimal
+    | runtime.DecimalJsLike
+    | number
+    | string;
+  maxDiscountAmount?:
+    | Prisma.NullableDecimalFieldUpdateOperationsInput
+    | runtime.Decimal
+    | runtime.DecimalJsLike
+    | number
+    | string
+    | null;
+  minOrderValue?:
+    | Prisma.NullableDecimalFieldUpdateOperationsInput
+    | runtime.Decimal
+    | runtime.DecimalJsLike
+    | number
+    | string
+    | null;
+  maxUsesTotal?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  currentUses?: Prisma.IntFieldUpdateOperationsInput | number;
+  maxUsesPerUser?: Prisma.IntFieldUpdateOperationsInput | number;
+  audience?: Prisma.EnumVoucherAudienceFieldUpdateOperationsInput | $Enums.VoucherAudience;
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  version?: Prisma.IntFieldUpdateOperationsInput | number;
+  usages?: Prisma.VoucherUsageUpdateManyWithoutVoucherNestedInput;
+  orders?: Prisma.OrderUpdateManyWithoutVoucherNestedInput;
+};
+
+export type VoucherUncheckedUpdateWithoutWalletsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  code?: Prisma.StringFieldUpdateOperationsInput | string;
+  type?: Prisma.EnumDiscountTypeFieldUpdateOperationsInput | $Enums.DiscountType;
+  value?:
+    | Prisma.DecimalFieldUpdateOperationsInput
+    | runtime.Decimal
+    | runtime.DecimalJsLike
+    | number
+    | string;
+  maxDiscountAmount?:
+    | Prisma.NullableDecimalFieldUpdateOperationsInput
+    | runtime.Decimal
+    | runtime.DecimalJsLike
+    | number
+    | string
+    | null;
+  minOrderValue?:
+    | Prisma.NullableDecimalFieldUpdateOperationsInput
+    | runtime.Decimal
+    | runtime.DecimalJsLike
+    | number
+    | string
+    | null;
+  maxUsesTotal?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  currentUses?: Prisma.IntFieldUpdateOperationsInput | number;
+  maxUsesPerUser?: Prisma.IntFieldUpdateOperationsInput | number;
+  audience?: Prisma.EnumVoucherAudienceFieldUpdateOperationsInput | $Enums.VoucherAudience;
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  version?: Prisma.IntFieldUpdateOperationsInput | number;
+  usages?: Prisma.VoucherUsageUncheckedUpdateManyWithoutVoucherNestedInput;
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutVoucherNestedInput;
+};
+
 export type VoucherCreateWithoutUsagesInput = {
   id?: string;
   code: string;
@@ -783,11 +980,13 @@ export type VoucherCreateWithoutUsagesInput = {
   maxUsesTotal?: number | null;
   currentUses?: number;
   maxUsesPerUser?: number;
+  audience?: $Enums.VoucherAudience;
   isActive?: boolean;
   startDate: Date | string;
   expiresAt?: Date | string | null;
   version?: number;
   orders?: Prisma.OrderCreateNestedManyWithoutVoucherInput;
+  wallets?: Prisma.UserVoucherCreateNestedManyWithoutVoucherInput;
 };
 
 export type VoucherUncheckedCreateWithoutUsagesInput = {
@@ -800,11 +999,13 @@ export type VoucherUncheckedCreateWithoutUsagesInput = {
   maxUsesTotal?: number | null;
   currentUses?: number;
   maxUsesPerUser?: number;
+  audience?: $Enums.VoucherAudience;
   isActive?: boolean;
   startDate: Date | string;
   expiresAt?: Date | string | null;
   version?: number;
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutVoucherInput;
+  wallets?: Prisma.UserVoucherUncheckedCreateNestedManyWithoutVoucherInput;
 };
 
 export type VoucherCreateOrConnectWithoutUsagesInput = {
@@ -862,11 +1063,13 @@ export type VoucherUpdateWithoutUsagesInput = {
   maxUsesTotal?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
   currentUses?: Prisma.IntFieldUpdateOperationsInput | number;
   maxUsesPerUser?: Prisma.IntFieldUpdateOperationsInput | number;
+  audience?: Prisma.EnumVoucherAudienceFieldUpdateOperationsInput | $Enums.VoucherAudience;
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   version?: Prisma.IntFieldUpdateOperationsInput | number;
   orders?: Prisma.OrderUpdateManyWithoutVoucherNestedInput;
+  wallets?: Prisma.UserVoucherUpdateManyWithoutVoucherNestedInput;
 };
 
 export type VoucherUncheckedUpdateWithoutUsagesInput = {
@@ -896,11 +1099,13 @@ export type VoucherUncheckedUpdateWithoutUsagesInput = {
   maxUsesTotal?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
   currentUses?: Prisma.IntFieldUpdateOperationsInput | number;
   maxUsesPerUser?: Prisma.IntFieldUpdateOperationsInput | number;
+  audience?: Prisma.EnumVoucherAudienceFieldUpdateOperationsInput | $Enums.VoucherAudience;
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   version?: Prisma.IntFieldUpdateOperationsInput | number;
   orders?: Prisma.OrderUncheckedUpdateManyWithoutVoucherNestedInput;
+  wallets?: Prisma.UserVoucherUncheckedUpdateManyWithoutVoucherNestedInput;
 };
 
 export type VoucherCreateWithoutOrdersInput = {
@@ -913,11 +1118,13 @@ export type VoucherCreateWithoutOrdersInput = {
   maxUsesTotal?: number | null;
   currentUses?: number;
   maxUsesPerUser?: number;
+  audience?: $Enums.VoucherAudience;
   isActive?: boolean;
   startDate: Date | string;
   expiresAt?: Date | string | null;
   version?: number;
   usages?: Prisma.VoucherUsageCreateNestedManyWithoutVoucherInput;
+  wallets?: Prisma.UserVoucherCreateNestedManyWithoutVoucherInput;
 };
 
 export type VoucherUncheckedCreateWithoutOrdersInput = {
@@ -930,11 +1137,13 @@ export type VoucherUncheckedCreateWithoutOrdersInput = {
   maxUsesTotal?: number | null;
   currentUses?: number;
   maxUsesPerUser?: number;
+  audience?: $Enums.VoucherAudience;
   isActive?: boolean;
   startDate: Date | string;
   expiresAt?: Date | string | null;
   version?: number;
   usages?: Prisma.VoucherUsageUncheckedCreateNestedManyWithoutVoucherInput;
+  wallets?: Prisma.UserVoucherUncheckedCreateNestedManyWithoutVoucherInput;
 };
 
 export type VoucherCreateOrConnectWithoutOrdersInput = {
@@ -992,11 +1201,13 @@ export type VoucherUpdateWithoutOrdersInput = {
   maxUsesTotal?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
   currentUses?: Prisma.IntFieldUpdateOperationsInput | number;
   maxUsesPerUser?: Prisma.IntFieldUpdateOperationsInput | number;
+  audience?: Prisma.EnumVoucherAudienceFieldUpdateOperationsInput | $Enums.VoucherAudience;
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   version?: Prisma.IntFieldUpdateOperationsInput | number;
   usages?: Prisma.VoucherUsageUpdateManyWithoutVoucherNestedInput;
+  wallets?: Prisma.UserVoucherUpdateManyWithoutVoucherNestedInput;
 };
 
 export type VoucherUncheckedUpdateWithoutOrdersInput = {
@@ -1026,11 +1237,13 @@ export type VoucherUncheckedUpdateWithoutOrdersInput = {
   maxUsesTotal?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
   currentUses?: Prisma.IntFieldUpdateOperationsInput | number;
   maxUsesPerUser?: Prisma.IntFieldUpdateOperationsInput | number;
+  audience?: Prisma.EnumVoucherAudienceFieldUpdateOperationsInput | $Enums.VoucherAudience;
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   version?: Prisma.IntFieldUpdateOperationsInput | number;
   usages?: Prisma.VoucherUsageUncheckedUpdateManyWithoutVoucherNestedInput;
+  wallets?: Prisma.UserVoucherUncheckedUpdateManyWithoutVoucherNestedInput;
 };
 
 /**
@@ -1040,6 +1253,7 @@ export type VoucherUncheckedUpdateWithoutOrdersInput = {
 export type VoucherCountOutputType = {
   usages: number;
   orders: number;
+  wallets: number;
 };
 
 export type VoucherCountOutputTypeSelect<
@@ -1047,6 +1261,7 @@ export type VoucherCountOutputTypeSelect<
 > = {
   usages?: boolean | VoucherCountOutputTypeCountUsagesArgs;
   orders?: boolean | VoucherCountOutputTypeCountOrdersArgs;
+  wallets?: boolean | VoucherCountOutputTypeCountWalletsArgs;
 };
 
 /**
@@ -1079,6 +1294,15 @@ export type VoucherCountOutputTypeCountOrdersArgs<
   where?: Prisma.OrderWhereInput;
 };
 
+/**
+ * VoucherCountOutputType without action
+ */
+export type VoucherCountOutputTypeCountWalletsArgs<
+  ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
+> = {
+  where?: Prisma.UserVoucherWhereInput;
+};
+
 export type VoucherSelect<
   ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
 > = runtime.Types.Extensions.GetSelect<
@@ -1092,12 +1316,14 @@ export type VoucherSelect<
     maxUsesTotal?: boolean;
     currentUses?: boolean;
     maxUsesPerUser?: boolean;
+    audience?: boolean;
     isActive?: boolean;
     startDate?: boolean;
     expiresAt?: boolean;
     version?: boolean;
     usages?: boolean | Prisma.Voucher$usagesArgs<ExtArgs>;
     orders?: boolean | Prisma.Voucher$ordersArgs<ExtArgs>;
+    wallets?: boolean | Prisma.Voucher$walletsArgs<ExtArgs>;
     _count?: boolean | Prisma.VoucherCountOutputTypeDefaultArgs<ExtArgs>;
   },
   ExtArgs['result']['voucher']
@@ -1116,6 +1342,7 @@ export type VoucherSelectCreateManyAndReturn<
     maxUsesTotal?: boolean;
     currentUses?: boolean;
     maxUsesPerUser?: boolean;
+    audience?: boolean;
     isActive?: boolean;
     startDate?: boolean;
     expiresAt?: boolean;
@@ -1137,6 +1364,7 @@ export type VoucherSelectUpdateManyAndReturn<
     maxUsesTotal?: boolean;
     currentUses?: boolean;
     maxUsesPerUser?: boolean;
+    audience?: boolean;
     isActive?: boolean;
     startDate?: boolean;
     expiresAt?: boolean;
@@ -1155,6 +1383,7 @@ export type VoucherSelectScalar = {
   maxUsesTotal?: boolean;
   currentUses?: boolean;
   maxUsesPerUser?: boolean;
+  audience?: boolean;
   isActive?: boolean;
   startDate?: boolean;
   expiresAt?: boolean;
@@ -1173,6 +1402,7 @@ export type VoucherOmit<
   | 'maxUsesTotal'
   | 'currentUses'
   | 'maxUsesPerUser'
+  | 'audience'
   | 'isActive'
   | 'startDate'
   | 'expiresAt'
@@ -1184,6 +1414,7 @@ export type VoucherInclude<
 > = {
   usages?: boolean | Prisma.Voucher$usagesArgs<ExtArgs>;
   orders?: boolean | Prisma.Voucher$ordersArgs<ExtArgs>;
+  wallets?: boolean | Prisma.Voucher$walletsArgs<ExtArgs>;
   _count?: boolean | Prisma.VoucherCountOutputTypeDefaultArgs<ExtArgs>;
 };
 export type VoucherIncludeCreateManyAndReturn<
@@ -1200,6 +1431,7 @@ export type $VoucherPayload<
   objects: {
     usages: Prisma.$VoucherUsagePayload<ExtArgs>[];
     orders: Prisma.$OrderPayload<ExtArgs>[];
+    wallets: Prisma.$UserVoucherPayload<ExtArgs>[];
   };
   scalars: runtime.Types.Extensions.GetPayloadResult<
     {
@@ -1212,6 +1444,7 @@ export type $VoucherPayload<
       maxUsesTotal: number | null;
       currentUses: number;
       maxUsesPerUser: number;
+      audience: $Enums.VoucherAudience;
       isActive: boolean;
       startDate: Date;
       expiresAt: Date | null;
@@ -1753,6 +1986,17 @@ export interface Prisma__VoucherClient<
       >
     | Null
   >;
+  wallets<T extends Prisma.Voucher$walletsArgs<ExtArgs> = {}>(
+    args?: Prisma.Subset<T, Prisma.Voucher$walletsArgs<ExtArgs>>
+  ): Prisma.PrismaPromise<
+    | runtime.Types.Result.GetResult<
+        Prisma.$UserVoucherPayload<ExtArgs>,
+        T,
+        'findMany',
+        GlobalOmitOptions
+      >
+    | Null
+  >;
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1793,6 +2037,7 @@ export interface VoucherFieldRefs {
   readonly maxUsesTotal: Prisma.FieldRef<'Voucher', 'Int'>;
   readonly currentUses: Prisma.FieldRef<'Voucher', 'Int'>;
   readonly maxUsesPerUser: Prisma.FieldRef<'Voucher', 'Int'>;
+  readonly audience: Prisma.FieldRef<'Voucher', 'VoucherAudience'>;
   readonly isActive: Prisma.FieldRef<'Voucher', 'Boolean'>;
   readonly startDate: Prisma.FieldRef<'Voucher', 'DateTime'>;
   readonly expiresAt: Prisma.FieldRef<'Voucher', 'DateTime'>;
@@ -2268,6 +2513,34 @@ export type Voucher$ordersArgs<
   take?: number;
   skip?: number;
   distinct?: Prisma.OrderScalarFieldEnum | Prisma.OrderScalarFieldEnum[];
+};
+
+/**
+ * Voucher.wallets
+ */
+export type Voucher$walletsArgs<
+  ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
+> = {
+  /**
+   * Select specific fields to fetch from the UserVoucher
+   */
+  select?: Prisma.UserVoucherSelect<ExtArgs> | null;
+  /**
+   * Omit specific fields from the UserVoucher
+   */
+  omit?: Prisma.UserVoucherOmit<ExtArgs> | null;
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserVoucherInclude<ExtArgs> | null;
+  where?: Prisma.UserVoucherWhereInput;
+  orderBy?:
+    | Prisma.UserVoucherOrderByWithRelationInput
+    | Prisma.UserVoucherOrderByWithRelationInput[];
+  cursor?: Prisma.UserVoucherWhereUniqueInput;
+  take?: number;
+  skip?: number;
+  distinct?: Prisma.UserVoucherScalarFieldEnum | Prisma.UserVoucherScalarFieldEnum[];
 };
 
 /**
