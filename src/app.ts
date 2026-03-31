@@ -3,9 +3,14 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import { env } from '@/common/configs/env';
-import { errorHandler } from './common/middlewares/error-handler.middleware';
+import { errorHandler } from './middlewares/error-handler.middleware';
+import { API_VERSION } from './constants/endpoints';
+import v1Router from './routes/v1';
 
 const app = express();
+
+// Báo cho Express biết nó đang đứng sau Proxy
+app.set('trust proxy', 1);
 
 // Middlewares bảo mật & Parse dữ liệu
 app.use(helmet());
@@ -41,6 +46,8 @@ app.get('/health', (_req: Request, res: Response) => {
 // 4. Mount Routes (Sau này sẽ thêm vào đây)
 // import router from '@/modules/router';
 // app.use('/v1', router);
+// Routing - Gắn bản v1 vào /api/v1
+app.use(API_VERSION, v1Router);
 
 // global error handler
 app.use(errorHandler);

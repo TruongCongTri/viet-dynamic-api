@@ -65,6 +65,10 @@ model User {
   email            String           @unique
   password         String?          // Có thể null nếu đăng nhập bằng Google/FB
   
+  // TÍNH NĂNG SMS/ZALO
+  phone           String?        @unique 
+  isPhoneVerified Boolean        @default(false)
+
   // Xác thực & Nguồn gốc
   isEmailVerified  Boolean          @default(false)
   authProvider     AuthProvider     @default(LOCAL)
@@ -136,8 +140,8 @@ model Session {
 enum OtpType {
   VERIFY_EMAIL
   FORGOT_PASSWORD
+  VERIFY_ACCOUNT  
 }
-
 model Otp {
   id        String   @id @default(uuid())
   email     String   

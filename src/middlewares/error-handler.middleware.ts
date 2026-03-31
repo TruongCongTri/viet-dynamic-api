@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { z, ZodError } from 'zod';
 import { AppError } from '@/common/errors/app.error';
-import { errorResponse, ValidationErrorDetail } from '../utils/responses/api-response';
+import { errorResponse, ValidationErrorDetail } from '../common/utils/responses/api-response';
 
 export const errorHandler = (
   err: unknown,

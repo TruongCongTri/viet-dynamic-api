@@ -6,7 +6,11 @@ import { env } from '@/common/configs/env'; // Import từ Zod thay vì dùng pr
 declare global {
   namespace Express {
     interface Request {
-      user?: { id: string; role: string };
+      user?: {
+        id: string;
+        role: string;
+        sessionId: string;
+      };
     }
   }
 }
@@ -20,7 +24,11 @@ export const verifyToken = (req: Request, res: Response, next: NextFunction) => 
   }
 
   try {
-    const decoded = jwt.verify(token, env.JWT_SECRET) as { id: string; role: string };
+    const decoded = jwt.verify(token, env.JWT_SECRET) as {
+      id: string;
+      role: string;
+      sessionId: string;
+    };
     req.user = decoded;
     next();
     return;

@@ -1,6 +1,7 @@
 import app from '@/app';
 import { prisma } from '@/common/configs/prisma';
 import { env } from '@/common/configs/env';
+import { initCronJobs } from './jobs/cleanup.job';
 
 // Hàm kiểm tra kết nối Database
 const checkDatabaseConnection = async () => {
@@ -28,6 +29,8 @@ const startServer = async () => {
       console.log(`🛡️  Chấp nhận kết nối từ: ${env.CLIENT_URL}`);
       console.log(`=================================`);
     });
+
+    initCronJobs(); // Khởi động CronJob chạy ngầm
   } catch (error) {
     console.error('Lỗi khởi động server:', error);
     process.exit(1);

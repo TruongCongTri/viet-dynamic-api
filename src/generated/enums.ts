@@ -19,6 +19,7 @@ export type AuthProvider = (typeof AuthProvider)[keyof typeof AuthProvider];
 export const OtpType = {
   VERIFY_EMAIL: 'VERIFY_EMAIL',
   FORGOT_PASSWORD: 'FORGOT_PASSWORD',
+  VERIFY_ACCOUNT: 'VERIFY_ACCOUNT',
 } as const;
 
 export type OtpType = (typeof OtpType)[keyof typeof OtpType];
