@@ -415,8 +415,8 @@ export class AuthService {
       },
     });
 
-    console.log(`[MOCK EMAIL] Mã OTP khôi phục mật khẩu của ${dto.email} là: ${otpCode}`);
-    // await notificationService.sendEmailOTP(dto.email, otpCode);
+    // console.log(`[MOCK EMAIL] Mã OTP khôi phục mật khẩu của ${dto.email} là: ${otpCode}`);
+    await notificationService.sendEmailOTP(dto.email, otpCode);
     return true;
   }
 
