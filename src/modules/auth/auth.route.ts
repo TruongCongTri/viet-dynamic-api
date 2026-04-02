@@ -10,6 +10,7 @@ import {
   verifyEmailSchema, // Chứa identifier, code & channel
   forgotPasswordSchema,
   resetPasswordSchema,
+  changePasswordSchema,
 } from './auth.schema';
 import { authLimiter } from '@/middlewares/rate-limit.middleware'; // Middleware chống Spam
 import { verifyToken } from '@/middlewares/auth.middleware';
@@ -18,9 +19,7 @@ const authRoute = Router();
 const authController = new AuthController();
 
 // PUBLIC ROUTES
-// ==========================================
-
-// 1. Đăng ký tài khoản
+// 1. ĐĂNG KÝ (REGISTER)
 authRoute.post(
   ENDPOINTS.AUTH.REGISTER,
   authLimiter,
@@ -28,67 +27,67 @@ authRoute.post(
   authController.register
 );
 
-// 2. Đăng nhập
+// 2. ĐĂNG NHẬP (LOGIN)
 authRoute.post(ENDPOINTS.AUTH.LOGIN, authLimiter, validate(loginSchema), authController.login);
 
-// 3. Refresh Token
+// 3. REFRESH TOKEN (Cấp lại Access Token)
 authRoute.post(
   ENDPOINTS.AUTH.REFRESH_TOKEN,
   validate(refreshTokenSchema),
   authController.refreshToken
 );
 
-// OTP & PASSWORD (Cần Limiter để chống đốt tiền SMS/Email)
-// ==========================================
-// 4. Gửi mã OTP xác thực email/SĐT (Dùng chung cho cả verify email và forgot password)
+// 6. XÁC THỰC EMAIL (Gửi & Xác nhận OTP)
 authRoute.post(
   ENDPOINTS.AUTH.SEND_VERIFY_EMAIL,
   authLimiter,
   validate(sendVerifyEmailSchema),
   authController.sendVerifyOTP
 );
-// 5. Xác thực mã OTP (Dùng chung cho cả verify email và forgot password)
-authRoute.post(ENDPOINTS.AUTH.VERIFY_EMAIL, validate(verifyEmailSchema), authController.verifyOTP);
+authRoute.post(
+  ENDPOINTS.AUTH.VERIFY_EMAIL,
+  authLimiter,
+  validate(verifyEmailSchema),
+  authController.verifyOTP
+);
 
-// 6. Quên mật khẩu
+// 7. QUÊN MẬT KHẨU & KHÔI PHỤC MẬT KHẨU
 authRoute.post(
   ENDPOINTS.AUTH.FORGOT_PASSWORD,
   authLimiter,
   validate(forgotPasswordSchema),
   authController.forgotPassword
 );
-// 7. Reset mật khẩu
 authRoute.post(
   ENDPOINTS.AUTH.RESET_PASSWORD,
+  authLimiter,
   validate(resetPasswordSchema),
   authController.resetPassword
 );
 
-// PRIVATE ROUTES (CẦN ACCESS TOKEN)
-// ==========================================
-// 8. Đăng xuất
+// 8. ĐỔI MẬT KHẨU (Khi đã đăng nhập)
+authRoute.put(
+  '/change-password',
+  verifyToken,
+  validate(changePasswordSchema),
+  authController.changePassword
+);
+
+// PROTECTED ROUTES (Cần token hợp lệ mới truy cập được)
+// 4. QUẢN LÝ THIẾT BỊ
+authRoute.get(ENDPOINTS.AUTH.SESSIONS, verifyToken, authController.getSessions);
+authRoute.delete(ENDPOINTS.AUTH.REVOKE_SESSION, verifyToken, authController.revokeSession);
+authRoute.delete(
+  ENDPOINTS.AUTH.REVOKE_OTHER_SESSIONS,
+  verifyToken,
+  authController.revokeOtherSessions
+);
+
+// 5. LOGOUT (Đăng xuất)
 authRoute.post(ENDPOINTS.AUTH.LOGOUT, verifyToken, authController.logout);
 
 // // OAuth2 Google
 // authRoute.get(ENDPOINTS.AUTH.GOOGLE, authController.googleInit);
 // authRoute.get(ENDPOINTS.AUTH.GOOGLE_CALLBACK, authController.googleCallback);
-
-// ==========================================
-// VÍ DỤ CÁCH SỬ DỤNG MIDDLEWARE BẢO MẬT (Cho các task sau)
-// ==========================================
-/*
-import { verifyToken, requirePermission } from '@/middlewares/auth.middleware';
-
-// Ví dụ: Đăng xuất (Cần biết là ai đang gửi request)
-authRoute.post(ENDPOINTS.AUTH.LOGOUT, verifyToken, authController.logout);
-
-// Ví dụ: Một API nhạy cảm đòi hỏi quyền Cấp phát Voucher
-authRoute.post(
-  '/admin/issue-voucher', 
-  verifyToken, 
-  requirePermission('ISSUE_VOUCHER'), // Lớp khiên quyền hạn tối thượng
-  voucherController.issueVoucher
-);
-*/
 
 export default authRoute;

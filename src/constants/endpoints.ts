@@ -11,17 +11,20 @@ export const ENDPOINTS = {
     GOOGLE_CALLBACK: '/google/callback',
     SEND_VERIFY_EMAIL: '/send-verify-email',
     VERIFY_EMAIL: '/verify-email',
-    // BỔ SUNG: Luồng khôi phục mật khẩu
     FORGOT_PASSWORD: '/forgot-password',
     RESET_PASSWORD: '/reset-password',
+    CHANGE_PASSWORD: '/change-password',
+    SESSIONS: '/sessions',
+    REVOKE_SESSION: '/sessions/:sessionId',
+    REVOKE_OTHER_SESSIONS: '/sessions/others',
   },
   PUBLIC: {
     CATEGORIES: '/categories',
     COURSES: '/courses',
-    COURSE_DETAIL: '/courses/:slug', // BỔ SUNG: Chi tiết khóa học cho khách
-    COURSE_REVIEWS: '/courses/:slug/reviews', // BỔ SUNG: Xem review public
+    COURSE_DETAIL: '/courses/:slug', // Chi tiết khóa học cho khách
+    COURSE_REVIEWS: '/courses/:slug/reviews', // Xem review public
     INSTRUCTORS: '/instructors',
-    INSTRUCTOR_DETAIL: '/instructors/:id', // BỔ SUNG: Xem profile giảng viên
+    INSTRUCTOR_DETAIL: '/instructors/:id', // Xem profile giảng viên
     WEBHOOK_PAYMENT: '/payments/webhook',
   },
   USER: {

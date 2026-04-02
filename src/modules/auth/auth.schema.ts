@@ -1,137 +1,146 @@
 import { z } from 'zod';
+import { OTP_CHANNELS } from '@/constants/app.constant';
+import { MESSAGES } from '@/constants/messages';
+import { FIELDS, FieldName } from '@/constants/fields';
 
-// ============================================================================
-// 1. SCHEMA XÁC THỰC
-// ============================================================================
+// HÀM HELPER: RULE CHUNG CHO MẬT KHẨU
+const passwordValidationRule = (fieldName: FieldName) =>
+  z
+    .string({ message: MESSAGES.VALIDATION.MUST_BE_STRING(fieldName) })
+    .min(6, { message: MESSAGES.VALIDATION.MIN_LENGTH(fieldName, 6) })
+    .regex(/[A-Z]/, { message: MESSAGES.VALIDATION.PASSWORD_UPPERCASE })
+    .regex(/[0-9]/, { message: MESSAGES.VALIDATION.PASSWORD_NUMBER });
 
+// 1. SCHEMA XÁC THỰC (Đăng ký / Đăng nhập)
 export const registerSchema = z.object({
   body: z.object({
     email: z
-      .string({ message: 'Email bắt buộc phải là chuỗi' })
+      .string({ message: MESSAGES.VALIDATION.MUST_BE_STRING(FIELDS.EMAIL) })
       .trim()
-      .min(1, { message: 'Email không được để trống' })
-      .pipe(z.email({ message: 'Email không đúng định dạng' })),
-    password: z
-      .string()
-      .min(6, 'Mật khẩu phải có ít nhất 6 ký tự')
-      .regex(/[A-Z]/, 'Mật khẩu phải chứa ít nhất 1 chữ hoa') // [Bảo mật cơ bản]
-      .regex(/[0-9]/, 'Mật khẩu phải chứa ít nhất 1 chữ số'),
-    fullName: z.string().trim().min(2, 'Họ tên phải có ít nhất 2 ký tự').max(100, 'Họ tên quá dài'),
+      .min(1, { message: MESSAGES.VALIDATION.REQUIRED(FIELDS.EMAIL) })
+      .pipe(z.email({ message: MESSAGES.VALIDATION.INVALID_EMAIL })),
+    password: passwordValidationRule(FIELDS.PASSWORD),
+    fullName: z
+      .string({ message: MESSAGES.VALIDATION.MUST_BE_STRING(FIELDS.FULL_NAME) })
+      .trim()
+      .min(2, { message: MESSAGES.VALIDATION.MIN_LENGTH(FIELDS.FULL_NAME, 2) })
+      .max(100, { message: MESSAGES.VALIDATION.MAX_LENGTH(FIELDS.FULL_NAME, 100) }),
   }),
 });
 
 export const loginSchema = z.object({
   body: z.object({
     email: z
-      .string({ message: 'Email bắt buộc' })
+      .string({ message: MESSAGES.VALIDATION.MUST_BE_STRING(FIELDS.EMAIL) })
       .trim()
-      .min(1, { message: 'Email không được để trống' })
-      .pipe(z.email({ message: 'Email không đúng định dạng' })),
+      .min(1, { message: MESSAGES.VALIDATION.REQUIRED(FIELDS.EMAIL) })
+      .pipe(z.email({ message: MESSAGES.VALIDATION.INVALID_EMAIL })),
     password: z
-      .string({ message: 'Mật khẩu bắt buộc' })
-      .min(1, { message: 'Vui lòng nhập mật khẩu' }),
+      .string({ message: MESSAGES.VALIDATION.MUST_BE_STRING(FIELDS.PASSWORD) })
+      .min(1, { message: MESSAGES.VALIDATION.REQUIRED(FIELDS.PASSWORD) }),
     deviceId: z
-      .string({ message: 'Device ID phải là chuỗi' })
+      .string({ message: MESSAGES.VALIDATION.MUST_BE_STRING(FIELDS.DEVICE_ID) })
       .trim()
-      .max(255, { message: 'Device ID quá dài' }) // Chặn payload rác
-      .regex(/^[a-zA-Z0-9_-]+$/, { message: 'Device ID chứa ký tự không hợp lệ' }) // Chỉ cho phép chữ, số, gạch ngang
+      .max(255, { message: MESSAGES.VALIDATION.MAX_LENGTH(FIELDS.DEVICE_ID, 255) })
+      .regex(/^[a-zA-Z0-9_-]+$/, { message: MESSAGES.VALIDATION.INVALID_CHARS(FIELDS.DEVICE_ID) })
       .optional(),
   }),
 });
 
-// ============================================================================
 // 2. SCHEMA LÀM MỚI & ĐĂNG XUẤT
-// ============================================================================
-
 export const refreshTokenSchema = z.object({
-  // Refresh Token được gửi ngầm qua HttpOnly Cookie, không nằm trong body
   cookies: z.object({
     refreshToken: z
       .string({
         error: (issue) =>
           issue.input === undefined
-            ? 'Không tìm thấy Refresh Token trong Cookie'
-            : 'Refresh Token phải là chuỗi hợp lệ',
+            ? MESSAGES.VALIDATION.MISSING_COOKIE_TOKEN
+            : MESSAGES.VALIDATION.MUST_BE_STRING(FIELDS.REFRESH_TOKEN),
       })
       .regex(/^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+$/, {
-        message: 'Định dạng Refresh Token không hợp lệ',
+        message: MESSAGES.VALIDATION.INVALID_FORMAT(FIELDS.REFRESH_TOKEN),
       }),
-  }),
-});
-
-// ============================================================================
-// 3. SCHEMA XÁC THỰC EMAIL (OTP)
-// ============================================================================
-
-export const sendVerifyEmailSchema = z.object({
-  body: z.object({
-    identifier: z.string({ message: 'Email hoặc Số điện thoại bắt buộc' }).trim().min(1),
-    channel: z.enum(['EMAIL', 'SMS', 'ZALO'], { message: 'Kênh gửi không hợp lệ' }),
-  }),
-});
-
-export const verifyEmailSchema = z.object({
-  body: z.object({
-    // Đổi 'email' thành 'identifier' để dùng chung cho cả Email/SĐT
-    identifier: z
-      .string({ message: 'Email hoặc Số điện thoại bắt buộc' })
-      .trim()
-      .min(1, { message: 'Định danh không được để trống' }),
-
-    code: z
-      .string({ message: 'Mã OTP bắt buộc' })
-      .length(6, { message: 'Mã OTP phải có đúng 6 ký tự' })
-      .regex(/^\d+$/, { message: 'Mã OTP chỉ được chứa các chữ số' }),
-
-    // Bổ sung channel vì logic verify của chúng ta cần biết verify cho kênh nào
-    channel: z.enum(['EMAIL', 'SMS', 'ZALO'], { message: 'Kênh xác thực không hợp lệ' }),
-  }),
-});
-
-// ============================================================================
-// 4. SCHEMA QUÊN MẬT KHẨU
-// ============================================================================
-
-export const forgotPasswordSchema = z.object({
-  body: z.object({
-    email: z
-      .string({ message: 'Email bắt buộc' })
-      .trim()
-      .min(1, { message: 'Email không được để trống' })
-      .pipe(z.email({ message: 'Email không đúng định dạng' })),
-  }),
-});
-
-export const resetPasswordSchema = z.object({
-  body: z.object({
-    email: z
-      .string({ message: 'Email bắt buộc' })
-      .trim()
-      .min(1, { message: 'Email không được để trống' })
-      .pipe(z.email({ message: 'Email không đúng định dạng' })),
-    code: z
-      .string()
-      .length(6, 'Mã OTP phải có đúng 6 ký tự')
-      .regex(/^\d+$/, 'Mã OTP chỉ được chứa các chữ số'),
-    newPassword: z
-      .string()
-      .min(6, 'Mật khẩu mới phải có ít nhất 6 ký tự')
-      .regex(/[A-Z]/, 'Mật khẩu phải chứa ít nhất 1 chữ hoa')
-      .regex(/[0-9]/, 'Mật khẩu phải chứa ít nhất 1 chữ số'),
   }),
 });
 
 export const revokeSessionSchema = z.object({
   params: z.object({
     sessionId: z
-      .string({ message: 'Session ID bắt buộc' })
-      .uuid({ message: 'Session ID không đúng định dạng UUID' }), // Ép chuẩn UUID
+      .string({ message: MESSAGES.VALIDATION.MUST_BE_STRING(FIELDS.SESSION_ID) })
+      .uuid({ message: MESSAGES.VALIDATION.INVALID_UUID(FIELDS.SESSION_ID) }),
   }),
 });
 
-// ============================================================================
-// TRÍCH XUẤT TYPE (DTO) CHO TẦNG SERVICE (End-to-End Type Safety)
-// ============================================================================
+// 3. SCHEMA XÁC THỰC ĐỊNH DANH (OTP)
+export const sendVerifyEmailSchema = z.object({
+  body: z.object({
+    identifier: z
+      .string({ message: MESSAGES.VALIDATION.MUST_BE_STRING(FIELDS.IDENTIFIER) })
+      .trim()
+      .min(1, { message: MESSAGES.VALIDATION.REQUIRED(FIELDS.IDENTIFIER) }),
+    channel: z.nativeEnum(OTP_CHANNELS, {
+      message: MESSAGES.VALIDATION.INVALID_ENUM(FIELDS.CHANNEL),
+    }),
+  }),
+});
+
+export const verifyEmailSchema = z.object({
+  body: z.object({
+    identifier: z
+      .string({ message: MESSAGES.VALIDATION.MUST_BE_STRING(FIELDS.IDENTIFIER) })
+      .trim()
+      .min(1, { message: MESSAGES.VALIDATION.REQUIRED(FIELDS.IDENTIFIER) }),
+    code: z
+      .string({ message: MESSAGES.VALIDATION.MUST_BE_STRING(FIELDS.OTP_CODE) })
+      .length(6, { message: MESSAGES.VALIDATION.EXACT_LENGTH(FIELDS.OTP_CODE, 6) })
+      .regex(/^\d+$/, { message: MESSAGES.VALIDATION.ONLY_NUMBERS(FIELDS.OTP_CODE) }),
+    channel: z.nativeEnum(OTP_CHANNELS, {
+      message: MESSAGES.VALIDATION.INVALID_ENUM(FIELDS.CHANNEL),
+    }),
+  }),
+});
+
+// 4. SCHEMA MẬT KHẨU
+export const forgotPasswordSchema = z.object({
+  body: z.object({
+    email: z
+      .string({ message: MESSAGES.VALIDATION.MUST_BE_STRING(FIELDS.EMAIL) })
+      .trim()
+      .min(1, { message: MESSAGES.VALIDATION.REQUIRED(FIELDS.EMAIL) })
+      .pipe(z.email({ message: MESSAGES.VALIDATION.INVALID_EMAIL })),
+  }),
+});
+
+export const resetPasswordSchema = z.object({
+  body: z.object({
+    email: z
+      .string({ message: MESSAGES.VALIDATION.MUST_BE_STRING(FIELDS.EMAIL) })
+      .trim()
+      .min(1, { message: MESSAGES.VALIDATION.REQUIRED(FIELDS.EMAIL) })
+      .pipe(z.email({ message: MESSAGES.VALIDATION.INVALID_EMAIL })),
+    code: z
+      .string({ message: MESSAGES.VALIDATION.MUST_BE_STRING(FIELDS.OTP_CODE) })
+      .length(6, { message: MESSAGES.VALIDATION.EXACT_LENGTH(FIELDS.OTP_CODE, 6) })
+      .regex(/^\d+$/, { message: MESSAGES.VALIDATION.ONLY_NUMBERS(FIELDS.OTP_CODE) }),
+    newPassword: passwordValidationRule(FIELDS.NEW_PASSWORD),
+  }),
+});
+
+export const changePasswordSchema = z.object({
+  body: z
+    .object({
+      currentPassword: z
+        .string({ message: MESSAGES.VALIDATION.MUST_BE_STRING(FIELDS.CURRENT_PASSWORD) })
+        .min(1, { message: MESSAGES.VALIDATION.REQUIRED(FIELDS.CURRENT_PASSWORD) }),
+      newPassword: passwordValidationRule(FIELDS.NEW_PASSWORD),
+    })
+    .refine((data) => data.currentPassword !== data.newPassword, {
+      message: MESSAGES.VALIDATION.PASSWORD_NOT_MATCH_OLD,
+      path: ['newPassword'],
+    }),
+});
+
+// TRÍCH XUẤT TYPE (DTO) CHO TẦNG SERVICE
 export type RegisterDTO = z.infer<typeof registerSchema>['body'];
 export type LoginDTO = z.infer<typeof loginSchema>['body'];
 export type RevokeSessionDTO = z.infer<typeof revokeSessionSchema>['params'];
@@ -140,3 +149,4 @@ export type VerifyEmailDTO = z.infer<typeof verifyEmailSchema>['body'];
 export type ForgotPasswordDTO = z.infer<typeof forgotPasswordSchema>['body'];
 export type ResetPasswordDTO = z.infer<typeof resetPasswordSchema>['body'];
 export type RefreshTokenDTO = z.infer<typeof refreshTokenSchema>['cookies'];
+export type ChangePasswordDTO = z.infer<typeof changePasswordSchema>['body'];

@@ -19,8 +19,18 @@ export type UserModel = runtime.Types.Result.DefaultSelection<Prisma.$UserPayloa
 
 export type AggregateUser = {
   _count: UserCountAggregateOutputType | null;
+  _avg: UserAvgAggregateOutputType | null;
+  _sum: UserSumAggregateOutputType | null;
   _min: UserMinAggregateOutputType | null;
   _max: UserMaxAggregateOutputType | null;
+};
+
+export type UserAvgAggregateOutputType = {
+  failedLoginAttempts: number | null;
+};
+
+export type UserSumAggregateOutputType = {
+  failedLoginAttempts: number | null;
 };
 
 export type UserMinAggregateOutputType = {
@@ -34,6 +44,8 @@ export type UserMinAggregateOutputType = {
   providerId: string | null;
   isActive: boolean | null;
   roleId: string | null;
+  failedLoginAttempts: number | null;
+  lockedUntil: Date | null;
   createdAt: Date | null;
   updatedAt: Date | null;
 };
@@ -49,6 +61,8 @@ export type UserMaxAggregateOutputType = {
   providerId: string | null;
   isActive: boolean | null;
   roleId: string | null;
+  failedLoginAttempts: number | null;
+  lockedUntil: Date | null;
   createdAt: Date | null;
   updatedAt: Date | null;
 };
@@ -64,9 +78,19 @@ export type UserCountAggregateOutputType = {
   providerId: number;
   isActive: number;
   roleId: number;
+  failedLoginAttempts: number;
+  lockedUntil: number;
   createdAt: number;
   updatedAt: number;
   _all: number;
+};
+
+export type UserAvgAggregateInputType = {
+  failedLoginAttempts?: true;
+};
+
+export type UserSumAggregateInputType = {
+  failedLoginAttempts?: true;
 };
 
 export type UserMinAggregateInputType = {
@@ -80,6 +104,8 @@ export type UserMinAggregateInputType = {
   providerId?: true;
   isActive?: true;
   roleId?: true;
+  failedLoginAttempts?: true;
+  lockedUntil?: true;
   createdAt?: true;
   updatedAt?: true;
 };
@@ -95,6 +121,8 @@ export type UserMaxAggregateInputType = {
   providerId?: true;
   isActive?: true;
   roleId?: true;
+  failedLoginAttempts?: true;
+  lockedUntil?: true;
   createdAt?: true;
   updatedAt?: true;
 };
@@ -110,6 +138,8 @@ export type UserCountAggregateInputType = {
   providerId?: true;
   isActive?: true;
   roleId?: true;
+  failedLoginAttempts?: true;
+  lockedUntil?: true;
   createdAt?: true;
   updatedAt?: true;
   _all?: true;
@@ -155,6 +185,18 @@ export type UserAggregateArgs<
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    *
+   * Select which fields to average
+   **/
+  _avg?: UserAvgAggregateInputType;
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   *
+   * Select which fields to sum
+   **/
+  _sum?: UserSumAggregateInputType;
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   *
    * Select which fields to find the minimum value
    **/
   _min?: UserMinAggregateInputType;
@@ -184,6 +226,8 @@ export type UserGroupByArgs<
   take?: number;
   skip?: number;
   _count?: UserCountAggregateInputType | true;
+  _avg?: UserAvgAggregateInputType;
+  _sum?: UserSumAggregateInputType;
   _min?: UserMinAggregateInputType;
   _max?: UserMaxAggregateInputType;
 };
@@ -199,9 +243,13 @@ export type UserGroupByOutputType = {
   providerId: string | null;
   isActive: boolean;
   roleId: string;
+  failedLoginAttempts: number;
+  lockedUntil: Date | null;
   createdAt: Date;
   updatedAt: Date;
   _count: UserCountAggregateOutputType | null;
+  _avg: UserAvgAggregateOutputType | null;
+  _sum: UserSumAggregateOutputType | null;
   _min: UserMinAggregateOutputType | null;
   _max: UserMaxAggregateOutputType | null;
 };
@@ -232,6 +280,8 @@ export type UserWhereInput = {
   providerId?: Prisma.StringNullableFilter<'User'> | string | null;
   isActive?: Prisma.BoolFilter<'User'> | boolean;
   roleId?: Prisma.StringFilter<'User'> | string;
+  failedLoginAttempts?: Prisma.IntFilter<'User'> | number;
+  lockedUntil?: Prisma.DateTimeNullableFilter<'User'> | Date | string | null;
   createdAt?: Prisma.DateTimeFilter<'User'> | Date | string;
   updatedAt?: Prisma.DateTimeFilter<'User'> | Date | string;
   role?: Prisma.XOR<Prisma.RoleScalarRelationFilter, Prisma.RoleWhereInput>;
@@ -265,6 +315,8 @@ export type UserOrderByWithRelationInput = {
   providerId?: Prisma.SortOrderInput | Prisma.SortOrder;
   isActive?: Prisma.SortOrder;
   roleId?: Prisma.SortOrder;
+  failedLoginAttempts?: Prisma.SortOrder;
+  lockedUntil?: Prisma.SortOrderInput | Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
   updatedAt?: Prisma.SortOrder;
   role?: Prisma.RoleOrderByWithRelationInput;
@@ -299,6 +351,8 @@ export type UserWhereUniqueInput = Prisma.AtLeast<
     providerId?: Prisma.StringNullableFilter<'User'> | string | null;
     isActive?: Prisma.BoolFilter<'User'> | boolean;
     roleId?: Prisma.StringFilter<'User'> | string;
+    failedLoginAttempts?: Prisma.IntFilter<'User'> | number;
+    lockedUntil?: Prisma.DateTimeNullableFilter<'User'> | Date | string | null;
     createdAt?: Prisma.DateTimeFilter<'User'> | Date | string;
     updatedAt?: Prisma.DateTimeFilter<'User'> | Date | string;
     role?: Prisma.XOR<Prisma.RoleScalarRelationFilter, Prisma.RoleWhereInput>;
@@ -334,11 +388,15 @@ export type UserOrderByWithAggregationInput = {
   providerId?: Prisma.SortOrderInput | Prisma.SortOrder;
   isActive?: Prisma.SortOrder;
   roleId?: Prisma.SortOrder;
+  failedLoginAttempts?: Prisma.SortOrder;
+  lockedUntil?: Prisma.SortOrderInput | Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
   updatedAt?: Prisma.SortOrder;
   _count?: Prisma.UserCountOrderByAggregateInput;
+  _avg?: Prisma.UserAvgOrderByAggregateInput;
   _max?: Prisma.UserMaxOrderByAggregateInput;
   _min?: Prisma.UserMinOrderByAggregateInput;
+  _sum?: Prisma.UserSumOrderByAggregateInput;
 };
 
 export type UserScalarWhereWithAggregatesInput = {
@@ -355,6 +413,8 @@ export type UserScalarWhereWithAggregatesInput = {
   providerId?: Prisma.StringNullableWithAggregatesFilter<'User'> | string | null;
   isActive?: Prisma.BoolWithAggregatesFilter<'User'> | boolean;
   roleId?: Prisma.StringWithAggregatesFilter<'User'> | string;
+  failedLoginAttempts?: Prisma.IntWithAggregatesFilter<'User'> | number;
+  lockedUntil?: Prisma.DateTimeNullableWithAggregatesFilter<'User'> | Date | string | null;
   createdAt?: Prisma.DateTimeWithAggregatesFilter<'User'> | Date | string;
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<'User'> | Date | string;
 };
@@ -369,6 +429,8 @@ export type UserCreateInput = {
   authProvider?: $Enums.AuthProvider;
   providerId?: string | null;
   isActive?: boolean;
+  failedLoginAttempts?: number;
+  lockedUntil?: Date | string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
   role: Prisma.RoleCreateNestedOneWithoutUsersInput;
@@ -399,6 +461,8 @@ export type UserUncheckedCreateInput = {
   providerId?: string | null;
   isActive?: boolean;
   roleId: string;
+  failedLoginAttempts?: number;
+  lockedUntil?: Date | string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput;
@@ -427,6 +491,8 @@ export type UserUpdateInput = {
   authProvider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider;
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  failedLoginAttempts?: Prisma.IntFieldUpdateOperationsInput | number;
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   role?: Prisma.RoleUpdateOneRequiredWithoutUsersNestedInput;
@@ -457,6 +523,8 @@ export type UserUncheckedUpdateInput = {
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
   roleId?: Prisma.StringFieldUpdateOperationsInput | string;
+  failedLoginAttempts?: Prisma.IntFieldUpdateOperationsInput | number;
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput;
@@ -486,6 +554,8 @@ export type UserCreateManyInput = {
   providerId?: string | null;
   isActive?: boolean;
   roleId: string;
+  failedLoginAttempts?: number;
+  lockedUntil?: Date | string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
 };
@@ -500,6 +570,8 @@ export type UserUpdateManyMutationInput = {
   authProvider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider;
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  failedLoginAttempts?: Prisma.IntFieldUpdateOperationsInput | number;
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
@@ -515,6 +587,8 @@ export type UserUncheckedUpdateManyInput = {
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
   roleId?: Prisma.StringFieldUpdateOperationsInput | string;
+  failedLoginAttempts?: Prisma.IntFieldUpdateOperationsInput | number;
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
@@ -545,8 +619,14 @@ export type UserCountOrderByAggregateInput = {
   providerId?: Prisma.SortOrder;
   isActive?: Prisma.SortOrder;
   roleId?: Prisma.SortOrder;
+  failedLoginAttempts?: Prisma.SortOrder;
+  lockedUntil?: Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
   updatedAt?: Prisma.SortOrder;
+};
+
+export type UserAvgOrderByAggregateInput = {
+  failedLoginAttempts?: Prisma.SortOrder;
 };
 
 export type UserMaxOrderByAggregateInput = {
@@ -560,6 +640,8 @@ export type UserMaxOrderByAggregateInput = {
   providerId?: Prisma.SortOrder;
   isActive?: Prisma.SortOrder;
   roleId?: Prisma.SortOrder;
+  failedLoginAttempts?: Prisma.SortOrder;
+  lockedUntil?: Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
   updatedAt?: Prisma.SortOrder;
 };
@@ -575,8 +657,14 @@ export type UserMinOrderByAggregateInput = {
   providerId?: Prisma.SortOrder;
   isActive?: Prisma.SortOrder;
   roleId?: Prisma.SortOrder;
+  failedLoginAttempts?: Prisma.SortOrder;
+  lockedUntil?: Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
   updatedAt?: Prisma.SortOrder;
+};
+
+export type UserSumOrderByAggregateInput = {
+  failedLoginAttempts?: Prisma.SortOrder;
 };
 
 export type UserCreateNestedManyWithoutRoleInput = {
@@ -685,6 +773,18 @@ export type BoolFieldUpdateOperationsInput = {
 
 export type EnumAuthProviderFieldUpdateOperationsInput = {
   set?: $Enums.AuthProvider;
+};
+
+export type IntFieldUpdateOperationsInput = {
+  set?: number;
+  increment?: number;
+  decrement?: number;
+  multiply?: number;
+  divide?: number;
+};
+
+export type NullableDateTimeFieldUpdateOperationsInput = {
+  set?: Date | string | null;
 };
 
 export type DateTimeFieldUpdateOperationsInput = {
@@ -1036,6 +1136,8 @@ export type UserCreateWithoutRoleInput = {
   authProvider?: $Enums.AuthProvider;
   providerId?: string | null;
   isActive?: boolean;
+  failedLoginAttempts?: number;
+  lockedUntil?: Date | string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput;
@@ -1064,6 +1166,8 @@ export type UserUncheckedCreateWithoutRoleInput = {
   authProvider?: $Enums.AuthProvider;
   providerId?: string | null;
   isActive?: boolean;
+  failedLoginAttempts?: number;
+  lockedUntil?: Date | string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput;
@@ -1125,6 +1229,8 @@ export type UserScalarWhereInput = {
   providerId?: Prisma.StringNullableFilter<'User'> | string | null;
   isActive?: Prisma.BoolFilter<'User'> | boolean;
   roleId?: Prisma.StringFilter<'User'> | string;
+  failedLoginAttempts?: Prisma.IntFilter<'User'> | number;
+  lockedUntil?: Prisma.DateTimeNullableFilter<'User'> | Date | string | null;
   createdAt?: Prisma.DateTimeFilter<'User'> | Date | string;
   updatedAt?: Prisma.DateTimeFilter<'User'> | Date | string;
 };
@@ -1139,6 +1245,8 @@ export type UserCreateWithoutExtraPermissionsInput = {
   authProvider?: $Enums.AuthProvider;
   providerId?: string | null;
   isActive?: boolean;
+  failedLoginAttempts?: number;
+  lockedUntil?: Date | string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
   role: Prisma.RoleCreateNestedOneWithoutUsersInput;
@@ -1168,6 +1276,8 @@ export type UserUncheckedCreateWithoutExtraPermissionsInput = {
   providerId?: string | null;
   isActive?: boolean;
   roleId: string;
+  failedLoginAttempts?: number;
+  lockedUntil?: Date | string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput;
@@ -1223,6 +1333,8 @@ export type UserUpdateWithoutExtraPermissionsInput = {
   authProvider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider;
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  failedLoginAttempts?: Prisma.IntFieldUpdateOperationsInput | number;
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   role?: Prisma.RoleUpdateOneRequiredWithoutUsersNestedInput;
@@ -1252,6 +1364,8 @@ export type UserUncheckedUpdateWithoutExtraPermissionsInput = {
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
   roleId?: Prisma.StringFieldUpdateOperationsInput | string;
+  failedLoginAttempts?: Prisma.IntFieldUpdateOperationsInput | number;
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput;
@@ -1279,6 +1393,8 @@ export type UserCreateWithoutProfileInput = {
   authProvider?: $Enums.AuthProvider;
   providerId?: string | null;
   isActive?: boolean;
+  failedLoginAttempts?: number;
+  lockedUntil?: Date | string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
   role: Prisma.RoleCreateNestedOneWithoutUsersInput;
@@ -1308,6 +1424,8 @@ export type UserUncheckedCreateWithoutProfileInput = {
   providerId?: string | null;
   isActive?: boolean;
   roleId: string;
+  failedLoginAttempts?: number;
+  lockedUntil?: Date | string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput;
@@ -1363,6 +1481,8 @@ export type UserUpdateWithoutProfileInput = {
   authProvider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider;
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  failedLoginAttempts?: Prisma.IntFieldUpdateOperationsInput | number;
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   role?: Prisma.RoleUpdateOneRequiredWithoutUsersNestedInput;
@@ -1392,6 +1512,8 @@ export type UserUncheckedUpdateWithoutProfileInput = {
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
   roleId?: Prisma.StringFieldUpdateOperationsInput | string;
+  failedLoginAttempts?: Prisma.IntFieldUpdateOperationsInput | number;
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput;
@@ -1419,6 +1541,8 @@ export type UserCreateWithoutSessionsInput = {
   authProvider?: $Enums.AuthProvider;
   providerId?: string | null;
   isActive?: boolean;
+  failedLoginAttempts?: number;
+  lockedUntil?: Date | string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
   role: Prisma.RoleCreateNestedOneWithoutUsersInput;
@@ -1448,6 +1572,8 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   providerId?: string | null;
   isActive?: boolean;
   roleId: string;
+  failedLoginAttempts?: number;
+  lockedUntil?: Date | string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
   profile?: Prisma.UserProfileUncheckedCreateNestedOneWithoutUserInput;
@@ -1503,6 +1629,8 @@ export type UserUpdateWithoutSessionsInput = {
   authProvider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider;
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  failedLoginAttempts?: Prisma.IntFieldUpdateOperationsInput | number;
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   role?: Prisma.RoleUpdateOneRequiredWithoutUsersNestedInput;
@@ -1532,6 +1660,8 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
   roleId?: Prisma.StringFieldUpdateOperationsInput | string;
+  failedLoginAttempts?: Prisma.IntFieldUpdateOperationsInput | number;
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   profile?: Prisma.UserProfileUncheckedUpdateOneWithoutUserNestedInput;
@@ -1559,6 +1689,8 @@ export type UserCreateWithoutTaughtCoursesInput = {
   authProvider?: $Enums.AuthProvider;
   providerId?: string | null;
   isActive?: boolean;
+  failedLoginAttempts?: number;
+  lockedUntil?: Date | string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
   role: Prisma.RoleCreateNestedOneWithoutUsersInput;
@@ -1588,6 +1720,8 @@ export type UserUncheckedCreateWithoutTaughtCoursesInput = {
   providerId?: string | null;
   isActive?: boolean;
   roleId: string;
+  failedLoginAttempts?: number;
+  lockedUntil?: Date | string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput;
@@ -1643,6 +1777,8 @@ export type UserUpdateWithoutTaughtCoursesInput = {
   authProvider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider;
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  failedLoginAttempts?: Prisma.IntFieldUpdateOperationsInput | number;
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   role?: Prisma.RoleUpdateOneRequiredWithoutUsersNestedInput;
@@ -1672,6 +1808,8 @@ export type UserUncheckedUpdateWithoutTaughtCoursesInput = {
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
   roleId?: Prisma.StringFieldUpdateOperationsInput | string;
+  failedLoginAttempts?: Prisma.IntFieldUpdateOperationsInput | number;
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput;
@@ -1699,6 +1837,8 @@ export type UserCreateWithoutCommentsInput = {
   authProvider?: $Enums.AuthProvider;
   providerId?: string | null;
   isActive?: boolean;
+  failedLoginAttempts?: number;
+  lockedUntil?: Date | string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
   role: Prisma.RoleCreateNestedOneWithoutUsersInput;
@@ -1728,6 +1868,8 @@ export type UserUncheckedCreateWithoutCommentsInput = {
   providerId?: string | null;
   isActive?: boolean;
   roleId: string;
+  failedLoginAttempts?: number;
+  lockedUntil?: Date | string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput;
@@ -1783,6 +1925,8 @@ export type UserUpdateWithoutCommentsInput = {
   authProvider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider;
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  failedLoginAttempts?: Prisma.IntFieldUpdateOperationsInput | number;
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   role?: Prisma.RoleUpdateOneRequiredWithoutUsersNestedInput;
@@ -1812,6 +1956,8 @@ export type UserUncheckedUpdateWithoutCommentsInput = {
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
   roleId?: Prisma.StringFieldUpdateOperationsInput | string;
+  failedLoginAttempts?: Prisma.IntFieldUpdateOperationsInput | number;
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput;
@@ -1839,6 +1985,8 @@ export type UserCreateWithoutReviewsInput = {
   authProvider?: $Enums.AuthProvider;
   providerId?: string | null;
   isActive?: boolean;
+  failedLoginAttempts?: number;
+  lockedUntil?: Date | string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
   role: Prisma.RoleCreateNestedOneWithoutUsersInput;
@@ -1868,6 +2016,8 @@ export type UserUncheckedCreateWithoutReviewsInput = {
   providerId?: string | null;
   isActive?: boolean;
   roleId: string;
+  failedLoginAttempts?: number;
+  lockedUntil?: Date | string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput;
@@ -1923,6 +2073,8 @@ export type UserUpdateWithoutReviewsInput = {
   authProvider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider;
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  failedLoginAttempts?: Prisma.IntFieldUpdateOperationsInput | number;
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   role?: Prisma.RoleUpdateOneRequiredWithoutUsersNestedInput;
@@ -1952,6 +2104,8 @@ export type UserUncheckedUpdateWithoutReviewsInput = {
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
   roleId?: Prisma.StringFieldUpdateOperationsInput | string;
+  failedLoginAttempts?: Prisma.IntFieldUpdateOperationsInput | number;
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput;
@@ -1979,6 +2133,8 @@ export type UserCreateWithoutSavedVouchersInput = {
   authProvider?: $Enums.AuthProvider;
   providerId?: string | null;
   isActive?: boolean;
+  failedLoginAttempts?: number;
+  lockedUntil?: Date | string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
   role: Prisma.RoleCreateNestedOneWithoutUsersInput;
@@ -2008,6 +2164,8 @@ export type UserUncheckedCreateWithoutSavedVouchersInput = {
   providerId?: string | null;
   isActive?: boolean;
   roleId: string;
+  failedLoginAttempts?: number;
+  lockedUntil?: Date | string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput;
@@ -2063,6 +2221,8 @@ export type UserUpdateWithoutSavedVouchersInput = {
   authProvider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider;
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  failedLoginAttempts?: Prisma.IntFieldUpdateOperationsInput | number;
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   role?: Prisma.RoleUpdateOneRequiredWithoutUsersNestedInput;
@@ -2092,6 +2252,8 @@ export type UserUncheckedUpdateWithoutSavedVouchersInput = {
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
   roleId?: Prisma.StringFieldUpdateOperationsInput | string;
+  failedLoginAttempts?: Prisma.IntFieldUpdateOperationsInput | number;
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput;
@@ -2119,6 +2281,8 @@ export type UserCreateWithoutVouchersUsedInput = {
   authProvider?: $Enums.AuthProvider;
   providerId?: string | null;
   isActive?: boolean;
+  failedLoginAttempts?: number;
+  lockedUntil?: Date | string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
   role: Prisma.RoleCreateNestedOneWithoutUsersInput;
@@ -2148,6 +2312,8 @@ export type UserUncheckedCreateWithoutVouchersUsedInput = {
   providerId?: string | null;
   isActive?: boolean;
   roleId: string;
+  failedLoginAttempts?: number;
+  lockedUntil?: Date | string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput;
@@ -2203,6 +2369,8 @@ export type UserUpdateWithoutVouchersUsedInput = {
   authProvider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider;
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  failedLoginAttempts?: Prisma.IntFieldUpdateOperationsInput | number;
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   role?: Prisma.RoleUpdateOneRequiredWithoutUsersNestedInput;
@@ -2232,6 +2400,8 @@ export type UserUncheckedUpdateWithoutVouchersUsedInput = {
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
   roleId?: Prisma.StringFieldUpdateOperationsInput | string;
+  failedLoginAttempts?: Prisma.IntFieldUpdateOperationsInput | number;
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput;
@@ -2259,6 +2429,8 @@ export type UserCreateWithoutOrdersInput = {
   authProvider?: $Enums.AuthProvider;
   providerId?: string | null;
   isActive?: boolean;
+  failedLoginAttempts?: number;
+  lockedUntil?: Date | string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
   role: Prisma.RoleCreateNestedOneWithoutUsersInput;
@@ -2288,6 +2460,8 @@ export type UserUncheckedCreateWithoutOrdersInput = {
   providerId?: string | null;
   isActive?: boolean;
   roleId: string;
+  failedLoginAttempts?: number;
+  lockedUntil?: Date | string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput;
@@ -2343,6 +2517,8 @@ export type UserUpdateWithoutOrdersInput = {
   authProvider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider;
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  failedLoginAttempts?: Prisma.IntFieldUpdateOperationsInput | number;
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   role?: Prisma.RoleUpdateOneRequiredWithoutUsersNestedInput;
@@ -2372,6 +2548,8 @@ export type UserUncheckedUpdateWithoutOrdersInput = {
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
   roleId?: Prisma.StringFieldUpdateOperationsInput | string;
+  failedLoginAttempts?: Prisma.IntFieldUpdateOperationsInput | number;
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput;
@@ -2399,6 +2577,8 @@ export type UserCreateWithoutWishlistInput = {
   authProvider?: $Enums.AuthProvider;
   providerId?: string | null;
   isActive?: boolean;
+  failedLoginAttempts?: number;
+  lockedUntil?: Date | string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
   role: Prisma.RoleCreateNestedOneWithoutUsersInput;
@@ -2428,6 +2608,8 @@ export type UserUncheckedCreateWithoutWishlistInput = {
   providerId?: string | null;
   isActive?: boolean;
   roleId: string;
+  failedLoginAttempts?: number;
+  lockedUntil?: Date | string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput;
@@ -2483,6 +2665,8 @@ export type UserUpdateWithoutWishlistInput = {
   authProvider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider;
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  failedLoginAttempts?: Prisma.IntFieldUpdateOperationsInput | number;
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   role?: Prisma.RoleUpdateOneRequiredWithoutUsersNestedInput;
@@ -2512,6 +2696,8 @@ export type UserUncheckedUpdateWithoutWishlistInput = {
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
   roleId?: Prisma.StringFieldUpdateOperationsInput | string;
+  failedLoginAttempts?: Prisma.IntFieldUpdateOperationsInput | number;
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput;
@@ -2539,6 +2725,8 @@ export type UserCreateWithoutRecentlyViewedInput = {
   authProvider?: $Enums.AuthProvider;
   providerId?: string | null;
   isActive?: boolean;
+  failedLoginAttempts?: number;
+  lockedUntil?: Date | string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
   role: Prisma.RoleCreateNestedOneWithoutUsersInput;
@@ -2568,6 +2756,8 @@ export type UserUncheckedCreateWithoutRecentlyViewedInput = {
   providerId?: string | null;
   isActive?: boolean;
   roleId: string;
+  failedLoginAttempts?: number;
+  lockedUntil?: Date | string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput;
@@ -2623,6 +2813,8 @@ export type UserUpdateWithoutRecentlyViewedInput = {
   authProvider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider;
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  failedLoginAttempts?: Prisma.IntFieldUpdateOperationsInput | number;
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   role?: Prisma.RoleUpdateOneRequiredWithoutUsersNestedInput;
@@ -2652,6 +2844,8 @@ export type UserUncheckedUpdateWithoutRecentlyViewedInput = {
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
   roleId?: Prisma.StringFieldUpdateOperationsInput | string;
+  failedLoginAttempts?: Prisma.IntFieldUpdateOperationsInput | number;
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput;
@@ -2679,6 +2873,8 @@ export type UserCreateWithoutCartInput = {
   authProvider?: $Enums.AuthProvider;
   providerId?: string | null;
   isActive?: boolean;
+  failedLoginAttempts?: number;
+  lockedUntil?: Date | string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
   role: Prisma.RoleCreateNestedOneWithoutUsersInput;
@@ -2708,6 +2904,8 @@ export type UserUncheckedCreateWithoutCartInput = {
   providerId?: string | null;
   isActive?: boolean;
   roleId: string;
+  failedLoginAttempts?: number;
+  lockedUntil?: Date | string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput;
@@ -2751,6 +2949,8 @@ export type UserUpdateWithoutCartInput = {
   authProvider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider;
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  failedLoginAttempts?: Prisma.IntFieldUpdateOperationsInput | number;
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   role?: Prisma.RoleUpdateOneRequiredWithoutUsersNestedInput;
@@ -2780,6 +2980,8 @@ export type UserUncheckedUpdateWithoutCartInput = {
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
   roleId?: Prisma.StringFieldUpdateOperationsInput | string;
+  failedLoginAttempts?: Prisma.IntFieldUpdateOperationsInput | number;
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput;
@@ -2807,6 +3009,8 @@ export type UserCreateWithoutEnrollmentsInput = {
   authProvider?: $Enums.AuthProvider;
   providerId?: string | null;
   isActive?: boolean;
+  failedLoginAttempts?: number;
+  lockedUntil?: Date | string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
   role: Prisma.RoleCreateNestedOneWithoutUsersInput;
@@ -2836,6 +3040,8 @@ export type UserUncheckedCreateWithoutEnrollmentsInput = {
   providerId?: string | null;
   isActive?: boolean;
   roleId: string;
+  failedLoginAttempts?: number;
+  lockedUntil?: Date | string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput;
@@ -2891,6 +3097,8 @@ export type UserUpdateWithoutEnrollmentsInput = {
   authProvider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider;
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  failedLoginAttempts?: Prisma.IntFieldUpdateOperationsInput | number;
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   role?: Prisma.RoleUpdateOneRequiredWithoutUsersNestedInput;
@@ -2920,6 +3128,8 @@ export type UserUncheckedUpdateWithoutEnrollmentsInput = {
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
   roleId?: Prisma.StringFieldUpdateOperationsInput | string;
+  failedLoginAttempts?: Prisma.IntFieldUpdateOperationsInput | number;
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput;
@@ -2947,6 +3157,8 @@ export type UserCreateWithoutProgressInput = {
   authProvider?: $Enums.AuthProvider;
   providerId?: string | null;
   isActive?: boolean;
+  failedLoginAttempts?: number;
+  lockedUntil?: Date | string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
   role: Prisma.RoleCreateNestedOneWithoutUsersInput;
@@ -2976,6 +3188,8 @@ export type UserUncheckedCreateWithoutProgressInput = {
   providerId?: string | null;
   isActive?: boolean;
   roleId: string;
+  failedLoginAttempts?: number;
+  lockedUntil?: Date | string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput;
@@ -3031,6 +3245,8 @@ export type UserUpdateWithoutProgressInput = {
   authProvider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider;
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  failedLoginAttempts?: Prisma.IntFieldUpdateOperationsInput | number;
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   role?: Prisma.RoleUpdateOneRequiredWithoutUsersNestedInput;
@@ -3060,6 +3276,8 @@ export type UserUncheckedUpdateWithoutProgressInput = {
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
   roleId?: Prisma.StringFieldUpdateOperationsInput | string;
+  failedLoginAttempts?: Prisma.IntFieldUpdateOperationsInput | number;
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput;
@@ -3087,6 +3305,8 @@ export type UserCreateManyRoleInput = {
   authProvider?: $Enums.AuthProvider;
   providerId?: string | null;
   isActive?: boolean;
+  failedLoginAttempts?: number;
+  lockedUntil?: Date | string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
 };
@@ -3101,6 +3321,8 @@ export type UserUpdateWithoutRoleInput = {
   authProvider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider;
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  failedLoginAttempts?: Prisma.IntFieldUpdateOperationsInput | number;
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput;
@@ -3129,6 +3351,8 @@ export type UserUncheckedUpdateWithoutRoleInput = {
   authProvider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider;
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  failedLoginAttempts?: Prisma.IntFieldUpdateOperationsInput | number;
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput;
@@ -3157,6 +3381,8 @@ export type UserUncheckedUpdateManyWithoutRoleInput = {
   authProvider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider;
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  failedLoginAttempts?: Prisma.IntFieldUpdateOperationsInput | number;
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
@@ -3331,6 +3557,8 @@ export type UserSelect<
     providerId?: boolean;
     isActive?: boolean;
     roleId?: boolean;
+    failedLoginAttempts?: boolean;
+    lockedUntil?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
     role?: boolean | Prisma.RoleDefaultArgs<ExtArgs>;
@@ -3367,6 +3595,8 @@ export type UserSelectCreateManyAndReturn<
     providerId?: boolean;
     isActive?: boolean;
     roleId?: boolean;
+    failedLoginAttempts?: boolean;
+    lockedUntil?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
     role?: boolean | Prisma.RoleDefaultArgs<ExtArgs>;
@@ -3388,6 +3618,8 @@ export type UserSelectUpdateManyAndReturn<
     providerId?: boolean;
     isActive?: boolean;
     roleId?: boolean;
+    failedLoginAttempts?: boolean;
+    lockedUntil?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
     role?: boolean | Prisma.RoleDefaultArgs<ExtArgs>;
@@ -3406,6 +3638,8 @@ export type UserSelectScalar = {
   providerId?: boolean;
   isActive?: boolean;
   roleId?: boolean;
+  failedLoginAttempts?: boolean;
+  lockedUntil?: boolean;
   createdAt?: boolean;
   updatedAt?: boolean;
 };
@@ -3423,6 +3657,8 @@ export type UserOmit<
   | 'providerId'
   | 'isActive'
   | 'roleId'
+  | 'failedLoginAttempts'
+  | 'lockedUntil'
   | 'createdAt'
   | 'updatedAt',
   ExtArgs['result']['user']
@@ -3491,6 +3727,8 @@ export type $UserPayload<
       providerId: string | null;
       isActive: boolean;
       roleId: string;
+      failedLoginAttempts: number;
+      lockedUntil: Date | null;
       createdAt: Date;
       updatedAt: Date;
     },
@@ -4216,6 +4454,8 @@ export interface UserFieldRefs {
   readonly providerId: Prisma.FieldRef<'User', 'String'>;
   readonly isActive: Prisma.FieldRef<'User', 'Boolean'>;
   readonly roleId: Prisma.FieldRef<'User', 'String'>;
+  readonly failedLoginAttempts: Prisma.FieldRef<'User', 'Int'>;
+  readonly lockedUntil: Prisma.FieldRef<'User', 'DateTime'>;
   readonly createdAt: Prisma.FieldRef<'User', 'DateTime'>;
   readonly updatedAt: Prisma.FieldRef<'User', 'DateTime'>;
 }

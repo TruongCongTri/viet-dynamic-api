@@ -2,6 +2,8 @@ import { Request, Response, NextFunction } from 'express';
 import { z, ZodError } from 'zod';
 import { AppError } from '@/common/errors/app.error';
 import { errorResponse, ValidationErrorDetail } from '../common/utils/responses/api-response';
+import { ERROR_CODES } from '@/constants/error-codes';
+import { MESSAGES } from '@/constants/messages';
 
 export const errorHandler = (
   err: unknown,
@@ -28,8 +30,8 @@ export const errorHandler = (
 
     return errorResponse(res, {
       statusCode: 422,
-      message: 'Dữ liệu đầu vào không hợp lệ',
-      error_code: 'VALIDATION_ERROR',
+      message: MESSAGES.COMMON.ERROR.INVALID_INPUT,
+      error_code: ERROR_CODES.COMMON.VALIDATION_ERROR,
       errors: formattedErrors,
     });
   }
@@ -59,8 +61,8 @@ export const errorHandler = (
 
       return errorResponse(res, {
         statusCode: 409,
-        message: `Dữ liệu đã tồn tại. Vi phạm ràng buộc duy nhất trên: ${targetField}`,
-        error_code: 'UNIQUE_CONSTRAINT_VIOLATION',
+        message: MESSAGES.SYSTEM.UNIQUE_CONSTRAINT(targetField),
+        error_code: ERROR_CODES.DATABASE.UNIQUE_CONSTRAINT_VIOLATION,
       });
     }
 
@@ -68,16 +70,17 @@ export const errorHandler = (
     if (prismaErr.code === 'P2025') {
       return errorResponse(res, {
         statusCode: 404,
-        message: 'Không tìm thấy dữ liệu yêu cầu trong hệ thống.',
-        error_code: 'RECORD_NOT_FOUND',
+        message: MESSAGES.SYSTEM.RECORD_NOT_FOUND,
+        error_code: ERROR_CODES.DATABASE.RECORD_NOT_FOUND,
       });
     }
   }
 
   // 4. Xử lý các lỗi Hệ thống không xác định
+  console.error('[SERVER ERROR]:', err);
   return errorResponse(res, {
     statusCode: 500,
-    message: 'Lỗi máy chủ nội bộ. Vui lòng thử lại sau.',
-    error_code: 'INTERNAL_SERVER_ERROR',
+    message: MESSAGES.COMMON.ERROR.INTERNAL_SERVER_ERROR,
+    error_code: ERROR_CODES.COMMON.INTERNAL_SERVER_ERROR,
   });
 };

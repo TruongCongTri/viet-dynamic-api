@@ -748,10 +748,6 @@ export type EnumVoucherAudienceFieldUpdateOperationsInput = {
   set?: $Enums.VoucherAudience;
 };
 
-export type NullableDateTimeFieldUpdateOperationsInput = {
-  set?: Date | string | null;
-};
-
 export type VoucherCreateNestedOneWithoutWalletsInput = {
   create?: Prisma.XOR<
     Prisma.VoucherCreateWithoutWalletsInput,

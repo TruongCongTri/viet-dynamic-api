@@ -2,6 +2,7 @@ import app from '@/app';
 import { prisma } from '@/common/configs/prisma';
 import { env } from '@/common/configs/env';
 import { initCronJobs } from './jobs/cleanup.job';
+import '@/common/utils/cron/cleanup.cron';
 
 // Hàm kiểm tra kết nối Database
 const checkDatabaseConnection = async () => {

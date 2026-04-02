@@ -4,6 +4,7 @@ import { env } from '@/common/configs/env';
 import { AuthService } from './auth.service';
 import { successResponse } from '@/common/utils/responses/api-response';
 import { AppError } from '@/common/errors/app.error';
+import { MESSAGES } from '@/constants/messages';
 
 const authService = new AuthService();
 
@@ -16,7 +17,7 @@ const getCookieOptions = () => ({
 });
 
 export class AuthController {
-  // ĐĂNG KÝ
+  // 1. ĐĂNG KÝ (REGISTER)
   register = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const user = await authService.register(req.body);
@@ -31,7 +32,7 @@ export class AuthController {
     }
   };
 
-  // ĐĂNG NHẬP
+  // 2. ĐĂNG NHẬP (LOGIN)
   login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const clientMeta = {
@@ -48,7 +49,7 @@ export class AuthController {
 
       successResponse(res, {
         statusCode: 200,
-        message: 'Đăng nhập thành công.',
+        message: MESSAGES.AUTH.SUCCESS.LOGIN,
         data: {
           user: result.user,
           accessToken: result.accessToken,
@@ -59,7 +60,7 @@ export class AuthController {
     }
   };
 
-  // LÀM MỚI TOKEN
+  // 3. REFRESH TOKEN (Cấp lại Access Token)
   refreshToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const refreshToken = req.cookies?.refreshToken;
@@ -70,12 +71,19 @@ export class AuthController {
           'MISSING_COOKIE_TOKEN'
         );
 
-      const newAccessToken = await authService.refreshToken({ refreshToken });
+      // Nhận 2 token mới
+      const tokens = await authService.refreshToken({ refreshToken });
+
+      // Cập nhật lại Cookie với Refresh Token MỚI
+      res.cookie('refreshToken', tokens.refreshToken, {
+        ...getCookieOptions(),
+        maxAge: ms(env.JWT_REFRESH_EXPIRES_IN as StringValue) || 7 * 24 * 60 * 60 * 1000,
+      });
 
       successResponse(res, {
         statusCode: 200,
         message: 'Làm mới token thành công.',
-        data: { accessToken: newAccessToken },
+        data: { accessToken: tokens.accessToken },
       });
     } catch (error) {
       // Nếu Refresh Token lỗi, xóa luôn cookie để tránh loop lỗi ở FE
@@ -84,7 +92,52 @@ export class AuthController {
     }
   };
 
-  // ĐĂNG XUẤT
+  // 4. QUẢN LÝ THIẾT BỊ
+  getSessions = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const sessions = await authService.getActiveSessions(req.user!.id);
+      successResponse(res, {
+        statusCode: 200,
+        message: 'Lấy danh sách thiết bị thành công.',
+        data: sessions,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  revokeSession = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const sessionId = req.params.sessionId as string;
+
+      if (!sessionId) {
+        throw new AppError(400, 'Thiếu mã phiên đăng nhập (sessionId).', 'INVALID_INPUT');
+      }
+
+      await authService.revokeDeviceSession(req.user!.id, sessionId);
+      successResponse(res, { statusCode: 200, message: 'Đã đăng xuất khỏi thiết bị.' });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  revokeOtherSessions = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const userId = req.user!.id;
+      const currentSessionId = req.user!.sessionId;
+
+      await authService.revokeOtherSessions(userId, currentSessionId);
+
+      successResponse(res, {
+        statusCode: 200,
+        message: 'Đã đăng xuất khỏi tất cả các thiết bị khác.',
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  // 5. LOGOUT (Đăng xuất)
   logout = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const user = (req as Request & { user?: { sessionId: string } }).user;
@@ -111,7 +164,7 @@ export class AuthController {
     }
   };
 
-  // OTP & MẬT KHẨU
+  // 6. XÁC THỰC EMAIL (Gửi & Xác nhận OTP)
   sendVerifyOTP = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       await authService.sendVerifyOTP(req.body);
@@ -130,6 +183,7 @@ export class AuthController {
     }
   };
 
+  // 7. QUÊN MẬT KHẨU & KHÔI PHỤC MẬT KHẨU
   forgotPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       await authService.forgotPassword(req.body);
@@ -152,6 +206,17 @@ export class AuthController {
         statusCode: 200,
         message: 'Đổi mật khẩu thành công. Vui lòng đăng nhập lại.',
       });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  // 8. ĐỔI MẬT KHẨU (Khi đã đăng nhập)
+  changePassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      await authService.changePassword(req.user!.id, req.body);
+
+      successResponse(res, { statusCode: 200, message: 'Đổi mật khẩu thành công.' });
     } catch (error) {
       next(error);
     }

@@ -683,14 +683,6 @@ export type EnumCourseStatusFieldUpdateOperationsInput = {
   set?: $Enums.CourseStatus;
 };
 
-export type IntFieldUpdateOperationsInput = {
-  set?: number;
-  increment?: number;
-  decrement?: number;
-  multiply?: number;
-  divide?: number;
-};
-
 export type CourseCreateNestedOneWithoutInstructorsInput = {
   create?: Prisma.XOR<
     Prisma.CourseCreateWithoutInstructorsInput,

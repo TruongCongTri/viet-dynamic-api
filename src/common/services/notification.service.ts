@@ -1,6 +1,9 @@
 import nodemailer from 'nodemailer';
 import axios from 'axios';
 import { env } from '@/common/configs/env';
+import { ERROR_CODES } from '@/constants/error-codes';
+import { AppError } from '../errors/app.error';
+import { MESSAGES } from '@/constants/messages';
 
 export class NotificationService {
   private emailTransporter;
@@ -18,9 +21,7 @@ export class NotificationService {
     });
   }
 
-  // ==========================================
   // 1. GỬI QUA EMAIL
-  // ==========================================
   async sendEmailOTP(to: string, otpCode: string) {
     try {
       // mock email sending for demo
@@ -46,16 +47,23 @@ export class NotificationService {
       return true;
     } catch (error) {
       console.error('Lỗi gửi Email:', error);
-      throw new Error('Không thể gửi Email OTP lúc này.', { cause: error });
+      throw new AppError(
+        500,
+        MESSAGES.NOTIFICATION.EMAIL_FAILED,
+        ERROR_CODES.NOTIFICATION.SEND_EMAIL_FAILED
+      );
     }
   }
 
-  // ==========================================
   // 2. GỬI QUA SMS (Sử dụng eSMS.vn hoặc Stringee - Phổ biến ở VN)
-  // ==========================================
   async sendSmsOTP(phone: string, otpCode: string) {
     try {
-      if (!env.ESMS_API_KEY || !env.ESMS_SECRET_KEY) throw new Error('Chưa cấu hình eSMS Keys');
+      if (!env.ESMS_API_KEY || !env.ESMS_SECRET_KEY)
+        throw new AppError(
+          500,
+          MESSAGES.NOTIFICATION.MISSING_ESMS_KEYS,
+          ERROR_CODES.NOTIFICATION.MISSING_CONFIG
+        );
 
       const response = await axios.get(env.ESMS_URL, {
         params: {
@@ -69,21 +77,32 @@ export class NotificationService {
       });
 
       if (response.data.CodeResult !== '100') {
-        throw new Error('SMS Gateway từ chối gửi');
+        throw new AppError(
+          502,
+          MESSAGES.NOTIFICATION.SMS_REJECTED,
+          ERROR_CODES.NOTIFICATION.GATEWAY_REJECTED
+        );
       }
       return true;
     } catch (error) {
       console.error('Lỗi gửi SMS:', error);
-      throw new Error('Không thể gửi SMS OTP lúc này.', { cause: error });
+      throw new AppError(
+        500,
+        MESSAGES.NOTIFICATION.SMS_FAILED,
+        ERROR_CODES.NOTIFICATION.SEND_SMS_FAILED
+      );
     }
   }
 
-  // ==========================================
   // 3. GỬI QUA ZALO ZNS (Zalo Notification Service)
-  // ==========================================
   async sendZaloOTP(phone: string, otpCode: string) {
     try {
-      if (!env.ZALO_ACCESS_TOKEN) throw new Error('Chưa cấu hình Zalo Access Token');
+      if (!env.ZALO_ACCESS_TOKEN)
+        throw new AppError(
+          500,
+          MESSAGES.NOTIFICATION.MISSING_ZALO_TOKEN,
+          ERROR_CODES.NOTIFICATION.MISSING_CONFIG
+        );
 
       // Format số điện thoại về chuẩn của Zalo (84xxxxx)
       const formattedPhone = phone.startsWith('0') ? `84${phone.slice(1)}` : phone;
@@ -112,7 +131,11 @@ export class NotificationService {
       return true;
     } catch (error) {
       console.error('Lỗi gửi Zalo ZNS:', error);
-      throw new Error('Không thể gửi tin nhắn Zalo lúc này.', { cause: error });
+      throw new AppError(
+        500,
+        MESSAGES.NOTIFICATION.ZALO_FAILED,
+        ERROR_CODES.NOTIFICATION.SEND_ZALO_FAILED
+      );
     }
   }
 }

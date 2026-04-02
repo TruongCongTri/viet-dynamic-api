@@ -1,12 +1,16 @@
 import rateLimit from 'express-rate-limit';
+import { APP_CONFIG } from '@/constants/app.constant';
+import { MESSAGES } from '@/constants/messages';
+import { ERROR_CODES } from '@/constants/error-codes';
 
 // 1. Limiter chung cho toàn bộ API (Chống spam request)
 export const apiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 phút
-  max: 100, // Giới hạn 100 request / 1 IP / 15 phút
+  windowMs: APP_CONFIG.RATE_LIMIT.API_WINDOW_MINUTES * 60 * 1000, // 15 phút
+  max: APP_CONFIG.RATE_LIMIT.API_MAX_REQUESTS, // Giới hạn 100 request / 1 IP / 15 phút
   message: {
     success: false,
-    message: 'Bạn đã gửi quá nhiều yêu cầu. Vui lòng thử lại sau 15 phút.',
+    message: MESSAGES.RATE_LIMIT.API_SPAM(APP_CONFIG.RATE_LIMIT.API_WINDOW_MINUTES),
+    error_code: ERROR_CODES.RATE_LIMIT.TOO_MANY_REQUESTS,
   },
   standardHeaders: true, // Trả về thông tin limit trong header `RateLimit-*`
   legacyHeaders: false, // Tắt các header cũ `X-RateLimit-*`
@@ -14,11 +18,12 @@ export const apiLimiter = rateLimit({
 
 // 2. Limiter nghiêm ngặt dành riêng cho Auth (Chống dò mật khẩu/Spam OTP)
 export const authLimiter = rateLimit({
-  windowMs: 60 * 1000, // 1 phút
-  max: 5, // Giới hạn 5 request / 1 IP / 1 phút
+  windowMs: APP_CONFIG.RATE_LIMIT.AUTH_WINDOW_MINUTES * 60 * 1000, // 1 phút
+  max: APP_CONFIG.RATE_LIMIT.AUTH_MAX_REQUESTS, // Giới hạn 5 request / 1 IP / 1 phút
   message: {
     success: false,
-    message: 'Quá nhiều lần thử đăng nhập/đăng ký. Vui lòng thử lại sau 1 phút.',
+    message: MESSAGES.RATE_LIMIT.AUTH_SPAM(APP_CONFIG.RATE_LIMIT.AUTH_WINDOW_MINUTES),
+    error_code: ERROR_CODES.RATE_LIMIT.TOO_MANY_REQUESTS,
   },
   standardHeaders: true,
   legacyHeaders: false,
