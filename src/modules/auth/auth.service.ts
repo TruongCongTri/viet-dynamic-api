@@ -40,7 +40,7 @@ export class AuthService {
       throw new AppError(500, MESSAGES.AUTH.ERROR.ROLE_NOT_FOUND, ERROR_CODES.AUTH.ROLE_NOT_FOUND);
 
     // 3. Mã hóa Mật khẩu bằng số SALT từ biến môi trường
-    const salt = await bcrypt.genSalt(env.BCRYPT_SALT);
+    const salt = await bcrypt.genSalt(env.BCRYPT_SALT_ROUNDS);
     const hashedPassword = await bcrypt.hash(password, salt);
 
     return await prisma.user.create({
@@ -464,7 +464,7 @@ export class AuthService {
     }
 
     // 3. Mã hóa mật khẩu mới
-    const salt = await bcrypt.genSalt(10);
+    const salt = await bcrypt.genSalt(env.BCRYPT_SALT_ROUNDS);
     const hashedPassword = await bcrypt.hash(dto.newPassword, salt);
 
     // 4. Thực thi Transaction (Giao dịch an toàn)
@@ -510,7 +510,8 @@ export class AuthService {
       );
 
     // 2. Mã hóa mật khẩu mới
-    const hashedPassword = await bcrypt.hash(dto.newPassword, 10);
+    const salt = await bcrypt.genSalt(env.BCRYPT_SALT_ROUNDS);
+    const hashedPassword = await bcrypt.hash(dto.newPassword, salt);
 
     await prisma.user.update({
       where: { id: userId },

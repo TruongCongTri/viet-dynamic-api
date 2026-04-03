@@ -26,7 +26,7 @@ export const PasswordUtil = {
       return password;
     }
 
-    // Gọi thẳng env.BCRYPT_SALT (Zod đã đảm bảo đây chắc chắn là một con số >= 1)
-    return bcrypt.hash(password, env.BCRYPT_SALT);
+    // Gọi thẳng env.BCRYPT_SALT_ROUNDS (Zod đã đảm bảo đây chắc chắn là một con số >= 1)
+    return bcrypt.hash(password, env.BCRYPT_SALT_ROUNDS);
   },
 };

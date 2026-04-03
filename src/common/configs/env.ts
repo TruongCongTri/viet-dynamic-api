@@ -13,7 +13,7 @@ const envSchema = z.object({
   JWT_REFRESH_SECRET: z.string().min(10),
   JWT_REFRESH_EXPIRES_IN: z.string().default('7d'), // Mặc định là 7 ngày
 
-  BCRYPT_SALT: z.coerce.number().int().min(1).default(10), // Tự động ép kiểu sang số!
+  BCRYPT_SALT_ROUNDS: z.coerce.number().int().min(1).default(10), // Tự động ép kiểu sang số!
 
   SMTP_HOST: z.string().default('smtp.gmail.com'),
   SMTP_PORT: z.coerce.number().int().default(587),
