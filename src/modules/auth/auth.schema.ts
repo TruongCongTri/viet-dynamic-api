@@ -44,6 +44,7 @@ export const loginSchema = z.object({
       .max(255, { message: MESSAGES.VALIDATION.MAX_LENGTH(FIELDS.DEVICE_ID, 255) })
       .regex(/^[a-zA-Z0-9_-]+$/, { message: MESSAGES.VALIDATION.INVALID_CHARS(FIELDS.DEVICE_ID) })
       .optional(),
+    rememberMe: z.boolean().optional().default(false),
   }),
 });
 
@@ -134,10 +135,24 @@ export const changePasswordSchema = z.object({
         .min(1, { message: MESSAGES.VALIDATION.REQUIRED(FIELDS.CURRENT_PASSWORD) }),
       newPassword: passwordValidationRule(FIELDS.NEW_PASSWORD),
     })
+    // 1. Check không được giống y hệt
     .refine((data) => data.currentPassword !== data.newPassword, {
       message: MESSAGES.VALIDATION.PASSWORD_NOT_MATCH_OLD,
       path: ['newPassword'],
-    }),
+    })
+    // 2. Check không được chứa chuỗi con của nhau (Nâng cao)
+    .refine(
+      (data) => {
+        const oldPass = data.currentPassword.toLowerCase();
+        const newPass = data.newPassword.toLowerCase();
+        // Trả về false nếu newPass chứa oldPass hoặc ngược lại
+        return !newPass.includes(oldPass) && !oldPass.includes(newPass);
+      },
+      {
+        message: MESSAGES.VALIDATION.PASSWORD_TOO_SIMILAR,
+        path: ['newPassword'],
+      }
+    ),
 });
 
 // TRÍCH XUẤT TYPE (DTO) CHO TẦNG SERVICE

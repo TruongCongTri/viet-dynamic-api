@@ -11,6 +11,7 @@ import {
   forgotPasswordSchema,
   resetPasswordSchema,
   changePasswordSchema,
+  revokeSessionSchema,
 } from './auth.schema';
 import { authLimiter } from '@/middlewares/rate-limit.middleware'; // Middleware chống Spam
 import { verifyToken } from '@/middlewares/auth.middleware';
@@ -76,7 +77,12 @@ authRoute.put(
 // PROTECTED ROUTES (Cần token hợp lệ mới truy cập được)
 // 4. QUẢN LÝ THIẾT BỊ
 authRoute.get(ENDPOINTS.AUTH.SESSIONS, verifyToken, authController.getSessions);
-authRoute.delete(ENDPOINTS.AUTH.REVOKE_SESSION, verifyToken, authController.revokeSession);
+authRoute.delete(
+  ENDPOINTS.AUTH.REVOKE_SESSION,
+  verifyToken,
+  validate(revokeSessionSchema),
+  authController.revokeSession
+);
 authRoute.delete(
   ENDPOINTS.AUTH.REVOKE_OTHER_SESSIONS,
   verifyToken,

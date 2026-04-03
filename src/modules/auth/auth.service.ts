@@ -1,5 +1,4 @@
 import bcrypt from 'bcryptjs';
-import ms, { StringValue } from 'ms';
 import { prisma } from '@/common/configs/prisma';
 import { env } from '@/common/configs/env';
 import { JwtUtil } from '@/common/utils/auth/jwt.util';
@@ -65,7 +64,7 @@ export class AuthService {
 
   // 2. ĐĂNG NHẬP (Bảo vệ 3 lớp: Khoá Spam + Soft Limit thiết bị + Flatten Permissions)
   async login(data: LoginDTO, clientMeta: { ipAddress: string; userAgent: string }) {
-    const { email, password, deviceId } = data;
+    const { email, password, deviceId, rememberMe } = data;
 
     // 1. Tìm User và "Đào sâu" (Deep Include) để lấy toàn bộ Quyền
     const user = await prisma.user.findUnique({
@@ -157,9 +156,12 @@ export class AuthService {
 
     // 5. Tạo Refresh Token mới
     const refreshToken = JwtUtil.generateRefreshToken({ id: user.id });
-    const expiresAt = new Date(
-      Date.now() + (ms(env.JWT_REFRESH_EXPIRES_IN as StringValue) || 604800000)
-    );
+    // Tính toán thời gian hết hạn dựa trên rememberMe
+    const expiresInDays = rememberMe
+      ? APP_CONFIG.AUTH.REMEMBER_ME_EXPIRES_IN_DAYS
+      : APP_CONFIG.AUTH.SESSION_EXPIRES_IN_DAYS;
+
+    const expiresAt = new Date(Date.now() + expiresInDays * 24 * 60 * 60 * 1000);
 
     // 6. Tạo bản ghi Session trong Database
     const session = await prisma.session.create({
@@ -191,6 +193,8 @@ export class AuthService {
       },
       accessToken,
       refreshToken,
+      rememberMe,
+      expiresAt,
     };
   }
 
@@ -207,45 +211,53 @@ export class AuthService {
       include: { user: { include: { role: true } } },
     });
 
-    if (!session)
+    if (!session || session.isRevoked || new Date() > session.expiresAt)
       throw new AppError(
         401,
         MESSAGES.AUTH.ERROR.INVALID_SESSION,
         ERROR_CODES.AUTH.INVALID_SESSION
       );
-    if (session.isRevoked)
-      throw new AppError(
-        401,
-        MESSAGES.AUTH.ERROR.SESSION_REVOKED,
-        ERROR_CODES.AUTH.SESSION_REVOKED
-      );
-    if (new Date() > session.expiresAt)
-      throw new AppError(
-        401,
-        MESSAGES.AUTH.ERROR.SESSION_EXPIRED,
-        ERROR_CODES.AUTH.SESSION_EXPIRED
-      );
 
-    // REFRESH TOKEN ROTATION (Cấp luôn một Refresh Token mới để thay thế cái cũ)
+    // 1. Phân tích trạng thái "Remember Me" từ Session cũ
+    // Tính vòng đời cũ (Đổi ra ngày)
+    const lifespanInDays = Math.round(
+      (session.expiresAt.getTime() - session.createdAt.getTime()) / (1000 * 60 * 60 * 24)
+    );
+
+    // Nếu vòng đời > 1 ngày (VD: 30 ngày) -> Trạng thái là Remember Me
+    const isRememberMe = lifespanInDays > APP_CONFIG.AUTH.SESSION_EXPIRES_IN_DAYS;
+
+    // 2. Tính toán ngày hết hạn mới (Gia hạn Session - Rolling Session)
+    const newExpiresInDays = isRememberMe
+      ? APP_CONFIG.AUTH.REMEMBER_ME_EXPIRES_IN_DAYS
+      : APP_CONFIG.AUTH.SESSION_EXPIRES_IN_DAYS;
+
+    const newExpiresAt = new Date(Date.now() + newExpiresInDays * 24 * 60 * 60 * 1000);
+
+    // 3. Xoay vòng Token
     const newRefreshToken = JwtUtil.generateRefreshToken({ id: session.user.id });
-
-    // Cấp lại Access Token mới
     const newAccessToken = JwtUtil.generateAccessToken({
       id: session.user.id,
       role: session.user.role.name,
       sessionId: session.id,
     });
 
-    // Cập nhật lastActive
+    // 4. Cập nhật vào Database
     await prisma.session.update({
       where: { id: session.id },
       data: {
-        refreshToken: newRefreshToken, // Xoay vòng Token
+        refreshToken: newRefreshToken,
         lastActive: new Date(),
+        expiresAt: newExpiresAt, // Gia hạn thời gian sống của Session
       },
     });
 
-    return { accessToken: newAccessToken, refreshToken: newRefreshToken };
+    return {
+      accessToken: newAccessToken,
+      refreshToken: newRefreshToken,
+      rememberMe: isRememberMe,
+      expiresAt: newExpiresAt,
+    };
   }
 
   // 4. QUẢN LÝ THIẾT BỊ
@@ -440,6 +452,16 @@ export class AuthService {
         MESSAGES.COMMON.ERROR.NOT_FOUND(RESOURCES.USER),
         ERROR_CODES.AUTH.USER_NOT_FOUND
       );
+
+    // 3. So sánh mật khẩu mới nhập vào với hash cũ trong DB
+    const isSameAsOld = await bcrypt.compare(dto.newPassword, user.password!);
+    if (isSameAsOld) {
+      throw new AppError(
+        400,
+        MESSAGES.AUTH.ERROR.PASSWORD_MUST_BE_DIFFERENT,
+        ERROR_CODES.AUTH.PASSWORD_MUST_BE_DIFFERENT
+      );
+    }
 
     // 3. Mã hóa mật khẩu mới
     const salt = await bcrypt.genSalt(10);

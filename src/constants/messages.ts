@@ -60,6 +60,7 @@ export const MESSAGES = {
     PASSWORD_UPPERCASE: 'Mật khẩu phải chứa ít nhất 1 chữ hoa',
     PASSWORD_NUMBER: 'Mật khẩu phải chứa ít nhất 1 chữ số',
     PASSWORD_NOT_MATCH_OLD: 'Mật khẩu mới không được trùng với mật khẩu cũ',
+    PASSWORD_TOO_SIMILAR: 'Mật khẩu mới không được chứa một phần của mật khẩu cũ',
     MISSING_COOKIE_TOKEN: 'Không tìm thấy Refresh Token trong Cookie',
   },
 
@@ -99,6 +100,7 @@ export const MESSAGES = {
       INVALID_OTP: 'Mã OTP không hợp lệ hoặc không tồn tại.',
       EXPIRED_OTP: 'Mã OTP đã hết hạn.',
       WRONG_CURRENT_PASSWORD: 'Mật khẩu hiện tại không chính xác.',
+      PASSWORD_MUST_BE_DIFFERENT: 'Mật khẩu mới phải khác với mật khẩu hiện tại',
       ROLE_NOT_FOUND: 'Lỗi cấu hình: Không tìm thấy Role mặc định.',
     },
   },

@@ -1,10 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
-import ms, { StringValue } from 'ms';
-import { env } from '@/common/configs/env';
 import { AuthService } from './auth.service';
 import { successResponse } from '@/common/utils/responses/api-response';
 import { AppError } from '@/common/errors/app.error';
 import { MESSAGES } from '@/constants/messages';
+import { ERROR_CODES } from '@/constants/error-codes';
 
 const authService = new AuthService();
 
@@ -42,10 +41,16 @@ export class AuthController {
 
       const result = await authService.login(req.body, clientMeta);
 
-      res.cookie('refreshToken', result.refreshToken, {
-        ...getCookieOptions(),
-        maxAge: ms(env.JWT_REFRESH_EXPIRES_IN as StringValue) || 7 * 24 * 60 * 60 * 1000,
-      });
+      // Khởi tạo cookie options mặc định (httpOnly, secure, sameSite, path)
+      const cookieOptions: any = getCookieOptions();
+
+      // Nếu chọn Remember Me -> Gắn maxAge (Persistent Cookie)
+      // Nếu không chọn -> Bỏ qua maxAge (Session Cookie, tự xóa khi đóng trình duyệt)
+      if (result.rememberMe) {
+        cookieOptions.maxAge = result.expiresAt.getTime() - Date.now();
+      }
+
+      res.cookie('refreshToken', result.refreshToken, cookieOptions);
 
       successResponse(res, {
         statusCode: 200,
@@ -67,23 +72,28 @@ export class AuthController {
       if (!refreshToken)
         throw new AppError(
           401,
-          'Phiên làm việc hết hạn. Vui lòng đăng nhập lại.',
-          'MISSING_COOKIE_TOKEN'
+          MESSAGES.AUTH.ERROR.MISSING_COOKIE_TOKEN,
+          ERROR_CODES.AUTH.MISSING_COOKIE_TOKEN
         );
 
-      // Nhận 2 token mới
-      const tokens = await authService.refreshToken({ refreshToken });
+      // Nhận Token mới và thông tin Remember Me từ Service
+      const result = await authService.refreshToken({ refreshToken });
 
-      // Cập nhật lại Cookie với Refresh Token MỚI
-      res.cookie('refreshToken', tokens.refreshToken, {
-        ...getCookieOptions(),
-        maxAge: ms(env.JWT_REFRESH_EXPIRES_IN as StringValue) || 7 * 24 * 60 * 60 * 1000,
-      });
+      const cookieOptions: any = getCookieOptions();
+
+      // Nếu là Session Remember Me -> Gắn lại maxAge để Cookie sống dai
+      // Nếu không -> Bỏ qua maxAge để trình duyệt tự xóa khi tắt
+      if (result.rememberMe) {
+        cookieOptions.maxAge = result.expiresAt.getTime() - Date.now();
+      }
+
+      // Ghi đè Cookie bằng Refresh Token mới
+      res.cookie('refreshToken', result.refreshToken, cookieOptions);
 
       successResponse(res, {
         statusCode: 200,
-        message: 'Làm mới token thành công.',
-        data: { accessToken: tokens.accessToken },
+        message: MESSAGES.AUTH.SUCCESS.REFRESH_TOKEN,
+        data: { accessToken: result.accessToken },
       });
     } catch (error) {
       // Nếu Refresh Token lỗi, xóa luôn cookie để tránh loop lỗi ở FE
