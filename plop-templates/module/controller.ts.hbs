@@ -1,0 +1,22 @@
+import { Request, Response, NextFunction } from 'express';
+import { {{camelCase name}}Service } from './{{dashCase name}}.service';
+import { successResponse } from '@/common/utils/responses/api-response';
+import { MESSAGES } from '@/constants/messages';
+import { RESOURCES } from '@/constants/resources';
+
+const service = new {{camelCase name}}Service();
+
+export class {{pascalCase name}}Controller {
+  create = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const data = await service.create(req.body);
+      successResponse(res, {
+        statusCode: 201,
+        message: MESSAGES.COMMON.SUCCESS.CREATED(RESOURCES.{{constantCase name}}),
+        data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+}

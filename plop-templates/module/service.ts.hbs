@@ -1,0 +1,12 @@
+import { {{pascalCase name}}Repository } from './{{dashCase name}}.repository';
+import { Create{{pascalCase name}}DTO } from './{{dashCase name}}.schema';
+import { AppError } from '@/common/errors/app.error';
+
+const repository = new {{pascalCase name}}Repository();
+
+export class {{camelCase name}}Service {
+  async create(data: Create{{pascalCase name}}DTO) {
+    // Thêm logic nghiệp vụ ở đây
+    return await repository.create(data);
+  }
+}

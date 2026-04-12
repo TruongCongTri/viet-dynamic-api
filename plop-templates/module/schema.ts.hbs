@@ -1,0 +1,11 @@
+import { z } from 'zod';
+import { MESSAGES } from '@/constants/messages';
+import { FIELDS } from '@/constants/fields';
+
+export const create{{pascalCase name}}Schema = z.object({
+  body: z.object({
+    // Khai báo validation ở đây
+  }),
+});
+
+export type Create{{pascalCase name}}DTO = z.infer<typeof create{{pascalCase name}}Schema>['body'];

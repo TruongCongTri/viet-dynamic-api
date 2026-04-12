@@ -1,0 +1,10 @@
+import { Router } from 'express';
+import { {{camelCase name}}Controller } from './{{dashCase name}}.controller';
+import { validate } from '@/middlewares/validate.middleware';
+import { create{{pascalCase name}}Schema } from './{{dashCase name}}.schema';
+
+export const {{camelCase name}}Route = Router();
+const controller = new {{pascalCase name}}Controller();
+
+// TODO: Thêm route vào src/modules/router.ts và endpoint vào src/constants/endpoints.ts
+{{camelCase name}}Route.post('/', validate(create{{pascalCase name}}Schema), controller.create);

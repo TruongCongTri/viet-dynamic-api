@@ -1,0 +1,9 @@
+import { prisma } from '@/common/configs/prisma';
+import { Create{{pascalCase name}}DTO } from './{{dashCase name}}.schema';
+
+export class {{pascalCase name}}Repository {
+  async create(data: Create{{pascalCase name}}DTO) {
+    // return await prisma.{{camelCase name}}.create({ data });
+    return { id: 'mock-id', ...data };
+  }
+}
