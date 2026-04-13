@@ -1,9 +1,20 @@
+import { Prisma } from '@/generated/client';
 import { prisma } from '@/common/configs/prisma';
+import { BaseRepository } from '@/common/repositories/base.repository';
 import { Create{{pascalCase name}}DTO } from './{{dashCase name}}.schema';
 
-export class {{pascalCase name}}Repository {
-  async create(data: Create{{pascalCase name}}DTO) {
-    // return await prisma.{{camelCase name}}.create({ data });
-    return { id: 'mock-id', ...data };
+export class {{pascalCase name}}Repository extends BaseRepository<Prisma.{{pascalCase name}}Delegate> {
+  constructor() {
+    // inject Prisma client delegate for {{pascalCase name}} model
+    super('{{camelCase name}}');
+  }
+
+  /**
+   * example method: create a new {{pascalCase name}} record
+   */
+  public async create(data: Create{{pascalCase name}}DTO) {
+    return await prisma.{{camelCase name}}.create({
+      data,
+    });
   }
 }

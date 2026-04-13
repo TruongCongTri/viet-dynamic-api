@@ -46,6 +46,10 @@ export const MESSAGES = {
   VALIDATION: {
     REQUIRED: (field: FieldName) => `${field} không được để trống`,
     MUST_BE_STRING: (field: FieldName) => `${field} bắt buộc phải là chuỗi`,
+    MUST_BE_NUMBER: (field: FieldName) => `${field} bắt buộc phải là số`,
+    MUST_BE_INTEGER: (field: FieldName) => `${field} phải là số nguyên`,
+    MIN_VALUE: (field: FieldName, min: number) => `${field} tối thiểu là ${min}`,
+    MAX_VALUE: (field: FieldName, max: number) => `${field} tối đa là ${max}`,
     INVALID_EMAIL: 'Email không đúng định dạng',
     MIN_LENGTH: (field: FieldName, min: number) => `${field} phải có ít nhất ${min} ký tự`,
     MAX_LENGTH: (field: FieldName, max: number) => `${field} không được vượt quá ${max} ký tự`,

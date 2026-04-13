@@ -1,10 +1,41 @@
 import { Router } from 'express';
-import { {{camelCase name}}Controller } from './{{dashCase name}}.controller';
+import { {{pascalCase name}}Controller } from './{{dashCase name}}.controller';
 import { validate } from '@/middlewares/validate.middleware';
 import { create{{pascalCase name}}Schema } from './{{dashCase name}}.schema';
+import { ENDPOINTS } from '@/constants/endpoints';
 
-export const {{camelCase name}}Route = Router();
-const controller = new {{pascalCase name}}Controller();
+export class {{pascalCase name}}Route {
+  public router: Router;
+  private readonly {{camelCase name}}Controller: {{pascalCase name}}Controller;
 
-// TODO: Thêm route vào src/modules/router.ts và endpoint vào src/constants/endpoints.ts
-{{camelCase name}}Route.post('/', validate(create{{pascalCase name}}Schema), controller.create);
+  /**
+   * Init Route with Dependency Injection (DI)
+   */
+  constructor(controller?: {{pascalCase name}}Controller) {
+    this.router = Router();
+    this.{{camelCase name}}Controller = controller || new {{pascalCase name}}Controller();
+    
+    this.initializeRoutes();
+  }
+
+  private initializeRoutes() {
+    // TODO: Định nghĩa hằng số ENDPOINTS trong src/constants/endpoints.ts
+    // TODO: Khai báo Route này vào file cấu hình tổng (ví dụ: src/modules/index.route.ts)
+
+    // [POST] CREATE NEW {{pascalCase name}}
+    this.router.post(
+      '/', // Recommend: ENDPOINTS.{{constantCase name}}.CREATE
+      validate(create{{pascalCase name}}Schema),
+      this.{{camelCase name}}Controller.create
+    );
+
+    // [GET] GET DETAILS OF {{pascalCase name}} BY ID
+    this.router.get(
+      '/:id', // Recommend: ENDPOINTS.{{constantCase name}}.DETAIL
+      this.{{camelCase name}}Controller.getDetail
+    );
+  }
+}
+
+// Export default instance of Route to be used in main route configuration
+export default new {{pascalCase name}}Route().router;

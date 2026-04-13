@@ -44,6 +44,7 @@ export type LessonMinAggregateOutputType = {
   videoUrl: string | null;
   thumbnailUrl: string | null;
   duration: number | null;
+  isPreview: boolean | null;
   order: number | null;
   moduleId: string | null;
   videoStatus: $Enums.VideoStatus | null;
@@ -60,6 +61,7 @@ export type LessonMaxAggregateOutputType = {
   videoUrl: string | null;
   thumbnailUrl: string | null;
   duration: number | null;
+  isPreview: boolean | null;
   order: number | null;
   moduleId: string | null;
   videoStatus: $Enums.VideoStatus | null;
@@ -76,6 +78,7 @@ export type LessonCountAggregateOutputType = {
   videoUrl: number;
   thumbnailUrl: number;
   duration: number;
+  isPreview: number;
   order: number;
   moduleId: number;
   videoStatus: number;
@@ -103,6 +106,7 @@ export type LessonMinAggregateInputType = {
   videoUrl?: true;
   thumbnailUrl?: true;
   duration?: true;
+  isPreview?: true;
   order?: true;
   moduleId?: true;
   videoStatus?: true;
@@ -119,6 +123,7 @@ export type LessonMaxAggregateInputType = {
   videoUrl?: true;
   thumbnailUrl?: true;
   duration?: true;
+  isPreview?: true;
   order?: true;
   moduleId?: true;
   videoStatus?: true;
@@ -135,6 +140,7 @@ export type LessonCountAggregateInputType = {
   videoUrl?: true;
   thumbnailUrl?: true;
   duration?: true;
+  isPreview?: true;
   order?: true;
   moduleId?: true;
   videoStatus?: true;
@@ -239,6 +245,7 @@ export type LessonGroupByOutputType = {
   videoUrl: string | null;
   thumbnailUrl: string | null;
   duration: number;
+  isPreview: boolean;
   order: number;
   moduleId: string;
   videoStatus: $Enums.VideoStatus;
@@ -275,6 +282,7 @@ export type LessonWhereInput = {
   videoUrl?: Prisma.StringNullableFilter<'Lesson'> | string | null;
   thumbnailUrl?: Prisma.StringNullableFilter<'Lesson'> | string | null;
   duration?: Prisma.IntFilter<'Lesson'> | number;
+  isPreview?: Prisma.BoolFilter<'Lesson'> | boolean;
   order?: Prisma.IntFilter<'Lesson'> | number;
   moduleId?: Prisma.StringFilter<'Lesson'> | string;
   videoStatus?: Prisma.EnumVideoStatusFilter<'Lesson'> | $Enums.VideoStatus;
@@ -295,6 +303,7 @@ export type LessonOrderByWithRelationInput = {
   videoUrl?: Prisma.SortOrderInput | Prisma.SortOrder;
   thumbnailUrl?: Prisma.SortOrderInput | Prisma.SortOrder;
   duration?: Prisma.SortOrder;
+  isPreview?: Prisma.SortOrder;
   order?: Prisma.SortOrder;
   moduleId?: Prisma.SortOrder;
   videoStatus?: Prisma.SortOrder;
@@ -319,6 +328,7 @@ export type LessonWhereUniqueInput = Prisma.AtLeast<
     videoUrl?: Prisma.StringNullableFilter<'Lesson'> | string | null;
     thumbnailUrl?: Prisma.StringNullableFilter<'Lesson'> | string | null;
     duration?: Prisma.IntFilter<'Lesson'> | number;
+    isPreview?: Prisma.BoolFilter<'Lesson'> | boolean;
     order?: Prisma.IntFilter<'Lesson'> | number;
     moduleId?: Prisma.StringFilter<'Lesson'> | string;
     videoStatus?: Prisma.EnumVideoStatusFilter<'Lesson'> | $Enums.VideoStatus;
@@ -341,6 +351,7 @@ export type LessonOrderByWithAggregationInput = {
   videoUrl?: Prisma.SortOrderInput | Prisma.SortOrder;
   thumbnailUrl?: Prisma.SortOrderInput | Prisma.SortOrder;
   duration?: Prisma.SortOrder;
+  isPreview?: Prisma.SortOrder;
   order?: Prisma.SortOrder;
   moduleId?: Prisma.SortOrder;
   videoStatus?: Prisma.SortOrder;
@@ -365,6 +376,7 @@ export type LessonScalarWhereWithAggregatesInput = {
   videoUrl?: Prisma.StringNullableWithAggregatesFilter<'Lesson'> | string | null;
   thumbnailUrl?: Prisma.StringNullableWithAggregatesFilter<'Lesson'> | string | null;
   duration?: Prisma.IntWithAggregatesFilter<'Lesson'> | number;
+  isPreview?: Prisma.BoolWithAggregatesFilter<'Lesson'> | boolean;
   order?: Prisma.IntWithAggregatesFilter<'Lesson'> | number;
   moduleId?: Prisma.StringWithAggregatesFilter<'Lesson'> | string;
   videoStatus?: Prisma.EnumVideoStatusWithAggregatesFilter<'Lesson'> | $Enums.VideoStatus;
@@ -381,6 +393,7 @@ export type LessonCreateInput = {
   videoUrl?: string | null;
   thumbnailUrl?: string | null;
   duration?: number;
+  isPreview?: boolean;
   order: number;
   videoStatus?: $Enums.VideoStatus;
   createdAt?: Date | string;
@@ -400,6 +413,7 @@ export type LessonUncheckedCreateInput = {
   videoUrl?: string | null;
   thumbnailUrl?: string | null;
   duration?: number;
+  isPreview?: boolean;
   order: number;
   moduleId: string;
   videoStatus?: $Enums.VideoStatus;
@@ -419,6 +433,7 @@ export type LessonUpdateInput = {
   videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   duration?: Prisma.IntFieldUpdateOperationsInput | number;
+  isPreview?: Prisma.BoolFieldUpdateOperationsInput | boolean;
   order?: Prisma.IntFieldUpdateOperationsInput | number;
   videoStatus?: Prisma.EnumVideoStatusFieldUpdateOperationsInput | $Enums.VideoStatus;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -438,6 +453,7 @@ export type LessonUncheckedUpdateInput = {
   videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   duration?: Prisma.IntFieldUpdateOperationsInput | number;
+  isPreview?: Prisma.BoolFieldUpdateOperationsInput | boolean;
   order?: Prisma.IntFieldUpdateOperationsInput | number;
   moduleId?: Prisma.StringFieldUpdateOperationsInput | string;
   videoStatus?: Prisma.EnumVideoStatusFieldUpdateOperationsInput | $Enums.VideoStatus;
@@ -457,6 +473,7 @@ export type LessonCreateManyInput = {
   videoUrl?: string | null;
   thumbnailUrl?: string | null;
   duration?: number;
+  isPreview?: boolean;
   order: number;
   moduleId: string;
   videoStatus?: $Enums.VideoStatus;
@@ -473,6 +490,7 @@ export type LessonUpdateManyMutationInput = {
   videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   duration?: Prisma.IntFieldUpdateOperationsInput | number;
+  isPreview?: Prisma.BoolFieldUpdateOperationsInput | boolean;
   order?: Prisma.IntFieldUpdateOperationsInput | number;
   videoStatus?: Prisma.EnumVideoStatusFieldUpdateOperationsInput | $Enums.VideoStatus;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -488,6 +506,7 @@ export type LessonUncheckedUpdateManyInput = {
   videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   duration?: Prisma.IntFieldUpdateOperationsInput | number;
+  isPreview?: Prisma.BoolFieldUpdateOperationsInput | boolean;
   order?: Prisma.IntFieldUpdateOperationsInput | number;
   moduleId?: Prisma.StringFieldUpdateOperationsInput | string;
   videoStatus?: Prisma.EnumVideoStatusFieldUpdateOperationsInput | $Enums.VideoStatus;
@@ -514,6 +533,7 @@ export type LessonCountOrderByAggregateInput = {
   videoUrl?: Prisma.SortOrder;
   thumbnailUrl?: Prisma.SortOrder;
   duration?: Prisma.SortOrder;
+  isPreview?: Prisma.SortOrder;
   order?: Prisma.SortOrder;
   moduleId?: Prisma.SortOrder;
   videoStatus?: Prisma.SortOrder;
@@ -535,6 +555,7 @@ export type LessonMaxOrderByAggregateInput = {
   videoUrl?: Prisma.SortOrder;
   thumbnailUrl?: Prisma.SortOrder;
   duration?: Prisma.SortOrder;
+  isPreview?: Prisma.SortOrder;
   order?: Prisma.SortOrder;
   moduleId?: Prisma.SortOrder;
   videoStatus?: Prisma.SortOrder;
@@ -551,6 +572,7 @@ export type LessonMinOrderByAggregateInput = {
   videoUrl?: Prisma.SortOrder;
   thumbnailUrl?: Prisma.SortOrder;
   duration?: Prisma.SortOrder;
+  isPreview?: Prisma.SortOrder;
   order?: Prisma.SortOrder;
   moduleId?: Prisma.SortOrder;
   videoStatus?: Prisma.SortOrder;
@@ -756,6 +778,7 @@ export type LessonCreateWithoutModuleInput = {
   videoUrl?: string | null;
   thumbnailUrl?: string | null;
   duration?: number;
+  isPreview?: boolean;
   order: number;
   videoStatus?: $Enums.VideoStatus;
   createdAt?: Date | string;
@@ -774,6 +797,7 @@ export type LessonUncheckedCreateWithoutModuleInput = {
   videoUrl?: string | null;
   thumbnailUrl?: string | null;
   duration?: number;
+  isPreview?: boolean;
   order: number;
   videoStatus?: $Enums.VideoStatus;
   createdAt?: Date | string;
@@ -836,6 +860,7 @@ export type LessonScalarWhereInput = {
   videoUrl?: Prisma.StringNullableFilter<'Lesson'> | string | null;
   thumbnailUrl?: Prisma.StringNullableFilter<'Lesson'> | string | null;
   duration?: Prisma.IntFilter<'Lesson'> | number;
+  isPreview?: Prisma.BoolFilter<'Lesson'> | boolean;
   order?: Prisma.IntFilter<'Lesson'> | number;
   moduleId?: Prisma.StringFilter<'Lesson'> | string;
   videoStatus?: Prisma.EnumVideoStatusFilter<'Lesson'> | $Enums.VideoStatus;
@@ -852,6 +877,7 @@ export type LessonCreateWithoutCommentsInput = {
   videoUrl?: string | null;
   thumbnailUrl?: string | null;
   duration?: number;
+  isPreview?: boolean;
   order: number;
   videoStatus?: $Enums.VideoStatus;
   createdAt?: Date | string;
@@ -870,6 +896,7 @@ export type LessonUncheckedCreateWithoutCommentsInput = {
   videoUrl?: string | null;
   thumbnailUrl?: string | null;
   duration?: number;
+  isPreview?: boolean;
   order: number;
   moduleId: string;
   videoStatus?: $Enums.VideoStatus;
@@ -916,6 +943,7 @@ export type LessonUpdateWithoutCommentsInput = {
   videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   duration?: Prisma.IntFieldUpdateOperationsInput | number;
+  isPreview?: Prisma.BoolFieldUpdateOperationsInput | boolean;
   order?: Prisma.IntFieldUpdateOperationsInput | number;
   videoStatus?: Prisma.EnumVideoStatusFieldUpdateOperationsInput | $Enums.VideoStatus;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -934,6 +962,7 @@ export type LessonUncheckedUpdateWithoutCommentsInput = {
   videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   duration?: Prisma.IntFieldUpdateOperationsInput | number;
+  isPreview?: Prisma.BoolFieldUpdateOperationsInput | boolean;
   order?: Prisma.IntFieldUpdateOperationsInput | number;
   moduleId?: Prisma.StringFieldUpdateOperationsInput | string;
   videoStatus?: Prisma.EnumVideoStatusFieldUpdateOperationsInput | $Enums.VideoStatus;
@@ -952,6 +981,7 @@ export type LessonCreateWithoutResumedByInput = {
   videoUrl?: string | null;
   thumbnailUrl?: string | null;
   duration?: number;
+  isPreview?: boolean;
   order: number;
   videoStatus?: $Enums.VideoStatus;
   createdAt?: Date | string;
@@ -970,6 +1000,7 @@ export type LessonUncheckedCreateWithoutResumedByInput = {
   videoUrl?: string | null;
   thumbnailUrl?: string | null;
   duration?: number;
+  isPreview?: boolean;
   order: number;
   moduleId: string;
   videoStatus?: $Enums.VideoStatus;
@@ -1016,6 +1047,7 @@ export type LessonUpdateWithoutResumedByInput = {
   videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   duration?: Prisma.IntFieldUpdateOperationsInput | number;
+  isPreview?: Prisma.BoolFieldUpdateOperationsInput | boolean;
   order?: Prisma.IntFieldUpdateOperationsInput | number;
   videoStatus?: Prisma.EnumVideoStatusFieldUpdateOperationsInput | $Enums.VideoStatus;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1034,6 +1066,7 @@ export type LessonUncheckedUpdateWithoutResumedByInput = {
   videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   duration?: Prisma.IntFieldUpdateOperationsInput | number;
+  isPreview?: Prisma.BoolFieldUpdateOperationsInput | boolean;
   order?: Prisma.IntFieldUpdateOperationsInput | number;
   moduleId?: Prisma.StringFieldUpdateOperationsInput | string;
   videoStatus?: Prisma.EnumVideoStatusFieldUpdateOperationsInput | $Enums.VideoStatus;
@@ -1052,6 +1085,7 @@ export type LessonCreateWithoutProgressInput = {
   videoUrl?: string | null;
   thumbnailUrl?: string | null;
   duration?: number;
+  isPreview?: boolean;
   order: number;
   videoStatus?: $Enums.VideoStatus;
   createdAt?: Date | string;
@@ -1070,6 +1104,7 @@ export type LessonUncheckedCreateWithoutProgressInput = {
   videoUrl?: string | null;
   thumbnailUrl?: string | null;
   duration?: number;
+  isPreview?: boolean;
   order: number;
   moduleId: string;
   videoStatus?: $Enums.VideoStatus;
@@ -1116,6 +1151,7 @@ export type LessonUpdateWithoutProgressInput = {
   videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   duration?: Prisma.IntFieldUpdateOperationsInput | number;
+  isPreview?: Prisma.BoolFieldUpdateOperationsInput | boolean;
   order?: Prisma.IntFieldUpdateOperationsInput | number;
   videoStatus?: Prisma.EnumVideoStatusFieldUpdateOperationsInput | $Enums.VideoStatus;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1134,6 +1170,7 @@ export type LessonUncheckedUpdateWithoutProgressInput = {
   videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   duration?: Prisma.IntFieldUpdateOperationsInput | number;
+  isPreview?: Prisma.BoolFieldUpdateOperationsInput | boolean;
   order?: Prisma.IntFieldUpdateOperationsInput | number;
   moduleId?: Prisma.StringFieldUpdateOperationsInput | string;
   videoStatus?: Prisma.EnumVideoStatusFieldUpdateOperationsInput | $Enums.VideoStatus;
@@ -1152,6 +1189,7 @@ export type LessonCreateManyModuleInput = {
   videoUrl?: string | null;
   thumbnailUrl?: string | null;
   duration?: number;
+  isPreview?: boolean;
   order: number;
   videoStatus?: $Enums.VideoStatus;
   createdAt?: Date | string;
@@ -1167,6 +1205,7 @@ export type LessonUpdateWithoutModuleInput = {
   videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   duration?: Prisma.IntFieldUpdateOperationsInput | number;
+  isPreview?: Prisma.BoolFieldUpdateOperationsInput | boolean;
   order?: Prisma.IntFieldUpdateOperationsInput | number;
   videoStatus?: Prisma.EnumVideoStatusFieldUpdateOperationsInput | $Enums.VideoStatus;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1185,6 +1224,7 @@ export type LessonUncheckedUpdateWithoutModuleInput = {
   videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   duration?: Prisma.IntFieldUpdateOperationsInput | number;
+  isPreview?: Prisma.BoolFieldUpdateOperationsInput | boolean;
   order?: Prisma.IntFieldUpdateOperationsInput | number;
   videoStatus?: Prisma.EnumVideoStatusFieldUpdateOperationsInput | $Enums.VideoStatus;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1203,6 +1243,7 @@ export type LessonUncheckedUpdateManyWithoutModuleInput = {
   videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   duration?: Prisma.IntFieldUpdateOperationsInput | number;
+  isPreview?: Prisma.BoolFieldUpdateOperationsInput | boolean;
   order?: Prisma.IntFieldUpdateOperationsInput | number;
   videoStatus?: Prisma.EnumVideoStatusFieldUpdateOperationsInput | $Enums.VideoStatus;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1278,6 +1319,7 @@ export type LessonSelect<
     videoUrl?: boolean;
     thumbnailUrl?: boolean;
     duration?: boolean;
+    isPreview?: boolean;
     order?: boolean;
     moduleId?: boolean;
     videoStatus?: boolean;
@@ -1304,6 +1346,7 @@ export type LessonSelectCreateManyAndReturn<
     videoUrl?: boolean;
     thumbnailUrl?: boolean;
     duration?: boolean;
+    isPreview?: boolean;
     order?: boolean;
     moduleId?: boolean;
     videoStatus?: boolean;
@@ -1326,6 +1369,7 @@ export type LessonSelectUpdateManyAndReturn<
     videoUrl?: boolean;
     thumbnailUrl?: boolean;
     duration?: boolean;
+    isPreview?: boolean;
     order?: boolean;
     moduleId?: boolean;
     videoStatus?: boolean;
@@ -1345,6 +1389,7 @@ export type LessonSelectScalar = {
   videoUrl?: boolean;
   thumbnailUrl?: boolean;
   duration?: boolean;
+  isPreview?: boolean;
   order?: boolean;
   moduleId?: boolean;
   videoStatus?: boolean;
@@ -1363,6 +1408,7 @@ export type LessonOmit<
   | 'videoUrl'
   | 'thumbnailUrl'
   | 'duration'
+  | 'isPreview'
   | 'order'
   | 'moduleId'
   | 'videoStatus'
@@ -1410,6 +1456,7 @@ export type $LessonPayload<
       videoUrl: string | null;
       thumbnailUrl: string | null;
       duration: number;
+      isPreview: boolean;
       order: number;
       moduleId: string;
       videoStatus: $Enums.VideoStatus;
@@ -2011,6 +2058,7 @@ export interface LessonFieldRefs {
   readonly videoUrl: Prisma.FieldRef<'Lesson', 'String'>;
   readonly thumbnailUrl: Prisma.FieldRef<'Lesson', 'String'>;
   readonly duration: Prisma.FieldRef<'Lesson', 'Int'>;
+  readonly isPreview: Prisma.FieldRef<'Lesson', 'Boolean'>;
   readonly order: Prisma.FieldRef<'Lesson', 'Int'>;
   readonly moduleId: Prisma.FieldRef<'Lesson', 'String'>;
   readonly videoStatus: Prisma.FieldRef<'Lesson', 'VideoStatus'>;

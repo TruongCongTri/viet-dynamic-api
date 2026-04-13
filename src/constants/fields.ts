@@ -17,11 +17,20 @@ export const FIELDS = {
   TOKEN: 'Token',
   REFRESH_TOKEN: 'Token Refresh',
 
-  // --- COURSE (Chuẩn bị cho Phase sau) ---
+  // --- COURSE ---
   TITLE: 'Tiêu đề',
   DESCRIPTION: 'Mô tả',
   PRICE: 'Giá bán',
   THUMBNAIL: 'Ảnh bìa',
+  SLUG: 'Đường dẫn tĩnh (Slug)',
+
+  // --- LEARN & COMMUNITY ---
+  WATCHED_SECONDS: 'Số giây đã xem',
+  IS_COMPLETED: 'Trạng thái hoàn thành',
+  CONTENT: 'Nội dung',
+  PARENT_ID: 'ID bình luận cha',
+  RATING: 'Đánh giá (Số sao)',
+  LESSON_ID: 'ID Bài học',
 
   // --- GENERAL ---
   ID: 'ID',

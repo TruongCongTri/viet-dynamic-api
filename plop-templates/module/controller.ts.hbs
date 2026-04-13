@@ -1,22 +1,44 @@
-import { Request, Response, NextFunction } from 'express';
-import { {{camelCase name}}Service } from './{{dashCase name}}.service';
+import { Request, Response } from 'express';
+import { {{pascalCase name}}Service } from './{{dashCase name}}.service';
 import { successResponse } from '@/common/utils/responses/api-response';
 import { MESSAGES } from '@/constants/messages';
 import { RESOURCES } from '@/constants/resources';
 
-const service = new {{camelCase name}}Service();
-
 export class {{pascalCase name}}Controller {
-  create = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
-      const data = await service.create(req.body);
-      successResponse(res, {
-        statusCode: 201,
-        message: MESSAGES.COMMON.SUCCESS.CREATED(RESOURCES.{{constantCase name}}),
-        data,
-      });
-    } catch (error) {
-      next(error);
-    }
+  private readonly {{camelCase name}}Service: {{pascalCase name}}Service;
+
+  constructor() {
+    this.{{camelCase name}}Service = new {{pascalCase name}}Service();
+  }
+
+  /**
+   * Create new {{pascalCase name}}
+   */
+  public create = async (req: Request, res: Response) => {
+    // TODO: Bổ sung ép kiểu DTO (Ví dụ: req.body as Create{{pascalCase name}}DTO)
+    const payload = req.body; 
+    
+    const data = await this.{{camelCase name}}Service.create(payload);
+
+    successResponse(res, {
+      statusCode: 201,
+      message: MESSAGES.COMMON.SUCCESS.CREATED(RESOURCES.{{constantCase name}}),
+      data,
+    });
+  };
+
+  /**
+   * Get details {{pascalCase name}}
+   */
+  public getDetail = async (req: Request, res: Response) => {
+    const id = req.params.id as string; 
+    
+    const data = await this.{{camelCase name}}Service.getDetail(id);
+
+    successResponse(res, {
+      statusCode: 200,
+      message: MESSAGES.COMMON.SUCCESS.FETCHED(RESOURCES.{{constantCase name}}),
+      data,
+    });
   };
 }

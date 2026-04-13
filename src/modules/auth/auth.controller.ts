@@ -23,7 +23,7 @@ export class AuthController {
 
       successResponse(res, {
         statusCode: 201,
-        message: 'Đăng ký thành công. Vui lòng kiểm tra email để xác thực.',
+        message: MESSAGES.AUTH.SUCCESS.REGISTER,
         data: user,
       });
     } catch (error) {

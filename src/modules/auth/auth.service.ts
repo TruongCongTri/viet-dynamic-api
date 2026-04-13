@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import { prisma } from '@/common/configs/prisma';
 import { env } from '@/common/configs/env';
 import { JwtUtil } from '@/common/utils/auth/jwt.util';
+
 import {
   RegisterDTO,
   LoginDTO,

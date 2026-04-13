@@ -1,37 +1,40 @@
 {
   "compilerOptions": {
-    "rootDir": "./",
-    "outDir": "./dist",
-
-    "paths": {
-      "@/*": ["./src/*"] 
-    },
-
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "target": "ES2022",
+    /* 1. Target & Module System */
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler", // Cho phép import không cần đuôi file .js/.ts
     "lib": ["ES2022"],
     "types": ["node"],
+
+    /* 2. Paths Configuration */
+    "rootDir": "./",
+    "outDir": "./dist",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+
+    /* 3. Interop & Compatibility */
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
+    "isolatedModules": true, // Bắt buộc khi dùng bundler/tsx
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
 
-    "sourceMap": true,
-    "declaration": false, 
-
+    /* 4. Strictness */
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
-
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
 
-    "isolatedModules": true,
-    "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true
+    /* 5. Emit Configuration */
+    "sourceMap": true,
+    "declaration": false,
+    "allowImportingTsExtensions": false
   },
-  "include": ["src/**/*", "tests/**/*", 
-    "prisma.config.ts", ".env"],
+  "include": ["src/**/*", "tests/**/*", "prisma.config.ts", ".env"],
   "exclude": ["node_modules", "dist", "**/*.spec.ts"]
 }

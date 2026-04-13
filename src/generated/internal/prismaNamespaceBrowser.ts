@@ -247,6 +247,7 @@ export const LessonScalarFieldEnum = {
   videoUrl: 'videoUrl',
   thumbnailUrl: 'thumbnailUrl',
   duration: 'duration',
+  isPreview: 'isPreview',
   order: 'order',
   moduleId: 'moduleId',
   videoStatus: 'videoStatus',

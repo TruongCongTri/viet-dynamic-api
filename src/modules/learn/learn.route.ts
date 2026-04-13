@@ -1,15 +1,66 @@
 import { Router } from 'express';
+import { ENDPOINTS } from '@/constants/endpoints';
+import { validate } from '@/middlewares/validate.middleware';
+import { requireRole, verifyToken } from '@/middlewares/auth.middleware';
+import { LearnController } from './learn.controller';
+import { createCommentSchema, createReviewSchema, updateProgressSchema } from './learn.schema';
 
-const learnRoute = Router();
-// const learnController = new LearnController();
+export class LearnRoute {
+  public router: Router;
+  private readonly learnController: LearnController;
 
-// // Courses
-// learnRoute.get(ENDPOINTS.LEARN.MY_COURSES, learnController.getMyCourses);
-// learnRoute.get(ENDPOINTS.LEARN.COURSE_RESUME, learnController.resumeCourse);
-// // Lesson Player & Progress
-// learnRoute.get(ENDPOINTS.LEARN.LESSON, checkEnrollment, learnController.getLessonData);
-// learnRoute.put(ENDPOINTS.LEARN.PROGRESS, learnController.updateProgress);
-// // Reviews
-// learnRoute.post('/courses/:slug/reviews', checkProgressThreshold, learnController.addReview);
+  /**
+   * DEPENDENCY INJECTION (DI)
+   */
+  constructor(controller?: LearnController) {
+    this.router = Router();
+    this.learnController = controller || new LearnController();
 
-export default learnRoute;
+    // Tự động map các route khi Class được khởi tạo
+    this.initializeRoutes();
+  }
+
+  private initializeRoutes() {
+    // Centralized Auth Middleware
+    const studentAuth = [verifyToken, requireRole(['STUDENT'])];
+
+    // [A] BẢNG ĐIỀU KHIỂN HỌC TẬP (DASHBOARD)
+    this.router.get(ENDPOINTS.LEARN.MY_COURSES, studentAuth, this.learnController.getMyCourses);
+    this.router.get(ENDPOINTS.LEARN.COURSE_RESUME, studentAuth, this.learnController.resumeCourse);
+
+    // [B] TRÌNH PHÁT VIDEO & NỘI DUNG (VIDEO PLAYER)
+    this.router.get(
+      ENDPOINTS.LEARN.COURSE_SYLLABUS,
+      studentAuth,
+      this.learnController.getCourseContent
+    );
+    this.router.get(ENDPOINTS.LEARN.LESSON, studentAuth, this.learnController.getLessonDetail);
+
+    this.router.put(
+      ENDPOINTS.LEARN.PROGRESS,
+      studentAuth,
+      validate(updateProgressSchema),
+      this.learnController.updateProgress
+    );
+
+    // [C] TƯƠNG TÁC & CỘNG ĐỒNG (COMMUNITY)
+    this.router.get(ENDPOINTS.LEARN.COMMENTS, this.learnController.getComments);
+
+    this.router.post(
+      ENDPOINTS.LEARN.COMMENTS,
+      studentAuth,
+      validate(createCommentSchema),
+      this.learnController.createComment
+    );
+
+    this.router.post(
+      ENDPOINTS.LEARN.REVIEWS,
+      studentAuth,
+      validate(createReviewSchema),
+      this.learnController.createReview
+    );
+  }
+}
+
+// Export một instance mặc định để dễ tương thích với file server.ts cũ
+export default new LearnRoute().router;

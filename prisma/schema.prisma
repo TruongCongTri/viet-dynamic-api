@@ -267,8 +267,10 @@ model Lesson {
   videoId     String?    // Lưu chính xác ID của nền tảng streaming (VD: "d54c12...")
   videoUrl    String?    // (Tùy chọn) Lưu link fallback nếu dạng mp4 thường
   thumbnailUrl   String?    // Ảnh bìa của video sinh ra từ Cloudflare
-  duration    Int      @default(0) // [BỔ SUNG] Lưu tổng thời lượng video (giây)
+  duration    Int      @default(0) // Lưu tổng thời lượng video (giây)
   
+  isPreview     Boolean    @default(false)
+
   order       Int
   
   moduleId    String

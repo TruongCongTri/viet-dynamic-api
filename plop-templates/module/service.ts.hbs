@@ -1,12 +1,37 @@
 import { {{pascalCase name}}Repository } from './{{dashCase name}}.repository';
 import { Create{{pascalCase name}}DTO } from './{{dashCase name}}.schema';
 import { AppError } from '@/common/errors/app.error';
+import { MESSAGES } from '@/constants/messages';
+import { RESOURCES } from '@/constants/resources';
 
-const repository = new {{pascalCase name}}Repository();
+export class {{pascalCase name}}Service {
+  private readonly {{camelCase name}}Repository: {{pascalCase name}}Repository;
 
-export class {{camelCase name}}Service {
-  async create(data: Create{{pascalCase name}}DTO) {
-    // Thêm logic nghiệp vụ ở đây
-    return await repository.create(data);
+  constructor() {
+    this.{{camelCase name}}Repository = new {{pascalCase name}}Repository();
+  }
+
+  /**
+   * Create new {{pascalCase name}}
+   */
+  public async create(data: Create{{pascalCase name}}DTO) {
+    // 1. Business logic
+    // EG: Check if related entities exist, validate data, etc.
+    
+    // 2. Call Repository to create {{pascalCase name}}
+    return await this.{{camelCase name}}Repository.create(data);
+  }
+
+  /**
+   * Get detail of {{pascalCase name}} by ID
+   */
+  public async getDetail(id: string) {
+    const result = await this.{{camelCase name}}Repository.findById(id);
+    
+    if (!result) {
+      throw new AppError(404, MESSAGES.COMMON.ERROR.NOT_FOUND(RESOURCES.{{constantCase name}}));
+    }
+    
+    return result;
   }
 }
