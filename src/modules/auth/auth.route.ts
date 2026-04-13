@@ -16,84 +16,99 @@ import {
 import { authLimiter } from '@/middlewares/rate-limit.middleware'; // Middleware chống Spam
 import { verifyToken } from '@/middlewares/auth.middleware';
 
-const authRoute = Router();
-const authController = new AuthController();
+export class AuthRoute {
+  public router: Router;
+  private readonly authController: AuthController;
 
-// PUBLIC ROUTES
-// 1. ĐĂNG KÝ (REGISTER)
-authRoute.post(
-  ENDPOINTS.AUTH.REGISTER,
-  authLimiter,
-  validate(registerSchema),
-  authController.register
-);
+  constructor() {
+    this.router = Router();
+    this.authController = new AuthController();
+    this.initializeRoutes();
+  }
 
-// 2. ĐĂNG NHẬP (LOGIN)
-authRoute.post(ENDPOINTS.AUTH.LOGIN, authLimiter, validate(loginSchema), authController.login);
+  private initializeRoutes() {
+    // PUBLIC ROUTES
+    // 1. ĐĂNG KÝ (REGISTER)
+    this.router.post(
+      ENDPOINTS.AUTH.REGISTER,
+      authLimiter,
+      validate(registerSchema),
+      this.authController.register
+    );
 
-// 3. REFRESH TOKEN (Cấp lại Access Token)
-authRoute.post(
-  ENDPOINTS.AUTH.REFRESH_TOKEN,
-  validate(refreshTokenSchema),
-  authController.refreshToken
-);
+    // 2. ĐĂNG NHẬP (LOGIN)
+    this.router.post(
+      ENDPOINTS.AUTH.LOGIN,
+      authLimiter,
+      validate(loginSchema),
+      this.authController.login
+    );
 
-// 6. XÁC THỰC EMAIL (Gửi & Xác nhận OTP)
-authRoute.post(
-  ENDPOINTS.AUTH.SEND_VERIFY_EMAIL,
-  authLimiter,
-  validate(sendVerifyEmailSchema),
-  authController.sendVerifyOTP
-);
-authRoute.post(
-  ENDPOINTS.AUTH.VERIFY_EMAIL,
-  authLimiter,
-  validate(verifyEmailSchema),
-  authController.verifyOTP
-);
+    // 3. REFRESH TOKEN (Cấp lại Access Token)
+    this.router.post(
+      ENDPOINTS.AUTH.REFRESH_TOKEN,
+      validate(refreshTokenSchema),
+      this.authController.refreshToken
+    );
 
-// 7. QUÊN MẬT KHẨU & KHÔI PHỤC MẬT KHẨU
-authRoute.post(
-  ENDPOINTS.AUTH.FORGOT_PASSWORD,
-  authLimiter,
-  validate(forgotPasswordSchema),
-  authController.forgotPassword
-);
-authRoute.post(
-  ENDPOINTS.AUTH.RESET_PASSWORD,
-  authLimiter,
-  validate(resetPasswordSchema),
-  authController.resetPassword
-);
+    // 6. XÁC THỰC EMAIL (Gửi & Xác nhận OTP)
+    this.router.post(
+      ENDPOINTS.AUTH.SEND_VERIFY_EMAIL,
+      authLimiter,
+      validate(sendVerifyEmailSchema),
+      this.authController.sendVerifyOTP
+    );
+    this.router.post(
+      ENDPOINTS.AUTH.VERIFY_EMAIL,
+      authLimiter,
+      validate(verifyEmailSchema),
+      this.authController.verifyOTP
+    );
 
-// 8. ĐỔI MẬT KHẨU (Khi đã đăng nhập)
-authRoute.put(
-  '/change-password',
-  verifyToken,
-  validate(changePasswordSchema),
-  authController.changePassword
-);
+    // 7. QUÊN MẬT KHẨU & KHÔI PHỤC MẬT KHẨU
+    this.router.post(
+      ENDPOINTS.AUTH.FORGOT_PASSWORD,
+      authLimiter,
+      validate(forgotPasswordSchema),
+      this.authController.forgotPassword
+    );
+    this.router.post(
+      ENDPOINTS.AUTH.RESET_PASSWORD,
+      authLimiter,
+      validate(resetPasswordSchema),
+      this.authController.resetPassword
+    );
 
-// PROTECTED ROUTES (Cần token hợp lệ mới truy cập được)
-// 4. QUẢN LÝ THIẾT BỊ
-authRoute.get(ENDPOINTS.AUTH.SESSIONS, verifyToken, authController.getSessions);
-authRoute.delete(
-  ENDPOINTS.AUTH.REVOKE_SESSION,
-  verifyToken,
-  validate(revokeSessionSchema),
-  authController.revokeSession
-);
-authRoute.delete(
-  ENDPOINTS.AUTH.REVOKE_OTHER_SESSIONS,
-  verifyToken,
-  authController.revokeOtherSessions
-);
+    // 8. ĐỔI MẬT KHẨU (Khi đã đăng nhập)
+    this.router.put(
+      ENDPOINTS.AUTH.CHANGE_PASSWORD,
+      verifyToken,
+      validate(changePasswordSchema),
+      this.authController.changePassword
+    );
 
-// 5. LOGOUT (Đăng xuất)
-authRoute.post(ENDPOINTS.AUTH.LOGOUT, verifyToken, authController.logout);
+    // PROTECTED ROUTES (Cần token hợp lệ mới truy cập được)
+    // 4. QUẢN LÝ THIẾT BỊ
+    this.router.get(ENDPOINTS.AUTH.SESSIONS, verifyToken, this.authController.getSessions);
+    this.router.delete(
+      ENDPOINTS.AUTH.REVOKE_SESSION,
+      verifyToken,
+      validate(revokeSessionSchema),
+      this.authController.revokeSession
+    );
+    this.router.delete(
+      ENDPOINTS.AUTH.REVOKE_OTHER_SESSIONS,
+      verifyToken,
+      this.authController.revokeOtherSessions
+    );
 
-// // OAuth2 Google
-// authRoute.get(ENDPOINTS.AUTH.GOOGLE, authController.googleInit);
-// authRoute.get(ENDPOINTS.AUTH.GOOGLE_CALLBACK, authController.googleCallback);
+    // 5. LOGOUT (Đăng xuất)
+    this.router.post(ENDPOINTS.AUTH.LOGOUT, verifyToken, this.authController.logout);
 
-export default authRoute;
+    // // OAuth2 Google
+    // this.router.get(ENDPOINTS.AUTH.GOOGLE, this.authController.googleInit);
+    // this.router.get(ENDPOINTS.AUTH.GOOGLE_CALLBACK, this.authController.googleCallback);
+  }
+}
+
+export default new AuthRoute().router;

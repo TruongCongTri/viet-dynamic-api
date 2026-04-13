@@ -1,7 +1,9 @@
 import bcrypt from 'bcryptjs';
-import { prisma } from '@/common/configs/prisma';
 import { env } from '@/common/configs/env';
 import { JwtUtil } from '@/common/utils/auth/jwt.util';
+import { AuthRepository } from './auth.repository';
+import { AppError } from '@/common/errors/app.error';
+import { notificationService } from '@/common/services/notification.service';
 
 import {
   RegisterDTO,
@@ -11,21 +13,24 @@ import {
   RefreshTokenDTO,
   ChangePasswordDTO,
 } from './auth.schema';
-import { AppError } from '@/common/errors/app.error';
-import { notificationService } from '@/common/services/notification.service';
-
 import { ERROR_CODES } from '@/constants/error-codes';
 import { MESSAGES } from '@/constants/messages';
 import { RESOURCES } from '@/constants/resources';
 import { APP_CONFIG, OTP_CHANNELS, OtpChannel } from '@/constants/app.constant';
 
 export class AuthService {
+  private readonly authRepository: AuthRepository;
+
+  constructor() {
+    this.authRepository = new AuthRepository();
+  }
+
   // 1. ĐĂNG KÝ (REGISTER)
   async register(data: RegisterDTO) {
     const { email, password, fullName } = data;
 
     // 1. Kiểm tra email tồn tại
-    const existingUser = await prisma.user.findUnique({ where: { email } });
+    const existingUser = await this.authRepository.findByEmail(email);
     if (existingUser)
       throw new AppError(
         409,
@@ -34,9 +39,7 @@ export class AuthService {
       );
 
     // 2. Lấy Role STUDENT mặc định
-    const studentRole = await prisma.role.findUnique({
-      where: { name: APP_CONFIG.AUTH.DEFAULT_ROLE },
-    });
+    const studentRole = await this.authRepository.findRoleByName(APP_CONFIG.AUTH.DEFAULT_ROLE);
     if (!studentRole)
       throw new AppError(500, MESSAGES.AUTH.ERROR.ROLE_NOT_FOUND, ERROR_CODES.AUTH.ROLE_NOT_FOUND);
 
@@ -44,22 +47,12 @@ export class AuthService {
     const salt = await bcrypt.genSalt(env.BCRYPT_SALT_ROUNDS);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    return await prisma.user.create({
-      data: {
-        email,
-        password: hashedPassword,
-        roleId: studentRole.id,
-        isEmailVerified: false, // Chờ verify email ở bước sau
-        profile: {
-          create: { fullName },
-        },
-      },
-      select: {
-        id: true,
-        email: true,
-        isEmailVerified: true,
-        profile: { select: { fullName: true } },
-      },
+    return await this.authRepository.createUser({
+      email,
+      password: hashedPassword,
+      role: { connect: { id: studentRole.id } },
+      isEmailVerified: false,
+      profile: { create: { fullName } },
     });
   }
 
@@ -68,22 +61,7 @@ export class AuthService {
     const { email, password, deviceId, rememberMe } = data;
 
     // 1. Tìm User và "Đào sâu" (Deep Include) để lấy toàn bộ Quyền
-    const user = await prisma.user.findUnique({
-      where: { email },
-      include: {
-        profile: true,
-        role: {
-          include: {
-            permissions: {
-              include: { permission: true }, // Lấy tên các Action (Quyền gốc)
-            },
-          },
-        },
-        extraPermissions: {
-          include: { permission: true }, // Lấy tên các Action (Quyền ngoại lệ)
-        },
-      },
-    });
+    const user = await this.authRepository.findUserForLogin(email);
 
     if (!user || !user.password || !user.isActive)
       throw new AppError(
@@ -107,16 +85,13 @@ export class AuthService {
       // Tăng số lần nhập sai, nếu >= 5 thì khóa 15 phút
       const attempts = user.failedLoginAttempts + 1;
       const maxAttempts = APP_CONFIG.AUTH.MAX_FAILED_LOGIN_ATTEMPTS;
-      await prisma.user.update({
-        where: { id: user.id },
-        data: {
-          failedLoginAttempts: attempts,
-          lockedUntil:
-            attempts >= maxAttempts
-              ? new Date(Date.now() + APP_CONFIG.AUTH.LOCKOUT_DURATION_MINUTES * 60000)
-              : null,
-        },
-      });
+      const lockedUntil =
+        attempts >= maxAttempts
+          ? new Date(Date.now() + APP_CONFIG.AUTH.LOCKOUT_DURATION_MINUTES * 60000)
+          : null;
+
+      await this.authRepository.updateUserLoginAttempts(user.id, attempts, lockedUntil);
+
       throw new AppError(
         401,
         MESSAGES.AUTH.ERROR.WRONG_PASSWORD(maxAttempts - attempts),
@@ -126,10 +101,7 @@ export class AuthService {
 
     // Nếu nhập đúng -> Reset số lần sai về 0
     if (user.failedLoginAttempts > 0) {
-      await prisma.user.update({
-        where: { id: user.id },
-        data: { failedLoginAttempts: 0, lockedUntil: null },
-      });
+      await this.authRepository.updateUserLoginAttempts(user.id, 0, null);
     }
 
     // 3. Tính toán quyền hạn
@@ -138,10 +110,7 @@ export class AuthService {
     const mergedPermissions = Array.from(new Set([...rolePermissions, ...extraPermissions]));
 
     // 4. Soft Limit: Giữ tối đa 3 thiết bị đăng nhập
-    const activeSessions = await prisma.session.findMany({
-      where: { userId: user.id, isRevoked: false, expiresAt: { gt: new Date() } },
-      orderBy: { lastActive: 'asc' }, // Sắp xếp từ cũ nhất đến mới nhất
-    });
+    const activeSessions = await this.authRepository.findActiveSessionsForLogin(user.id);
 
     // Nếu số thiết bị vượt mức, tính toán cần xóa bao nhiêu thiết bị cũ nhất
     if (activeSessions.length >= APP_CONFIG.AUTH.MAX_DEVICES_PER_USER) {
@@ -149,10 +118,7 @@ export class AuthService {
       const sessionsToRevoke = activeSessions.slice(0, numToRevoke);
       const sessionIdsToRevoke = sessionsToRevoke.map((s) => s.id);
 
-      await prisma.session.updateMany({
-        where: { id: { in: sessionIdsToRevoke } },
-        data: { isRevoked: true },
-      });
+      await this.authRepository.revokeSessions(sessionIdsToRevoke);
     }
 
     // 5. Tạo Refresh Token mới
@@ -165,15 +131,13 @@ export class AuthService {
     const expiresAt = new Date(Date.now() + expiresInDays * 24 * 60 * 60 * 1000);
 
     // 6. Tạo bản ghi Session trong Database
-    const session = await prisma.session.create({
-      data: {
-        userId: user.id,
-        refreshToken,
-        expiresAt,
-        ipAddress: clientMeta.ipAddress,
-        userAgent: clientMeta.userAgent,
-        deviceId: deviceId || 'unknown',
-      },
+    const session = await this.authRepository.createSession({
+      userId: user.id,
+      refreshToken,
+      expiresAt,
+      ipAddress: clientMeta.ipAddress,
+      userAgent: clientMeta.userAgent,
+      deviceId: deviceId || 'unknown',
     });
 
     // 7. Cấp Access Token
@@ -207,10 +171,7 @@ export class AuthService {
       throw new AppError(401, MESSAGES.AUTH.ERROR.MISSING_TOKEN, ERROR_CODES.AUTH.MISSING_TOKEN);
 
     // Tìm session trong DB dựa vào refreshToken
-    const session = await prisma.session.findUnique({
-      where: { refreshToken },
-      include: { user: { include: { role: true } } },
-    });
+    const session = await this.authRepository.findSessionByRefreshToken(dto.refreshToken);
 
     if (!session || session.isRevoked || new Date() > session.expiresAt)
       throw new AppError(
@@ -244,13 +205,10 @@ export class AuthService {
     });
 
     // 4. Cập nhật vào Database
-    await prisma.session.update({
-      where: { id: session.id },
-      data: {
-        refreshToken: newRefreshToken,
-        lastActive: new Date(),
-        expiresAt: newExpiresAt, // Gia hạn thời gian sống của Session
-      },
+    await this.authRepository.updateSession(session.id, {
+      refreshToken: newRefreshToken,
+      lastActive: new Date(),
+      expiresAt: newExpiresAt,
     });
 
     return {
@@ -263,22 +221,11 @@ export class AuthService {
 
   // 4. QUẢN LÝ THIẾT BỊ
   async getActiveSessions(userId: string) {
-    return await prisma.session.findMany({
-      where: { userId, isRevoked: false, expiresAt: { gt: new Date() } },
-      select: {
-        id: true,
-        ipAddress: true,
-        userAgent: true,
-        deviceId: true,
-        createdAt: true,
-        lastActive: true,
-      },
-      orderBy: { lastActive: 'desc' },
-    });
+    return await this.authRepository.findDeviceSessions(userId);
   }
 
   async revokeDeviceSession(userId: string, sessionId: string) {
-    const session = await prisma.session.findUnique({ where: { id: sessionId } });
+    const session = await this.authRepository.findSessionById(sessionId);
     if (!session || session.userId !== userId) {
       throw new AppError(
         404,
@@ -286,28 +233,18 @@ export class AuthService {
         ERROR_CODES.AUTH.SESSION_NOT_FOUND
       );
     }
-    await prisma.session.update({ where: { id: sessionId }, data: { isRevoked: true } });
+    await this.authRepository.revokeSessions([sessionId]);
     return true;
   }
 
   async revokeOtherSessions(userId: string, currentSessionId: string) {
-    await prisma.session.updateMany({
-      where: {
-        userId: userId,
-        isRevoked: false,
-        id: { not: currentSessionId }, // Không đá thiết bị hiện tại
-      },
-      data: { isRevoked: true },
-    });
+    await this.authRepository.revokeOtherSessions(userId, currentSessionId);
     return true;
   }
 
   // 5. LOGOUT (Đăng xuất)
   async logout(sessionId: string) {
-    await prisma.session.update({
-      where: { id: sessionId },
-      data: { isRevoked: true },
-    });
+    await this.authRepository.revokeSessions([sessionId]);
     return true;
   }
 
@@ -316,9 +253,7 @@ export class AuthService {
     const { identifier, channel } = data;
 
     // 1. Tìm User (Bằng Email hoặc Phone tùy kênh)
-    const user = await prisma.user.findFirst({
-      where: channel === OTP_CHANNELS.EMAIL ? { email: identifier } : { phone: identifier },
-    });
+    const user = await this.authRepository.findUserByIdentifier(identifier, channel);
 
     if (!user)
       throw new AppError(
@@ -342,10 +277,7 @@ export class AuthService {
       );
 
     // Check cooldown 60s cho cùng một identifier và cùng loại OTP
-    const lastOtp = await prisma.otp.findFirst({
-      where: { email: identifier, type: 'VERIFY_ACCOUNT' },
-      orderBy: { createdAt: 'desc' },
-    });
+    const lastOtp = await this.authRepository.findLatestOtp(identifier, 'VERIFY_ACCOUNT');
 
     if (
       lastOtp &&
@@ -364,8 +296,11 @@ export class AuthService {
       Date.now() + APP_CONFIG.AUTH.OTP_VERIFY_EXPIRATION_MINUTES * 60 * 1000
     );
     // Lưu vào DB
-    await prisma.otp.create({
-      data: { email: identifier, code: otpCode, type: 'VERIFY_ACCOUNT', expiresAt },
+    await this.authRepository.createOtp({
+      email: identifier,
+      code: otpCode,
+      type: 'VERIFY_ACCOUNT',
+      expiresAt,
     });
 
     // 3. Thực thi gửi theo Channel
@@ -384,10 +319,7 @@ export class AuthService {
     const { identifier, code, channel } = data;
 
     // Tìm mã OTP
-    const otpRecord = await prisma.otp.findFirst({
-      where: { email: identifier, code, type: 'VERIFY_ACCOUNT', isUsed: false },
-      orderBy: { createdAt: 'desc' },
-    });
+    const otpRecord = await this.authRepository.findValidOtp(identifier, code, 'VERIFY_ACCOUNT');
 
     if (!otpRecord)
       throw new AppError(400, MESSAGES.AUTH.ERROR.INVALID_OTP, ERROR_CODES.AUTH.INVALID_OTP);
@@ -395,21 +327,14 @@ export class AuthService {
       throw new AppError(400, MESSAGES.AUTH.ERROR.EXPIRED_OTP, ERROR_CODES.AUTH.EXPIRED_OTP);
 
     // Transaction an toàn
-    await prisma.$transaction([
-      prisma.otp.update({ where: { id: otpRecord.id }, data: { isUsed: true } }),
-      prisma.user.update({
-        where: channel === OTP_CHANNELS.EMAIL ? { email: identifier } : { phone: identifier },
-        data:
-          channel === OTP_CHANNELS.EMAIL ? { isEmailVerified: true } : { isPhoneVerified: true },
-      }),
-    ]);
+    await this.authRepository.verifyAccountTransaction(otpRecord.id, identifier, channel);
 
     return true;
   }
 
   // 7. QUÊN MẬT KHẨU & KHÔI PHỤC MẬT KHẨU
   async forgotPassword(dto: ForgotPasswordDTO) {
-    const user = await prisma.user.findUnique({ where: { email: dto.email } });
+    const user = await this.authRepository.findByEmail(dto.email);
     if (!user)
       throw new AppError(
         404,
@@ -419,13 +344,11 @@ export class AuthService {
 
     const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
 
-    await prisma.otp.create({
-      data: {
-        email: dto.email,
-        code: otpCode,
-        type: 'FORGOT_PASSWORD',
-        expiresAt: new Date(Date.now() + 15 * 60 * 1000),
-      },
+    await this.authRepository.createOtp({
+      email: dto.email,
+      code: otpCode,
+      type: 'FORGOT_PASSWORD',
+      expiresAt: new Date(Date.now() + 15 * 60 * 1000),
     });
 
     // console.log(`[MOCK EMAIL] Mã OTP khôi phục mật khẩu của ${dto.email} là: ${otpCode}`);
@@ -435,10 +358,11 @@ export class AuthService {
 
   async resetPassword(dto: ResetPasswordDTO) {
     // 1. Kiểm tra mã OTP
-    const otpRecord = await prisma.otp.findFirst({
-      where: { email: dto.email, code: dto.code, type: 'FORGOT_PASSWORD', isUsed: false },
-      orderBy: { createdAt: 'desc' },
-    });
+    const otpRecord = await this.authRepository.findValidOtp(
+      dto.email,
+      dto.code,
+      'FORGOT_PASSWORD'
+    );
 
     if (!otpRecord)
       throw new AppError(400, MESSAGES.AUTH.ERROR.INVALID_OTP, ERROR_CODES.AUTH.INVALID_OTP);
@@ -446,7 +370,7 @@ export class AuthService {
       throw new AppError(400, MESSAGES.AUTH.ERROR.EXPIRED_OTP, ERROR_CODES.AUTH.EXPIRED_OTP);
 
     // 2. Lấy User TRƯỚC khi chạy Transaction
-    const user = await prisma.user.findUnique({ where: { email: dto.email } });
+    const user = await this.authRepository.findByEmail(dto.email);
     if (!user)
       throw new AppError(
         404,
@@ -469,31 +393,14 @@ export class AuthService {
     const hashedPassword = await bcrypt.hash(dto.newPassword, salt);
 
     // 4. Thực thi Transaction (Giao dịch an toàn)
-    await prisma.$transaction([
-      // Đánh dấu OTP đã sử dụng
-      prisma.otp.update({
-        where: { id: otpRecord.id },
-        data: { isUsed: true },
-      }),
-      // Cập nhật mật khẩu mới (Dùng user.id truy vấn sẽ nhanh hơn dùng email)
-      prisma.user.update({
-        where: { id: user.id },
-        data: { password: hashedPassword },
-      }),
-      // Thu hồi toàn bộ phiên đăng nhập cũ (Bắt buộc người dùng phải login lại bằng pass mới)
-      prisma.session.updateMany({
-        // user.id lúc này đã được TS công nhận chắc chắn là 'string'
-        where: { userId: user.id, isRevoked: false },
-        data: { isRevoked: true },
-      }),
-    ]);
+    await this.authRepository.resetPasswordTransaction(otpRecord.id, user.id, hashedPassword);
 
     return true;
   }
 
   // 8. ĐỔI MẬT KHẨU (Khi đã đăng nhập)
   async changePassword(userId: string, dto: ChangePasswordDTO) {
-    const user = await prisma.user.findUnique({ where: { id: userId } });
+    const user = await this.authRepository.findById(userId);
     if (!user)
       throw new AppError(
         404,
@@ -514,10 +421,7 @@ export class AuthService {
     const salt = await bcrypt.genSalt(env.BCRYPT_SALT_ROUNDS);
     const hashedPassword = await bcrypt.hash(dto.newPassword, salt);
 
-    await prisma.user.update({
-      where: { id: userId },
-      data: { password: hashedPassword },
-    });
+    await this.authRepository.updatePassword(userId, hashedPassword);
     return true;
   }
 }
