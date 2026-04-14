@@ -4,17 +4,15 @@
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
 generator client {
-  provider   = "prisma-client"
-  output = "../src/generated"
+  provider = "prisma-client"
+  output   = "../src/generated"
 }
 
 datasource db {
   provider = "postgresql"
 }
 
-// ==========================================
 // 1. IDENTITY & ACCESS MANAGEMENT
-// ==========================================
 
 enum AuthProvider {
   LOCAL
@@ -23,21 +21,21 @@ enum AuthProvider {
 }
 
 model Role {
-  id          String           @id @default(uuid())
-  name        String           @unique
+  id          String  @id @default(uuid())
+  name        String  @unique
   description String?
-  
+
   users       User[]
   permissions RolePermission[]
 }
 
 model Permission {
-  id          String           @id @default(uuid())
-  action      String           @unique
+  id          String  @id @default(uuid())
+  action      String  @unique
   description String?
 
-  roles       RolePermission[]
-  users       UserPermission[]
+  roles RolePermission[]
+  users UserPermission[]
 }
 
 model RolePermission {
@@ -45,7 +43,7 @@ model RolePermission {
   role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
   permissionId String
   permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
-  conditions   Json?      
+  conditions   Json?
 
   @@id([roleId, permissionId])
 }
@@ -61,51 +59,51 @@ model UserPermission {
 }
 
 model User {
-  id               String           @id @default(uuid())
-  email            String           @unique
-  password         String?          // Có thể null nếu đăng nhập bằng Google/FB
-  
+  id       String  @id @default(uuid())
+  email    String  @unique
+  password String? // Có thể null nếu đăng nhập bằng Google/FB
+
   // TÍNH NĂNG SMS/ZALO
-  phone           String?        @unique 
-  isPhoneVerified Boolean        @default(false)
+  phone           String? @unique
+  isPhoneVerified Boolean @default(false)
 
   // Xác thực & Nguồn gốc
-  isEmailVerified  Boolean          @default(false)
-  authProvider     AuthProvider     @default(LOCAL)
-  providerId       String?          // Lưu ID của Google/Facebook trả về
-  
-  isActive         Boolean          @default(true)
+  isEmailVerified Boolean      @default(false)
+  authProvider    AuthProvider @default(LOCAL)
+  providerId      String? // Lưu ID của Google/Facebook trả về
 
-  roleId           String
-  role             Role             @relation(fields: [roleId], references: [id])
-  
+  isActive Boolean @default(true)
+
+  roleId String
+  role   Role   @relation(fields: [roleId], references: [id])
+
   // Quản lý Session thay vì chỉ là RefreshToken
-  sessions         Session[]
+  sessions Session[]
 
   profile          UserProfile?
   extraPermissions UserPermission[]
 
   // Business Relations
-  taughtCourses    CourseInstructor[]
-  enrollments      Enrollment[]
-  progress         LessonProgress[]
-  orders           Order[]
-  reviews          CourseReview[]
-  comments         LessonComment[]
+  taughtCourses CourseInstructor[]
+  enrollments   Enrollment[]
+  progress      LessonProgress[]
+  orders        Order[]
+  reviews       CourseReview[]
+  comments      LessonComment[]
 
-  savedVouchers    UserVoucher[]
-  vouchersUsed     VoucherUsage[]
+  savedVouchers UserVoucher[]
+  vouchersUsed  VoucherUsage[]
 
-  wishlist         Wishlist[]
+  wishlist       Wishlist[]
   recentlyViewed RecentlyViewed[]
-  cart             Cart?
+  cart           Cart?
 
   // fail login attempts
   failedLoginAttempts Int       @default(0)
   lockedUntil         DateTime?
 
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime         @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model UserProfile {
@@ -115,27 +113,36 @@ model UserProfile {
   avatarUrl String?
   bio       String? @db.Text
   phone     String?
+
+  // METRICS DÀNH CHO INSTRUCTOR
+  totalStudents Int     @default(0) // Tổng số học viên của tất cả khóa học
+  averageRating Decimal @default(0.00) @db.Decimal(3, 2) // Đánh giá trung bình của Giảng viên
+  totalCourses  Int     @default(0) // Tổng số khóa học đang PUBLISHED
+
+  @@index([totalStudents(sort: Desc)]) // Index để tìm Giảng viên Hot nhất
+  @@index([averageRating(sort: Desc)]) // Index để tìm Giảng viên tốt nhất
+  @@index([totalCourses(sort: Desc)]) // Index để tìm Giảng viên bán chạy nhất
 }
 
 // Nâng cấp RefreshToken thành bảng Session để chống dùng chung tài khoản
 model Session {
-  id           String   @id @default(uuid())
-  refreshToken String   @unique
-  
+  id           String @id @default(uuid())
+  refreshToken String @unique
+
   // Thông tin thiết bị để ép Logout thiết bị cũ
-  deviceId     String?  
-  userAgent    String?  
-  ipAddress    String?  
-  
+  deviceId  String?
+  userAgent String?
+  ipAddress String?
+
   // Trạng thái Session
-  lastActive   DateTime @default(now())
-  isRevoked    Boolean  @default(false)
-  expiresAt    DateTime
-  
-  userId       String
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  createdAt    DateTime @default(now())
+  lastActive DateTime @default(now())
+  isRevoked  Boolean  @default(false)
+  expiresAt  DateTime
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
 
   @@index([userId])
 }
@@ -144,73 +151,90 @@ model Session {
 enum OtpType {
   VERIFY_EMAIL
   FORGOT_PASSWORD
-  VERIFY_ACCOUNT  
+  VERIFY_ACCOUNT
 }
+
 model Otp {
   id        String   @id @default(uuid())
-  email     String   
-  code      String   // Mã 6 số
+  email     String
+  code      String // Mã 6 số
   type      OtpType
   isUsed    Boolean  @default(false)
   expiresAt DateTime // Thường là now() + 5 phút
-  
+
   createdAt DateTime @default(now())
 
   @@index([email, code])
 }
 
-// ==========================================
 // 2. COURSE CATALOG
-// ==========================================
 
 // Bảng Category
 model Category {
-  id          String   @id @default(uuid())
-  name        String   @unique
-  slug        String   @unique
+  id          String  @id @default(uuid())
+  name        String  @unique
+  slug        String  @unique
   description String?
-  
-  courses     Course[]
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  // METRICS 
+  publishedCourseCount Int @default(0) // Tổng số khóa học ĐANG PUBLISHED trong danh mục này
+  totalStudents        Int @default(0) // Tổng số lượt mua/học viên của các khóa học trong danh mục này
+
+  courses Course[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([totalStudents(sort: Desc)]) // Dùng để query "Danh mục Hot nhất / Phổ biến nhất"
+  @@index([publishedCourseCount(sort: Desc)]) // Dùng để query "Danh mục có nhiều khóa học nhất"
 }
 
 enum CourseStatus {
-  DRAFT       // Giảng viên đang soạn, chưa xong
-  PENDING     // Giảng viên gửi yêu cầu lên Admin duyệt
-  PUBLISHED   // Admin đã duyệt, xuất hiện trên Trang chủ
-  REJECTED    // Admin từ chối (kèm lý do)
-  HIDDEN      // Admin buộc gỡ xuống vì vi phạm
+  DRAFT // Giảng viên đang soạn, chưa xong
+  PENDING // Giảng viên gửi yêu cầu lên Admin duyệt
+  PUBLISHED // Admin đã duyệt, xuất hiện trên Trang chủ
+  REJECTED // Admin từ chối (kèm lý do)
+  HIDDEN // Admin buộc gỡ xuống vì vi phạm
 }
 
 model Course {
-  id          String   @id @default(uuid())
-  title       String
-  slug        String   @unique
-  description String?  @db.Text
-  basePrice   Decimal  @db.Decimal(10, 2) @default(0)
-  status CourseStatus @default(DRAFT)
+  id           String       @id @default(uuid())
+  title        String
+  slug         String       @unique
+  thumbnailUrl String?
+  description  String?      @db.Text
+  basePrice    Decimal      @default(0) @db.Decimal(12, 0)
+  status       CourseStatus @default(DRAFT)
 
-  totalDuration Int      @default(0)
+  totalDuration Int @default(0)
 
-  categoryId  String?
-  category    Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  // METRICS CHO PUBLIC API (Tránh query COUNT/AVG on-the-fly)
+  averageRating Decimal @default(0.00) @db.Decimal(3, 2) // Khóa học đánh giá cao nhất
+  reviewCount   Int     @default(0) // Khóa học nhiều review nhất
+  studentCount  Int     @default(0) // Khóa học bán chạy nhất (Best Sellers)
+  viewCount     Int     @default(0) // Khóa học xem nhiều nhất (All-time)
 
-  instructors CourseInstructor[]
-  modules     Module[]
-  enrollments Enrollment[]
-  reviews     CourseReview[]
-  discounts   CourseDiscount[]
-  orderItems  OrderItem[]
-  wishlist    Wishlist[]
-  cartItems   CartItem[]
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  instructors    CourseInstructor[]
+  modules        Module[]
+  enrollments    Enrollment[]
+  reviews        CourseReview[]
+  discounts      CourseDiscount[]
+  orderItems     OrderItem[]
+  wishlist       Wishlist[]
+  cartItems      CartItem[]
   recentlyViewed RecentlyViewed[]
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([categoryId])
+  @@index([status, createdAt(sort: Desc)]) // Cho query: Mới nhất
+  @@index([status, studentCount(sort: Desc)]) // Cho query: Bán chạy nhất
+  @@index([status, averageRating(sort: Desc)]) // Cho query: Đánh giá cao nhất
+  @@index([status, viewCount(sort: Desc)]) // Cho query: Xem nhiều nhất
 }
 
 model CourseInstructor {
@@ -219,25 +243,23 @@ model CourseInstructor {
   userId       String
   user         User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   isOwner      Boolean @default(false)
-  revenueShare Decimal @db.Decimal(5, 2) @default(0)
+  revenueShare Decimal @default(0) @db.Decimal(5, 2)
 
   @@id([courseId, userId])
 }
 
-// ==========================================
 // 3. COURSE CONTENT & SOCIAL
-// ==========================================
 
 model Module {
-  id          String   @id @default(uuid())
-  title       String
-  order       Int
+  id    String @id @default(uuid())
+  title String
+  order Int
 
-  totalDuration Int      @default(0)
+  totalDuration Int @default(0)
 
-  courseId    String
-  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  lessons     Lesson[]
+  courseId String
+  course   Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lessons  Lesson[]
 }
 
 // Enum phân loại bài học
@@ -248,83 +270,82 @@ enum LessonType {
 }
 
 enum VideoStatus {
-  NONE        // Bài học dạng Text, không có video
-  UPLOADING   // Đang tải lên
-  PROCESSING  // Cloudflare đang xử lý (Transcoding)
-  READY       // Đã sẵn sàng phát
-  FAILED      // Lỗi xử lý
+  NONE // Bài học dạng Text, không có video
+  UPLOADING // Đang tải lên
+  PROCESSING // Cloudflare đang xử lý (Transcoding)
+  READY // Đã sẵn sàng phát
+  FAILED // Lỗi xử lý
 }
 
 model Lesson {
-  id          String   @id @default(uuid())
-  title       String
-  type        LessonType @default(VIDEO)
+  id    String     @id @default(uuid())
+  title String
+  type  LessonType @default(VIDEO)
 
   // Dành cho bài học dạng Text (Markdown/HTML)
-  content     String?    @db.Text
+  content String? @db.Text
 
   // Dành cho bài học dạng Video (Cloudflare/Vimeo)
-  videoId     String?    // Lưu chính xác ID của nền tảng streaming (VD: "d54c12...")
-  videoUrl    String?    // (Tùy chọn) Lưu link fallback nếu dạng mp4 thường
-  thumbnailUrl   String?    // Ảnh bìa của video sinh ra từ Cloudflare
-  duration    Int      @default(0) // Lưu tổng thời lượng video (giây)
-  
-  isPreview     Boolean    @default(false)
+  videoId      String? // Lưu chính xác ID của nền tảng streaming (VD: "d54c12...")
+  videoUrl     String? // (Tùy chọn) Lưu link fallback nếu dạng mp4 thường
+  thumbnailUrl String? // Ảnh bìa của video sinh ra từ Cloudflare
+  duration     Int     @default(0) // Lưu tổng thời lượng video (giây)
 
-  order       Int
-  
-  moduleId    String
-  module      Module   @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  isPreview Boolean @default(false)
 
-  progress    LessonProgress[]
-  comments    LessonComment[]
-  
+  order Int
+
+  moduleId String
+  module   Module @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  progress LessonProgress[]
+  comments LessonComment[]
+
   // Quan hệ ngược cho tính năng Resume Learning
-  resumedBy   Enrollment[] @relation("ResumeLearning")
+  resumedBy Enrollment[] @relation("ResumeLearning")
 
   videoStatus VideoStatus @default(NONE)
-  createdAt      DateTime   @default(now())
-  updatedAt      DateTime   @updatedAt
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 
   @@index([moduleId])
 }
 
 model LessonComment {
-  id        String   @id @default(uuid())
-  content   String   @db.Text
-  
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  lessonId  String
-  lesson    Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  id      String @id @default(uuid())
+  content String @db.Text
 
-  parentId  String?
-  parent    LessonComment?  @relation("Replies", fields: [parentId], references: [id])
-  replies   LessonComment[] @relation("Replies")
+  userId   String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lessonId String
+  lesson   Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  parentId String?
+  parent   LessonComment?  @relation("Replies", fields: [parentId], references: [id])
+  replies  LessonComment[] @relation("Replies")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model CourseReview {
-  id        String   @id @default(uuid())
-  rating    Int      
-  comment   String?  @db.Text
-  
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  courseId  String
-  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  id      String  @id @default(uuid())
+  rating  Int
+  comment String? @db.Text
+
+  userId   String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId String
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@unique([userId, courseId])
+  @@index([courseId, createdAt(sort: Desc)]) // lấy danh sách review của 1 khóa học phân trang siêu tốc
 }
 
-// ==========================================
 // 4. COMMERCE (DISCOUNTS, VOUCHERS, ORDERS)
-// ==========================================
 
 enum DiscountType {
   PERCENTAGE
@@ -333,98 +354,98 @@ enum DiscountType {
 
 // DISCOUNT: Giảm giá ghim trực tiếp lên giá của Khóa học (Tự động áp dụng)
 model Discount {
-  id          String       @id @default(uuid())
-  name        String       
-  type        DiscountType
-  value       Decimal      @db.Decimal(10, 2)
+  id    String       @id @default(uuid())
+  name  String
+  type  DiscountType
+  value Decimal      @db.Decimal(10, 2)
 
   // Bảo vệ tài chính: Giới hạn số tiền giảm tối đa (Áp dụng cho PERCENTAGE)
-  maxDiscountAmount Decimal?         @db.Decimal(10, 2)
+  maxDiscountAmount Decimal? @db.Decimal(10, 2)
 
-  isGlobal    Boolean      @default(false) 
+  isGlobal Boolean @default(false)
 
   // Công tắc khẩn cấp (Tắt/Bật chiến dịch ngay lập tức)
-  isActive          Boolean          @default(true)
+  isActive Boolean @default(true)
 
-  startDate   DateTime
-  endDate     DateTime
+  startDate DateTime
+  endDate   DateTime
 
-  courses     CourseDiscount[] 
+  courses CourseDiscount[]
 }
 
 model CourseDiscount {
-  courseId    String
-  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  discountId  String
-  discount    Discount @relation(fields: [discountId], references: [id], onDelete: Cascade)
-  
+  courseId   String
+  course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  discountId String
+  discount   Discount @relation(fields: [discountId], references: [id], onDelete: Cascade)
+
   @@id([courseId, discountId])
 }
 
 // VOUCHER: Mã giảm giá người dùng phải tự nhập ở màn hình Thanh toán (Checkout)
 // 1. Khai báo đối tượng được phép sử dụng Voucher
 enum VoucherAudience {
-  GLOBAL          // Ai cũng dùng được (Mã Public)
-  SPECIFIC_USERS  // Chỉ những người có trong "Ví Voucher" mới được dùng
+  GLOBAL // Ai cũng dùng được (Mã Public)
+  SPECIFIC_USERS // Chỉ những người có trong "Ví Voucher" mới được dùng
 }
 
 // 2. Nguồn gốc Voucher chui vào ví (Để thống kê Marketing)
 enum VoucherSource {
-  SAVED_BY_USER     // Học viên tự thấy mã trên web và bấm "Lưu vào ví"
+  SAVED_BY_USER // Học viên tự thấy mã trên web và bấm "Lưu vào ví"
   ASSIGNED_BY_ADMIN // Hệ thống/Admin chủ động tặng (Bắn thẳng vào ví)
 }
 
 model Voucher {
-  id                String          @id @default(uuid())
-  code              String          @unique 
-  type              DiscountType
-  value             Decimal         @db.Decimal(10, 2)
+  id    String       @id @default(uuid())
+  code  String       @unique
+  type  DiscountType
+  value Decimal      @db.Decimal(10, 2)
 
-  maxDiscountAmount Decimal?        @db.Decimal(10, 2)
-  minOrderValue     Decimal?        @db.Decimal(10, 2)
+  maxDiscountAmount Decimal? @db.Decimal(10, 2)
+  minOrderValue     Decimal? @db.Decimal(10, 2)
 
-  maxUsesTotal      Int?          
-  currentUses       Int             @default(0)
-  maxUsesPerUser    Int             @default(1) 
+  maxUsesTotal   Int?
+  currentUses    Int  @default(0)
+  maxUsesPerUser Int  @default(1)
 
   // Phân loại mã Public hay Private
-  audience          VoucherAudience @default(GLOBAL)
+  audience VoucherAudience @default(GLOBAL)
 
-  isActive          Boolean         @default(true)
-  startDate         DateTime
-  expiresAt         DateTime?
-  version           Int             @default(1)
+  isActive  Boolean   @default(true)
+  startDate DateTime
+  expiresAt DateTime?
+  version   Int       @default(1)
 
-  usages            VoucherUsage[]
-  orders            Order[]
-  
+  usages VoucherUsage[]
+  orders Order[]
+
   // [BỔ SUNG]: Liên kết tới Ví của người dùng
-  wallets           UserVoucher[]   
+  wallets UserVoucher[]
 }
 
 // Bảng "Ví Voucher" (Đóng vai trò là bảng trung gian N-N)
 model UserVoucher {
   userId    String
-  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   voucherId String
-  voucher   Voucher       @relation(fields: [voucherId], references: [id], onDelete: Cascade)
-  
-  source    VoucherSource @default(SAVED_BY_USER) // Biết được mã này do user tự lưu hay admin tặng
-  
-  isUsed    Boolean       @default(false)
-  usedAt    DateTime?     // Thời điểm sử dụng
+  voucher   Voucher @relation(fields: [voucherId], references: [id], onDelete: Cascade)
 
-  createdAt DateTime      @default(now())
+  source VoucherSource @default(SAVED_BY_USER) // Biết được mã này do user tự lưu hay admin tặng
+
+  isUsed Boolean   @default(false)
+  usedAt DateTime? // Thời điểm sử dụng
+
+  createdAt DateTime @default(now())
 
   // Đảm bảo 1 user không được gán/lưu 1 mã voucher 2 lần
-  @@id([userId, voucherId]) 
+  @@id([userId, voucherId])
 }
 
 model VoucherUsage {
   userId    String
-  user      User    @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
   voucherId String
-  voucher   Voucher @relation(fields: [voucherId], references: [id])
+  voucher   Voucher  @relation(fields: [voucherId], references: [id])
   usedAt    DateTime @default(now())
 
   @@id([userId, voucherId])
@@ -445,66 +466,66 @@ enum PaymentStatus {
 }
 
 model Order {
-  id              String      @id @default(uuid())
-  totalAmount     Decimal     @db.Decimal(10, 2)
-  status          OrderStatus @default(PENDING)
-  
-  // Hỗ trợ CRON Job hủy đơn hàng rác (Thường set = now() + 15 phút)
-  expiresAt       DateTime?
+  id          String      @id @default(uuid())
+  totalAmount Decimal     @db.Decimal(10, 2)
+  status      OrderStatus @default(PENDING)
 
-  userId          String
-  user            User        @relation(fields: [userId], references: [id])
-  
-  voucherId       String?  
-  voucher         Voucher?    @relation(fields: [voucherId], references: [id])
-  
-  items           OrderItem[]
+  // Hỗ trợ CRON Job hủy đơn hàng rác (Thường set = now() + 15 phút)
+  expiresAt DateTime?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  voucherId String?
+  voucher   Voucher? @relation(fields: [voucherId], references: [id])
+
+  items OrderItem[]
 
   // Đơn hàng có thể có nhiều lần thử thanh toán (Payment Attempts)
-  payments        Payment[]
+  payments Payment[]
 
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // Bảng Quản lý Giao dịch (Payment Attempts & Audit Log)
 model Payment {
-  id                    String        @id @default(uuid()) // Đây chính là vnp_TxnRef gửi sang VNPAY
-  
-  orderId               String
-  order                 Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  
-  provider              String        // VD: "VNPAY", "MOMO"
-  providerTransactionId String?       // Mã GD thật sự trên hệ thống VNPAY/MoMo (vnp_TransactionNo)
-  
-  amount                Decimal       @db.Decimal(10, 2)
-  status                PaymentStatus @default(PENDING)
-  
-  // Lưu lại RAW Body từ Webhook để Debug khi có tranh chấp (Rào cản 10)
-  webhookPayload        Json?         
+  id String @id @default(uuid()) // Đây chính là vnp_TxnRef gửi sang VNPAY
 
-  createdAt             DateTime      @default(now())
-  updatedAt             DateTime      @updatedAt
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  provider              String // VD: "VNPAY", "MOMO"
+  providerTransactionId String? // Mã GD thật sự trên hệ thống VNPAY/MoMo (vnp_TransactionNo)
+
+  amount Decimal       @db.Decimal(10, 2)
+  status PaymentStatus @default(PENDING)
+
+  // Lưu lại RAW Body từ Webhook để Debug khi có tranh chấp (Rào cản 10)
+  webhookPayload Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([provider, providerTransactionId]) // Không cho phép trùng mã GD thành công từ cổng
   @@index([orderId])
 }
 
 model OrderItem {
-  id        String   @id @default(uuid())
-  pricePaid Decimal  @db.Decimal(10, 2) 
+  id        String  @id @default(uuid())
+  pricePaid Decimal @db.Decimal(10, 2)
   orderId   String
-  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   courseId  String
-  course    Course   @relation(fields: [courseId], references: [id])
+  course    Course  @relation(fields: [courseId], references: [id])
 }
 
 // Wishlist - Danh sách khóa học yêu thích
 model Wishlist {
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  courseId  String
-  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  userId   String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId String
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
 
@@ -513,96 +534,90 @@ model Wishlist {
 
 // Lịch sử xem khóa học của User
 model RecentlyViewed {
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  courseId  String
-  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  
-  viewedAt  DateTime @default(now())
+  userId   String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId String
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  viewedAt DateTime @default(now())
 
   // Đảm bảo 1 user - 1 khóa học chỉ có 1 record lịch sử
   @@id([userId, courseId])
 }
 
-// ==========================================
 // SHOPPING CART (GIỎ HÀNG SERVER)
-// ==========================================
 
 model Cart {
-  id        String     @id @default(uuid())
-  
-  userId    String     @unique // Quan hệ 1-1: Mỗi user chỉ có 1 giỏ hàng active
-  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  items     CartItem[]
+  id String @id @default(uuid())
 
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  userId String @unique // Quan hệ 1-1: Mỗi user chỉ có 1 giỏ hàng active
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  items CartItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model CartItem {
-  id        String   @id @default(uuid())
-  
-  cartId    String
-  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
-  
-  courseId  String
-  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  id String @id @default(uuid())
+
+  cartId String
+  cart   Cart   @relation(fields: [cartId], references: [id], onDelete: Cascade)
+
+  courseId String
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
 
   // Đảm bảo 1 khóa học chỉ xuất hiện 1 lần trong giỏ hàng
-  @@unique([cartId, courseId]) 
+  @@unique([cartId, courseId])
 }
 
-// ==========================================
 // 5. PROGRESS & ENROLLMENT
-// ==========================================
 
 model Enrollment {
-  id                   String   @id @default(uuid())
-  
-  userId               String
-  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  courseId             String
-  course               Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  
+  id String @id @default(uuid())
+
+  userId   String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId String
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
   // Lưu lại id bài học gần nhất để Resume
   lastAccessedLessonId String?
-  lastAccessedLesson   Lesson?  @relation("ResumeLearning", fields: [lastAccessedLessonId], references: [id], onDelete: SetNull)
+  lastAccessedLesson   Lesson? @relation("ResumeLearning", fields: [lastAccessedLessonId], references: [id], onDelete: SetNull)
 
-  createdAt            DateTime @default(now())
-  
+  createdAt DateTime @default(now())
+
   @@unique([userId, courseId])
 }
 
 model LessonProgress {
-  id             String   @id @default(uuid())
-  isCompleted    Boolean  @default(false)
-  
+  id          String  @id @default(uuid())
+  isCompleted Boolean @default(false)
+
   // Tracker theo dõi từng giây xem video
-  watchedSeconds Int      @default(0) 
+  watchedSeconds Int @default(0)
 
-  userId         String
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  lessonId       String
-  lesson         Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  userId   String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lessonId String
+  lesson   Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
 
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([userId, lessonId])
 }
 
-// ==========================================
 // 6. SYSTEM LOGIC & MODERATION
-// ==========================================
 
 // Bảng từ khóa cấm
 model ForbiddenWord {
-  id        String   @id @default(uuid())
-  word      String   @unique
-  isActive  Boolean  @default(true)
+  id       String  @id @default(uuid())
+  word     String  @unique
+  isActive Boolean @default(true)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
