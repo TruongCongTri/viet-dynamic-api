@@ -4,8 +4,9 @@
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated"
+  provider = "prisma-client-js"
+  moduleFormat = "cjs"
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
@@ -18,6 +19,13 @@ enum AuthProvider {
   LOCAL
   GOOGLE
   FACEBOOK
+}
+
+enum AccountStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  SUSPENDED
 }
 
 model Role {
@@ -63,6 +71,7 @@ model User {
   email    String  @unique
   password String? // Có thể null nếu đăng nhập bằng Google/FB
 
+  accountStatus AccountStatus @default(PENDING)
   // TÍNH NĂNG SMS/ZALO
   phone           String? @unique
   isPhoneVerified Boolean @default(false)
@@ -109,6 +118,9 @@ model User {
 model UserProfile {
   userId    String  @id
   user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  slug      String? @unique
+  
   fullName  String?
   avatarUrl String?
   bio       String? @db.Text
@@ -227,6 +239,8 @@ model Course {
   cartItems      CartItem[]
   recentlyViewed RecentlyViewed[]
 
+  rejectionReason String?  @map("rejection_reason")
+  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

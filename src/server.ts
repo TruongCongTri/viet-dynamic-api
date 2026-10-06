@@ -1,8 +1,13 @@
+import { prisma } from '@/common/configs/prisma.config';
+import { env } from '@/common/configs/env.config';
 import app from '@/app';
-import { prisma } from '@/common/configs/prisma';
-import { env } from '@/common/configs/env';
-import { initCronJobs } from './jobs/cleanup.job';
+
+import http from 'http';
+import { initializeSocket } from '@/common/configs/socket.config';
+import { redisConnection } from '@/common/configs/redis.config';
+
 import '@/common/utils/cron/cleanup.cron';
+import { initCronJobs } from './cronjobs';
 
 // Hàm kiểm tra kết nối Database
 const checkDatabaseConnection = async () => {
@@ -17,21 +22,54 @@ const checkDatabaseConnection = async () => {
   }
 };
 
+/**
+ * @function checkRedisConnection
+ * @description Verifies connection to Upstash/Redis before starting the server.
+ */
+const checkRedisConnection = async () => {
+  try {
+    await redisConnection.ping();
+    console.log('[Redis]: Connected successfully!');
+  } catch (error) {
+    console.error('[Redis]: Failed to connect to Redis. Error:', error);
+    process.exit(1);
+  }
+};
+
+// --- GLOBAL CRASH HANDLERS ---
+process.on('uncaughtException', (err) => {
+  console.error('[FATAL] Uncaught Exception:', err);
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('[FATAL] Unhandled Rejection at:', promise, 'reason:', reason);
+  process.exit(1);
+});
+
 const startServer = async () => {
   try {
-    // 1. Chờ kết nối DB thành công trước
-    await checkDatabaseConnection();
+    console.log('[System]: server.ts has started!');
+    console.log('[System]: Starting initialization...');
 
+    // 1. Check Infrastructure
+    await checkDatabaseConnection();
+    await checkRedisConnection();
+
+    // 2. Start Server
     const port = parseInt(env.PORT, 10);
+    const server = http.createServer(app);
+
+    initializeSocket(server);
 
     app.listen(port, () => {
       console.log(`=================================`);
-      console.log(`🚀 API Server đang chạy tại: http://localhost:${port}`);
+      console.log(`🚀 API Server đang chạy tại 0.0.0.0:${port}`);
       console.log(`🛡️  Chấp nhận kết nối từ: ${env.CLIENT_URL}`);
       console.log(`=================================`);
     });
 
-    initCronJobs(); // Khởi động CronJob chạy ngầm
+    initCronJobs();
   } catch (error) {
     console.error('Lỗi khởi động server:', error);
     process.exit(1);
@@ -39,16 +77,3 @@ const startServer = async () => {
 };
 
 startServer();
-
-// // Lắng nghe sự kiện tắt Server (Ctrl+C hoặc hệ thống yêu cầu tắt)
-// process.on('SIGINT', async () => {
-//   console.log('⏳ Đang ngắt kết nối Database...');
-//   await prisma.$disconnect();
-//   console.log('🛑 [Database]: Đã ngắt kết nối PostgreSQL an toàn.');
-//   process.exit(0);
-// });
-
-// process.on('SIGTERM', async () => {
-//   await prisma.$disconnect();
-//   process.exit(0);
-// });

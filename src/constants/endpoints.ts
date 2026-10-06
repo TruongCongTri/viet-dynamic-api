@@ -19,13 +19,16 @@ export const ENDPOINTS = {
     REVOKE_OTHER_SESSIONS: '/sessions/others',
   },
   PUBLIC: {
+    BASE: '/public', // Thường gắn trực tiếp vào root v1
     CATEGORIES: '/categories',
+    CATEGORY_DETAIL: '/categories/:slug',
     COURSES: '/courses',
     COURSE_DETAIL: '/courses/:slug', // Chi tiết khóa học cho khách
     COURSE_REVIEWS: '/courses/:slug/reviews', // Xem review public
     INSTRUCTORS: '/instructors',
-    INSTRUCTOR_DETAIL: '/instructors/:id', // Xem profile giảng viên
-    WEBHOOK_PAYMENT: '/payments/webhook',
+    INSTRUCTOR_DETAIL: '/instructors/:slug', // Xem profile giảng viên
+    WEBHOOK_PAYMENT_VNPAY: '/payments/webhook/vnpay',
+    WEBHOOK_PAYMENT_MOMO: '/payments/webhook/momo',
   },
   USER: {
     BASE: '/users/me',
@@ -41,14 +44,22 @@ export const ENDPOINTS = {
     WISHLIST_TOGGLE: '/wishlist/toggle',
     CART: '/cart',
     CART_ITEMS: '/cart/items',
+    CART_ITEMS_REMOVE: '/cart/items/:courseId', // BỔ SUNG: Silent API
+    CART_ITEMS_MOVE_TO_WISHLIST: '/cart/items/:courseId/move-to-wishlist', // BỔ SUNG: Silent API
     MERGE_GUEST_CART: '/cart/merge-guest-cart', // BỔ SUNG: Rào cản 4 tài liệu E-com
     VOUCHERS: '/vouchers',
+    VOUCHERS_ME: '/vouchers/me', // BỔ SUNG: Rào cản 4 tài liệu
+    VOUCHERS_APPLY: '/vouchers/apply', // BỔ SUNG: Rào cản 4 tài liệu
+    VOUCHERS_SAVE: '/vouchers/:code/save', // BỔ SUNG: Rào cản 4 tài liệu
     VOUCHERS_APPLICABLE: '/vouchers/applicable', // BỔ SUNG: Gợi ý mã có thể dùng
     ORDERS: '/orders',
-    ORDER_PAY: '/orders/:id/pay',
+    ORDERS_DETAIL: '/orders/:id', // BỔ SUNG: Rào cản 4 tài liệu'
+    ORDERS_CHECKOUT: '/orders/checkout', // BỔ SUNG: Rào cản 4 tài liệu
+    ORDERS_PAY: '/orders/:id/pay',
     ORDER_STATUS: '/orders/:id/status-polling',
-    // BỔ SUNG: Recently Viewed (Vũ khí chốt sale)
-    RECENTLY_VIEWED: '/courses/recently-viewed',
+    RECENTLY_VIEWED: '/commerces/recently-viewed',
+    RECENTLY_VIEWED_TRACK: '/courses/:slug/view', // BỔ SUNG: Silent API
+    RECENTLY_VIEWED_REMOVE: '/courses/recently-viewed/:courseId', // BỔ SUNG: Silent API
   },
   LEARN: {
     BASE: '/learn',

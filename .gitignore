@@ -138,4 +138,7 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
-/generated/prisma
+# Prisma generated client
+/src/generated
+node_modules/.prisma
+

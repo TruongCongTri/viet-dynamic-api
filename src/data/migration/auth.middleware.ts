@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { env } from '@/common/configs/env'; // Import từ Zod thay vì dùng process.env
+import { env } from '@/common/configs/env.config'; // Import từ Zod thay vì dùng process.env
 
 // Mở rộng interface Request của Express để chứa thông tin user
 declare global {

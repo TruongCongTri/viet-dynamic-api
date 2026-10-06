@@ -5,7 +5,7 @@
     "module": "ESNext",
     "moduleResolution": "bundler", // Cho phép import không cần đuôi file .js/.ts
     "lib": ["ES2022"],
-    "types": ["node"],
+    "types": ["node", "jest"],
 
     /* 2. Paths Configuration */
     "rootDir": "./",

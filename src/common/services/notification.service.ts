@@ -1,24 +1,22 @@
-import nodemailer from 'nodemailer';
-import axios from 'axios';
-import { env } from '@/common/configs/env';
+import { env } from '@/common/configs/env.config';
 import { ERROR_CODES } from '@/constants/error-codes';
 import { AppError } from '../errors/app.error';
 import { MESSAGES } from '@/constants/messages';
 
 export class NotificationService {
-  private emailTransporter;
+  // private emailTransporter;
 
   constructor() {
     // Cấu hình Nodemailer (Dùng Gmail, SendGrid, hoặc AWS SES)
-    this.emailTransporter = nodemailer.createTransport({
-      host: env.SMTP_HOST,
-      port: env.SMTP_PORT,
-      secure: false,
-      auth: {
-        user: env.SMTP_USER, // VD: cskh@vietdynamic.com
-        pass: env.SMTP_PASSWORD, // App Password của Gmail
-      },
-    });
+    // this.emailTransporter = nodemailer.createTransport({
+    //   host: env.SMTP_HOST,
+    //   port: env.SMTP_PORT,
+    //   secure: false,
+    //   auth: {
+    //     user: env.SMTP_USER, // VD: cskh@vietdynamic.com
+    //     pass: env.SMTP_PASSWORD, // App Password của Gmail
+    //   },
+    // });
   }
 
   // 1. GỬI QUA EMAIL
@@ -29,19 +27,19 @@ export class NotificationService {
       console.log(`🔑 [MOCK EMAIL] MÃ OTP CỦA BẠN LÀ: ${otpCode}\n\n`);
 
       if (process.env.NODE_ENV === 'production') {
-        await this.emailTransporter.sendMail({
-          from: `"Viet Dynamic" <${process.env.SMTP_USER}>`,
-          to,
-          subject: 'Mã xác thực tài khoản Viet Dynamic',
-          html: `
-            <div style="font-family: Arial, sans-serif; text-align: center; padding: 20px;">
-              <h2>Xác thực tài khoản của bạn</h2>
-              <p>Mã OTP của bạn có hiệu lực trong 5 phút:</p>
-              <h1 style="color: #4CAF50; font-size: 40px; letter-spacing: 5px;">${otpCode}</h1>
-              <p>Vui lòng không chia sẻ mã này cho bất kỳ ai.</p>
-            </div>
-          `,
-        });
+        // await this.emailTransporter.sendMail({
+        //   from: `"Viet Dynamic" <${process.env.SMTP_USER}>`,
+        //   to,
+        //   subject: 'Mã xác thực tài khoản Viet Dynamic',
+        //   html: `
+        //     <div style="font-family: Arial, sans-serif; text-align: center; padding: 20px;">
+        //       <h2>Xác thực tài khoản của bạn</h2>
+        //       <p>Mã OTP của bạn có hiệu lực trong 5 phút:</p>
+        //       <h1 style="color: #4CAF50; font-size: 40px; letter-spacing: 5px;">${otpCode}</h1>
+        //       <p>Vui lòng không chia sẻ mã này cho bất kỳ ai.</p>
+        //     </div>
+        //   `,
+        // });
       }
 
       return true;
@@ -65,18 +63,24 @@ export class NotificationService {
           ERROR_CODES.NOTIFICATION.MISSING_CONFIG
         );
 
-      const response = await axios.get(env.ESMS_URL, {
-        params: {
-          Phone: phone,
-          Content: `Ma xac thuc Viet Dynamic cua ban la: ${otpCode}. Khong chia se ma nay.`,
-          ApiKey: env.ESMS_API_KEY,
-          SecretKey: env.ESMS_SECRET_KEY,
-          SmsType: 2, // Brandname CSKH
-          Brandname: 'VIETDYNAMIC',
-        },
+      const url = new URL(env.ESMS_URL);
+      url.searchParams.append('Phone', phone);
+      url.searchParams.append(
+        'Content',
+        `Ma xac thuc Viet Dynamic cua ban la: ${otpCode}. Khong chia se ma nay.`
+      );
+      url.searchParams.append('ApiKey', env.ESMS_API_KEY);
+      url.searchParams.append('SecretKey', env.ESMS_SECRET_KEY);
+      url.searchParams.append('SmsType', '2'); // Brandname CSKH
+      url.searchParams.append('Brandname', 'VIETDYNAMIC');
+
+      const response = await fetch(url.toString(), {
+        method: 'GET',
       });
 
-      if (response.data.CodeResult !== '100') {
+      const data = (await response.json()) as { CodeResult?: string };
+
+      if (data.CodeResult !== '100') {
         throw new AppError(
           502,
           MESSAGES.NOTIFICATION.SMS_REJECTED,
@@ -107,26 +111,25 @@ export class NotificationService {
       // Format số điện thoại về chuẩn của Zalo (84xxxxx)
       const formattedPhone = phone.startsWith('0') ? `84${phone.slice(1)}` : phone;
 
-      const response = await axios.post(
-        env.ZALO_ZNS_URL,
-        {
+      const response = await fetch(env.ZALO_ZNS_URL, {
+        method: 'POST',
+        headers: {
+          access_token: env.ZALO_ACCESS_TOKEN,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
           phone: formattedPhone,
           template_id: env.ZALO_OTP_TEMPLATE_ID,
           template_data: {
-            otp_code: otpCode, // Biến này phải khớp với template bạn khai báo trên Zalo
-            // name: "Học viên", v.v...
+            otp_code: otpCode, // Biến này phải khớp với template khai báo trên Zalo
           },
-        },
-        {
-          headers: {
-            access_token: env.ZALO_ACCESS_TOKEN,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
+        }),
+      });
 
-      if (response.data.error) {
-        throw new Error(response.data.message);
+      const data = (await response.json()) as { error?: number | boolean; message?: string };
+
+      if (data.error) {
+        throw new Error(data.message);
       }
       return true;
     } catch (error) {

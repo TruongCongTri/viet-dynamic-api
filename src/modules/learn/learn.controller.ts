@@ -6,6 +6,7 @@ import { MESSAGES } from '@/constants/messages';
 import { RESOURCES } from '@/constants/resources';
 
 import { CreateCommentDTO, CreateReviewDTO, UpdateProgressDTO } from './learn.schema';
+import { AppError } from '@/common/errors/app.error';
 
 export class LearnController {
   private readonly learnService: LearnService;
@@ -16,7 +17,8 @@ export class LearnController {
 
   // [A] BẢNG ĐIỀU KHIỂN HỌC TẬP
   public getMyCourses = async (req: Request, res: Response) => {
-    const userId = req.user!.id;
+    const userId = (req as any).user.id;
+
     const courses = await this.learnService.getMyCourses(userId);
 
     successResponse(res, {
@@ -27,7 +29,8 @@ export class LearnController {
   };
 
   public resumeCourse = async (req: Request, res: Response) => {
-    const userId = req.user!.id;
+    const userId = (req as any).user.id;
+
     const slug = req.params.slug as string;
 
     const resumeData = await this.learnService.resumeCourse(userId, slug);
@@ -41,7 +44,8 @@ export class LearnController {
 
   // [B] TRÌNH PHÁT VIDEO & NỘI DUNG
   public getCourseContent = async (req: Request, res: Response) => {
-    const userId = req.user!.id;
+    const userId = (req as any).user.id;
+
     const slug = req.params.slug as string;
 
     const syllabus = await this.learnService.getCourseSyllabus(userId, slug);
@@ -54,8 +58,11 @@ export class LearnController {
   };
 
   public getLessonDetail = async (req: Request, res: Response) => {
-    const userId = req.user!.id;
-    const lessonId = req.params.lessonId as string;
+    const userId = (req as any).user.id;
+
+    const lessonId = req.params.id as string;
+
+    if (!lessonId) throw new AppError(400, 'Missing Lesson ID');
 
     const lessonDetail = await this.learnService.getLessonDetail(userId, lessonId);
 
@@ -67,8 +74,9 @@ export class LearnController {
   };
 
   public updateProgress = async (req: Request, res: Response) => {
-    const userId = req.user!.id;
-    const lessonId = req.params.lessonId as string;
+    const userId = (req as any).user.id;
+
+    const lessonId = req.params.id as string;
 
     // Gán type DTO để TypeScript tự động nhắc code (Autocomplete)
     const payload = req.body as UpdateProgressDTO;
@@ -84,7 +92,7 @@ export class LearnController {
 
   // [C] TƯƠNG TÁC & CỘNG ĐỒNG
   public getComments = async (req: Request, res: Response) => {
-    const lessonId = req.params.lessonId as string;
+    const lessonId = req.params.id as string;
     const comments = await this.learnService.getComments(lessonId);
 
     successResponse(res, {
@@ -95,8 +103,9 @@ export class LearnController {
   };
 
   public createComment = async (req: Request, res: Response) => {
-    const userId = req.user!.id;
-    const lessonId = req.params.lessonId as string;
+    const userId = (req as any).user.id;
+
+    const lessonId = req.params.id as string;
     const payload = req.body as CreateCommentDTO;
 
     const comment = await this.learnService.createComment(userId, lessonId, payload);
@@ -109,7 +118,8 @@ export class LearnController {
   };
 
   public createReview = async (req: Request, res: Response) => {
-    const userId = req.user!.id;
+    const userId = (req as any).user.id;
+
     const slug = req.params.slug as string;
     const payload = req.body as CreateReviewDTO;
 
@@ -120,5 +130,26 @@ export class LearnController {
       message: MESSAGES.COMMON.SUCCESS.CREATED(RESOURCES.REVIEW),
       data: review,
     });
+  };
+
+  public updateComment = async (req: Request, res: Response) => {
+    const userId = (req as any).user.id;
+    const commentId = req.params.commentId as string;
+    const payload = req.body as { content: string }; // Ép kiểu nhanh hoặc dùng DTO
+
+    const comment = await this.learnService.updateComment(userId, commentId, payload.content);
+    successResponse(res, {
+      statusCode: 200,
+      message: 'Cập nhật bình luận thành công',
+      data: comment,
+    });
+  };
+
+  public deleteComment = async (req: Request, res: Response) => {
+    const userId = (req as any).user.id;
+    const commentId = req.params.commentId as string;
+
+    const result = await this.learnService.deleteComment(userId, commentId);
+    successResponse(res, { statusCode: 200, message: result.message });
   };
 }

@@ -1,9 +1,10 @@
-import { Prisma, OtpType } from '@/generated/client';
-import { prisma } from '@/common/configs/prisma';
+import { OtpType, Prisma, User } from '@prisma/client';
+import { prisma } from '@/common/configs/prisma.config';
 import { BaseRepository } from '@/common/repositories/base.repository';
-import { OtpChannel, OTP_CHANNELS } from '@/constants/app.constant';
+import { APP_CONFIG, OtpChannel, OTP_CHANNELS } from '@/constants/app.constant';
+import { RegisterDTO } from './auth.schema';
 
-export class AuthRepository extends BaseRepository<Prisma.UserDelegate> {
+export class AuthRepository extends BaseRepository<User> {
   constructor() {
     super('user');
   }
@@ -24,6 +25,7 @@ export class AuthRepository extends BaseRepository<Prisma.UserDelegate> {
         id: true,
         email: true,
         isEmailVerified: true,
+        accountStatus: true,
         profile: { select: { fullName: true } },
       },
     });
@@ -170,5 +172,17 @@ export class AuthRepository extends BaseRepository<Prisma.UserDelegate> {
       prisma.user.update({ where: { id: userId }, data: { password: hashedPassword } }),
       prisma.session.updateMany({ where: { userId, isRevoked: false }, data: { isRevoked: true } }),
     ]);
+  }
+
+  public async createPendingUser(data: RegisterDTO, hashedPassword: string) {
+    return await prisma.user.create({
+      data: {
+        email: data.email,
+        password: hashedPassword,
+        fullName: data.fullName,
+        role: APP_CONFIG.AUTH.DEFAULT_ROLE as any,
+        accountStatus: 'PENDING', // Enforcing the manual review flow
+      },
+    });
   }
 }

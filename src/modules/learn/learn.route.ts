@@ -3,7 +3,13 @@ import { ENDPOINTS } from '@/constants/endpoints';
 import { validate } from '@/middlewares/validate.middleware';
 import { requireRole, verifyToken } from '@/middlewares/auth.middleware';
 import { LearnController } from './learn.controller';
-import { createCommentSchema, createReviewSchema, updateProgressSchema } from './learn.schema';
+import {
+  commentParamSchema,
+  createCommentSchema,
+  createReviewSchema,
+  updateCommentSchema,
+  updateProgressSchema,
+} from './learn.schema';
 
 export class LearnRoute {
   public router: Router;
@@ -58,6 +64,23 @@ export class LearnRoute {
       studentAuth,
       validate(createReviewSchema),
       this.learnController.createReview
+    );
+
+    // Sửa bình luận
+    this.router.put(
+      '/comments/:commentId',
+      studentAuth,
+      validate(commentParamSchema),
+      validate(updateCommentSchema),
+      this.learnController.updateComment
+    );
+
+    // Xóa bình luận
+    this.router.delete(
+      '/comments/:commentId',
+      studentAuth,
+      validate(commentParamSchema),
+      this.learnController.deleteComment
     );
   }
 }

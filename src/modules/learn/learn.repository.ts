@@ -1,9 +1,9 @@
-import { Prisma } from '@/generated/client';
-import { prisma } from '@/common/configs/prisma';
+import { Lesson, Prisma } from '@prisma/client';
+import { prisma } from '@/common/configs/prisma.config';
 import { BaseRepository } from '@/common/repositories/base.repository';
 import { UpdateProgressDTO, CreateCommentDTO, CreateReviewDTO } from './learn.schema';
 
-export class LearnRepository extends BaseRepository<Prisma.LessonDelegate> {
+export class LearnRepository extends BaseRepository<Lesson> {
   constructor() {
     super('lesson');
   }
@@ -193,5 +193,52 @@ export class LearnRepository extends BaseRepository<Prisma.LessonDelegate> {
         comment: commentValue,
       },
     });
+  }
+
+  // --- BỔ SUNG QUERIES CHO COMMENTS ---
+  public async updateComment(commentId: string, content: string) {
+    return prisma.lessonComment.update({
+      where: { id: commentId },
+      data: { content },
+    });
+  }
+
+  public async deleteComment(commentId: string) {
+    return prisma.lessonComment.delete({
+      where: { id: commentId },
+    });
+  }
+
+  // ==========================================
+  // [D] SECURITY & ACCESS CONTROL
+  // ==========================================
+
+  /**
+   * Rào cản 3 lớp cho khu vực Hỏi Đáp (Q&A)
+   * Quyền truy cập: ADMIN, Giảng viên của khóa, Học viên đã mua khóa
+   */
+  public async checkUserHasQnaAccess(userId: string, courseId: string): Promise<boolean> {
+    // Chạy song song 3 câu query để tối ưu tốc độ (Performance)
+    const [user, isInstructor, isEnrolled] = await Promise.all([
+      // Lớp 1: Check Admin
+      prisma.user.findUnique({
+        where: { id: userId },
+        select: { role: { select: { name: true } } },
+      }),
+      // Lớp 2: Check Giảng viên của khóa học này
+      prisma.courseInstructor.findUnique({
+        where: { courseId_userId: { courseId, userId } },
+      }),
+      // Lớp 3: Check Học viên đã mua khóa học này
+      prisma.enrollment.findUnique({
+        where: { userId_courseId: { userId, courseId } },
+      }),
+    ]);
+
+    if (user?.role?.name === 'ADMIN') return true;
+    if (isInstructor) return true;
+    if (isEnrolled) return true;
+
+    return false; // Trượt cả 3 lớp -> Từ chối truy cập
   }
 }

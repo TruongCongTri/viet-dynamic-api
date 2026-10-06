@@ -1,175 +1,272 @@
-import { 
-  LessonType, 
-  DiscountType, 
-  CourseStatus, 
-  VideoStatus, 
-  VoucherAudience 
-} from '../src/generated/enums';
-import bcrypt from 'bcryptjs';
-import { slugify } from '../src/common/utils/slugify.util';
+import { AuthProvider, AccountStatus, CourseStatus, LessonType, VideoStatus, DiscountType, VoucherAudience } from '@prisma/client';
+import * as bcrypt from 'bcryptjs';
 
-import "dotenv/config";
-import { prisma } from '../src/common/configs/prisma';
+import { prisma } from '../src/common/configs/prisma.config';
+// Đảm bảo đường dẫn import tương ứng với nơi bạn lưu file mock
+import { mockCategories } from '../mocks/categories.mock';
+import { mockCourses } from '../mocks/courses.mock';
 
 async function main() {
-  console.log('🤖 Starting Robotics & Automation Seeding...');
+  console.log('🌱 Bắt đầu chạy Seed Data...');
 
-  // Kiểm tra kết nối trước khi seed
-  await prisma.$connect();
-
-  // 1. SEED ROLES
-  const roles = [
-    { name: 'ADMIN', description: 'Quản trị viên hệ thống' },
-    { name: 'INSTRUCTOR', description: 'Chuyên gia Robotics' },
-    { name: 'STUDENT', description: 'Kỹ sư/Sinh viên kỹ thuật' },
+  // ==========================================
+  // 1. TẠO QUYỀN HẠN (PERMISSIONS)
+  // ==========================================
+  const permissionsData = [
+    { action: 'MANAGE_SYSTEM', description: 'Quyền quản trị hệ thống tối cao' },
+    { action: 'MANAGE_USERS', description: 'Quản lý người dùng' },
+    { action: 'MANAGE_ALL_COURSES', description: 'Quản lý, duyệt mọi khóa học' },
+    { action: 'VIEW_FINANCE', description: 'Xem báo cáo tài chính toàn sàn' },
+    { action: 'CREATE_COURSE', description: 'Tạo khóa học mới' },
+    { action: 'EDIT_OWN_COURSE', description: 'Chỉnh sửa khóa học của mình' },
+    { action: 'VIEW_OWN_COURSE', description: 'Học khóa học đã mua' },
+    { action: 'LEAVE_REVIEW', description: 'Đánh giá khóa học' },
   ];
 
-  for (const role of roles) {
-    await prisma.role.upsert({
-      where: { name: role.name },
-      update: {},
-      create: role,
+  for (const p of permissionsData) {
+    await prisma.permission.upsert({
+      where: { action: p.action },
+      update: { description: p.description },
+      create: p,
     });
   }
+  console.log('✅ Đã seed Permissions');
 
-  const adminRole = await prisma.role.findUnique({ where: { name: 'ADMIN' } });
-  const instructorRole = await prisma.role.findUnique({ where: { name: 'INSTRUCTOR' } });
+  // ==========================================
+  // 2. TẠO VAI TRÒ (ROLES) & GÁN QUYỀN
+  // ==========================================
+  const adminRole = await prisma.role.upsert({
+    where: { name: 'ADMIN' },
+    update: {},
+    create: {
+      name: 'ADMIN',
+      description: 'Quản trị viên hệ thống',
+      permissions: {
+        create: [
+          { permission: { connect: { action: 'MANAGE_SYSTEM' } } },
+          { permission: { connect: { action: 'MANAGE_USERS' } } },
+          { permission: { connect: { action: 'MANAGE_ALL_COURSES' } } },
+          { permission: { connect: { action: 'VIEW_FINANCE' } } },
+        ]
+      }
+    },
+  });
 
-  // 2. SEED USERS
-  const salt = await bcrypt.genSalt(12);
-  const password = await bcrypt.hash('VietDynamic@2026', salt);
+  const instructorRole = await prisma.role.upsert({
+    where: { name: 'INSTRUCTOR' },
+    update: {},
+    create: {
+      name: 'INSTRUCTOR',
+      description: 'Giảng viên',
+      permissions: {
+        create: [
+          { permission: { connect: { action: 'CREATE_COURSE' } } },
+          { permission: { connect: { action: 'EDIT_OWN_COURSE' } } },
+          { permission: { connect: { action: 'VIEW_OWN_COURSE' } } },
+          { permission: { connect: { action: 'LEAVE_REVIEW' } } },
+        ]
+      }
+    },
+  });
 
-  const admin = await prisma.user.upsert({
+  const studentRole = await prisma.role.upsert({
+    where: { name: 'STUDENT' },
+    update: {},
+    create: {
+      name: 'STUDENT',
+      description: 'Học viên',
+      permissions: {
+        create: [
+          { permission: { connect: { action: 'VIEW_OWN_COURSE' } } },
+          { permission: { connect: { action: 'LEAVE_REVIEW' } } },
+        ]
+      }
+    },
+  });
+  console.log('✅ Đã seed Roles');
+
+  // ==========================================
+  // 3. TẠO CATEGORIES (TỪ MOCK DATA)
+  // ==========================================
+  for (const cat of mockCategories) {
+    await prisma.category.upsert({
+      where: { slug: cat.slug },
+      update: { name: cat.name, description: cat.description },
+      create: cat,
+    });
+  }
+  console.log('✅ Đã seed Categories từ Mock Files');
+
+  // ==========================================
+  // 4. TẠO FORBIDDEN WORDS (TỪ CẤM)
+  // ==========================================
+  const badWords = ['đm', 'vcl', 'lừa đảo', 'scam', 'cứt'];
+  for (const word of badWords) {
+    await prisma.forbiddenWord.upsert({
+      where: { word },
+      update: {},
+      create: { word },
+    });
+  }
+  console.log('✅ Đã seed Forbidden Words');
+
+  // ==========================================
+  // 5. TẠO USERS (ADMIN, INSTRUCTOR, STUDENT)
+  // ==========================================
+  const defaultPassword = await bcrypt.hash('Password123!', 10);
+
+  await prisma.user.upsert({
     where: { email: 'admin@vietdynamic.vn' },
     update: {},
     create: {
       email: 'admin@vietdynamic.vn',
-      password,
-      roleId: adminRole!.id,
-      profile: { create: { fullName: 'Viet Dynamic Admin' } }
-    }
-  });
-
-  const expert = await prisma.user.upsert({
-    where: { email: 'expert.robotics@vietdynamic.vn' },
-    update: {},
-    create: {
-      email: 'expert.robotics@vietdynamic.vn',
-      password,
-      roleId: instructorRole!.id,
-      profile: { 
-        create: { 
-          fullName: 'TS. Nguyễn Tự Động', 
-          bio: 'Chuyên gia 10 năm kinh nghiệm trong lĩnh vực Robot cánh tay và SCADA.' 
-        } 
-      }
-    }
-  });
-
-  // 3. SEED CATEGORIES (Chuyên môn Robotics)
-  console.log('Creating Robotics Categories...');
-  const roboticsCategories = [
-    { name: 'Robot Công Nghiệp', slug: slugify('Robot Công Nghiệp') },
-    { name: 'Lập trình PLC & SCADA', slug: slugify('Lập trình PLC & SCADA') },
-    { name: 'AI & Computer Vision', slug: slugify('AI & Computer Vision') },
-    { name: 'IoT cho Nhà Máy', slug: slugify('IoT cho Nhà Máy') },
-  ];
-
-  for (const cat of roboticsCategories) {
-    await prisma.category.upsert({
-      where: { name: cat.name },
-      update: {},
-      create: cat,
-    });
-  }
-
-  const robotCat = await prisma.category.findUnique({ where: { name: 'Robot Công Nghiệp' } });
-
-  // 4. SEED ROBOTICS COURSES
-  console.log('Creating Advanced Courses...');
-  if (robotCat && expert) {
-    const courses = [
-      {
-        title: 'Lập trình Cánh tay Robot ABB cơ bản',
-        desc: 'Làm chủ ngôn ngữ RAPID và vận hành Robot ABB trong dây chuyền sản xuất.',
-        price: 3500000
-      },
-      {
-        title: 'Thiết kế hệ thống Tự động hóa với PLC S7-1200',
-        desc: 'Hướng dẫn đấu nối, lập trình TIA Portal và giám sát qua HMI.',
-        price: 2800000
-      }
-    ];
-
-    for (const c of courses) {
-      const slug = slugify(c.title);
-      await prisma.course.upsert({
-        where: { slug: slug },
-        update: {
-          status: CourseStatus.PUBLISHED, // Đảm bảo trạng thái luôn cập nhật
-        },
+      password: defaultPassword,
+      accountStatus: AccountStatus.APPROVED,
+      isEmailVerified: true,
+      authProvider: AuthProvider.LOCAL,
+      roleId: adminRole.id,
+      profile: {
         create: {
-          title: c.title,
-          slug: slug,
-          description: c.desc,
-          basePrice: c.price,
-          status: CourseStatus.PUBLISHED, // [CẬP NHẬT]: Dùng Enum thay cho isPublished
-          categoryId: robotCat.id,
-          // [CẬP NHẬT]: Thêm tỷ lệ ăn chia (revenueShare) cho Giảng viên
-          instructors: { create: { userId: expert.id, isOwner: true, revenueShare: 70 } }, 
-          modules: {
-            create: [
-              {
-                title: 'Chương 1: Tổng quan thiết bị',
-                order: 1,
-                lessons: {
-                  create: [
-                    { 
-                      title: 'An toàn trong vận hành Robot', 
-                      type: LessonType.VIDEO, 
-                      order: 1, 
-                      duration: 600, 
-                      videoStatus: VideoStatus.READY // [CẬP NHẬT]: Báo hiệu video đã transcode xong
-                    },
-                    { 
-                      title: 'Cấu trúc phần cứng và tủ điều khiển', 
-                      type: LessonType.VIDEO, 
-                      order: 2, 
-                      duration: 1200,
-                      videoStatus: VideoStatus.READY // [CẬP NHẬT]
-                    },
-                  ]
-                }
-              }
-            ]
-          }
+          fullName: 'Super Admin',
+          slug: 'super-admin',
+          bio: 'Quản trị viên tối cao của nền tảng.',
         }
-      });
-    }
-  }
-
-  // 5. SEED VOUCHERS
-  await prisma.voucher.upsert({
-    where: { code: 'ROBOTICS_MASTER' },
-    update: {},
-    create: {
-      code: 'ROBOTICS_MASTER',
-      type: DiscountType.PERCENTAGE,
-      value: 15,
-      maxDiscountAmount: 1000000,
-      minOrderValue: 2000000,
-      audience: VoucherAudience.GLOBAL, // [CẬP NHẬT]: Khai báo mã Public
-      startDate: new Date(),
-      expiresAt: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000),
-    }
+      }
+    },
   });
 
-  console.log('✅ Robotics & Automation data seeded successfully!');
+  const instructor = await prisma.user.upsert({
+    where: { email: 'instructor@vietdynamic.vn' },
+    update: {},
+    create: {
+      email: 'instructor@vietdynamic.vn',
+      password: defaultPassword,
+      accountStatus: AccountStatus.APPROVED,
+      isEmailVerified: true,
+      authProvider: AuthProvider.LOCAL,
+      roleId: instructorRole.id,
+      profile: {
+        create: {
+          fullName: 'Bui Vien Giảng Viên',
+          slug: 'bui-vien-giang-vien',
+          bio: 'Senior Automation Engineer & Robotics Expert.',
+        }
+      }
+    },
+  });
+
+  await prisma.user.upsert({
+    where: { email: 'student@vietdynamic.vn' },
+    update: {},
+    create: {
+      email: 'student@vietdynamic.vn',
+      password: defaultPassword,
+      accountStatus: AccountStatus.APPROVED,
+      isEmailVerified: true,
+      authProvider: AuthProvider.LOCAL,
+      roleId: studentRole.id,
+      profile: {
+        create: {
+          fullName: 'Nguyễn Học Viên',
+          slug: 'nguyen-hoc-vien',
+        }
+      }
+    },
+  });
+  console.log('✅ Đã seed Users');
+
+  // ==========================================
+  // 6. TẠO KHÓA HỌC MẪU TỪ MOCK DATA
+  // ==========================================
+  console.log('⏳ Đang tạo các khóa học mẫu. Vui lòng chờ...');
+  
+  let courseCount = 0;
+
+  for (const courseData of mockCourses) {
+    const category = await prisma.category.findUnique({ where: { slug: courseData.categorySlug } });
+    if (!category) continue;
+
+    const course = await prisma.course.upsert({
+      where: { slug: courseData.slug },
+      update: {},
+      create: {
+        title: courseData.title,
+        slug: courseData.slug,
+        description: courseData.description,
+        basePrice: courseData.basePrice,
+        status: CourseStatus.PUBLISHED,
+        categoryId: category.id,
+        // Phân quyền giảng viên
+        instructors: {
+          create: {
+            userId: instructor.id,
+            isOwner: true,
+            revenueShare: 80.00
+          }
+        },
+        // Tạo Chapters và Bài học
+        modules: {
+          create: courseData.modules.map(mod => ({
+            title: mod.title,
+            order: mod.order,
+            lessons: {
+              create: mod.lessons.map(lesson => ({
+                title: lesson.title,
+                type: LessonType.VIDEO,
+                videoStatus: VideoStatus.READY,
+                duration: lesson.duration,
+                order: lesson.order,
+                isPreview: lesson.isPreview,
+              }))
+            }
+          }))
+        }
+      }
+    });
+
+    // Tăng Course Count trên Category
+    await prisma.category.update({
+      where: { id: category.id },
+      data: { publishedCourseCount: { increment: 1 } }
+    });
+
+    courseCount++;
+  }
+
+  // Cập nhật Profile giảng viên
+  await prisma.userProfile.update({
+    where: { userId: instructor.id },
+    data: { totalCourses: courseCount }
+  });
+
+  console.log(`✅ Đã seed ${courseCount} Khóa học từ Mock Data`);
+
+  // ==========================================
+  // 7. TẠO VOUCHER MẪU (GLOBAL)
+  // ==========================================
+  await prisma.voucher.upsert({
+    where: { code: 'WELCOME100K' },
+    update: {},
+    create: {
+      code: 'WELCOME100K',
+      type: DiscountType.FIXED_AMOUNT,
+      value: 100000, 
+      minOrderValue: 500000, 
+      maxUsesTotal: 1000,
+      maxUsesPerUser: 1,
+      audience: VoucherAudience.GLOBAL,
+      startDate: new Date(),
+      expiresAt: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
+    }
+  });
+  console.log('✅ Đã seed Voucher');
+
+  console.log('🎉 Quá trình Seed hoàn tất!');
 }
 
 main()
   .catch((e) => {
-    console.error(e);
+    console.error('❌ Có lỗi xảy ra trong quá trình Seed:', e);
     process.exit(1);
   })
   .finally(async () => {

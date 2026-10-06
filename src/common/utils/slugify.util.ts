@@ -1,6 +1,6 @@
 /**
  * Chuyển đổi chuỗi tiếng Việt có dấu thành slug không dấu, chuẩn URL.
- * Ví dụ: "Lập trình Next.js 2026" -> "lap-trinh-nextjs-2026-a1b2c"
+ * Ví dụ: "Lập trình Next.js" -> "lap-trinh-nextjs-1713110400000"
  */
 export function slugify(input: string): string {
   if (!input) return '';
@@ -25,14 +25,8 @@ export function slugify(input: string): string {
     .replace(/-+/g, '-') // Loại bỏ nhiều dấu gạch ngang liên tiếp
     .replace(/^-+|-+$/g, ''); // Cắt gạch ngang ở đầu và cuối
 
-  const hash = shortHash(input);
-  return `${slug}-${hash}`;
-}
+  // 3. Dùng Date.now() để lấy timestamp tại thời điểm tạo (Mảng 13 chữ số)
+  const timestamp = Date.now();
 
-function shortHash(s: string): string {
-  let h = 5381;
-  for (let i = 0; i < s.length; i++) {
-    h = ((h << 5) + h) ^ s.charCodeAt(i);
-  }
-  return (h >>> 0).toString(16).slice(0, 5);
+  return `${slug}-${timestamp}`;
 }

@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import { OTP_CHANNELS } from '@/constants/app.constant';
 import { MESSAGES } from '@/constants/messages';
 import { FIELDS, FieldName } from '@/constants/fields';
+import { OTP_CHANNELS } from '@/constants/app.constant';
 
 // HÀM HELPER: RULE CHUNG CHO MẬT KHẨU
 const passwordValidationRule = (fieldName: FieldName) =>

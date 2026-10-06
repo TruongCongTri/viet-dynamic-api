@@ -1,4 +1,5 @@
-import { prisma } from '@/common/configs/prisma';
+import { prisma } from '@/common/configs/prisma.config';
+import { env } from '@/common/configs/env.config'; // Nhớ import env
 
 import { CreateCommentDTO, CreateReviewDTO, UpdateProgressDTO } from './learn.schema';
 
@@ -6,8 +7,7 @@ import { AppError } from '@/common/errors/app.error';
 import { MESSAGES } from '@/constants/messages';
 import { RESOURCES } from '@/constants/resources';
 import { LearnRepository } from './learn.repository';
-
-// import { signCloudflareVideoToken } from '@/common/utils/cloudflare.util';
+import { ERROR_CODES } from '@/constants/error-codes';
 
 export class LearnService {
   private readonly learnRepository: LearnRepository;
@@ -20,16 +20,13 @@ export class LearnService {
   public async getMyCourses(userId: string) {
     const enrollments = await this.learnRepository.findEnrollmentsByUserId(userId);
 
-    // Tính toán phần trăm hoàn thành cho từng khóa học
     const courseProgressPromises = enrollments.map(async (enrollment) => {
       const courseId = enrollment.courseId;
 
-      // Đếm tổng số bài học của khóa
       const totalLessons = await prisma.lesson.count({
         where: { module: { courseId } },
       });
 
-      // Đếm số bài user đã hoàn thành trong khóa này
       const completedLessons = await prisma.lessonProgress.count({
         where: {
           userId,
@@ -38,6 +35,7 @@ export class LearnService {
         },
       });
 
+      // Tiến độ khóa học tính dựa trên số lượng bài học đã hoàn thành [cite: 44]
       const progressPercent = await this.calculateProgress(userId, enrollment.courseId);
 
       return {
@@ -57,15 +55,12 @@ export class LearnService {
     if (!course) throw new AppError(404, MESSAGES.COMMON.ERROR.NOT_FOUND(RESOURCES.COURSE));
 
     const enrollment = await this.learnRepository.findEnrollmentBySlug(userId, slug);
-
     if (!enrollment) throw new AppError(403, 'Bạn chưa ghi danh khóa học này.');
 
-    // Nếu đã có bài học lưu dở, trả về luôn
     if (enrollment.lastAccessedLessonId) {
       return { lessonId: enrollment.lastAccessedLessonId };
     }
 
-    // Nếu học lần đầu, tìm bài học đầu tiên của module đầu tiên
     const firstLesson = await prisma.lesson.findFirst({
       where: { module: { courseId: course.id } },
       orderBy: [{ module: { order: 'asc' } }, { order: 'asc' }],
@@ -80,9 +75,7 @@ export class LearnService {
   // [B] TRÌNH PHÁT VIDEO & NỘI DUNG
   public async getCourseSyllabus(userId: string, slug: string) {
     const course = await this.learnRepository.findCourseBySlug(slug, userId);
-
     if (!course) throw new AppError(404, MESSAGES.COMMON.ERROR.NOT_FOUND(RESOURCES.COURSE));
-
     return course;
   }
 
@@ -98,12 +91,11 @@ export class LearnService {
       where: { userId_courseId: { userId, courseId } },
     });
 
-    // Nếu không sở hữu VÀ bài này không cho học thử -> Chặn!
     if (!enrollment && !lesson.isPreview) {
       throw new AppError(403, 'Bạn phải sở hữu khóa học này để xem nội dung.');
     }
 
-    // 2. Ghi nhận vị trí học tập (Fire and Forget - Không cần await để tránh làm chậm API)
+    // 2. Ghi nhận vị trí học tập (Fire and Forget)
     if (enrollment) {
       prisma.enrollment
         .update({
@@ -113,16 +105,39 @@ export class LearnService {
         .catch(console.error);
     }
 
-    // 3. KIỂM TRA TRẠNG THÁI VIDEO TRƯỚC KHI CẤP TOKEN
+    // 3. KIỂM TRA TRẠNG THÁI VIDEO TRƯỚC KHI CẤP TOKEN BẢO MẬT
     let videoToken = null;
     if (lesson.type === 'VIDEO') {
       if (lesson.videoStatus === 'READY' && lesson.videoId) {
-        // Chỉ cấp token phát khi video đã xử lý xong hoàn toàn
-        // videoToken = signCloudflareVideoToken(lesson.videoId);
-        videoToken = `signed_token_${lesson.videoId}_${Date.now()}`;
+        const accountId = env.CLOUDFLARE_ACCOUNT_ID;
+        const apiToken = env.CLOUDFLARE_API_TOKEN;
+
+        if (accountId && apiToken) {
+          try {
+            // Thay vì giao Video ID gốc, Backend gọi API tạo ra một "Signed Token" [cite: 56]
+            const response = await fetch(
+              `https://api.cloudflare.com/client/v4/accounts/${accountId}/stream/${lesson.videoId}/token`,
+              {
+                method: 'POST',
+                headers: {
+                  Authorization: `Bearer ${apiToken}`,
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  exp: Math.floor(Date.now() / 1000) + 7200, // Token sống 2 tiếng [cite: 56]
+                  downloadable: false,
+                }),
+              }
+            );
+            const data: any = await response.json();
+            if (data.success) {
+              videoToken = data.result.token;
+            }
+          } catch (error) {
+            console.error('Lỗi lấy token Cloudflare:', error);
+          }
+        }
       }
-      // Nếu videoStatus là PROCESSING hoặc FAILED, videoToken sẽ null.
-      // FE check thấy type=VIDEO nhưng videoToken=null và videoStatus=PROCESSING -> Hiện màn hình chờ.
     }
 
     // 4. Lấy lịch sử xem dở (nếu có) để Player nhảy đến đúng giây
@@ -131,8 +146,10 @@ export class LearnService {
       select: { watchedSeconds: true, isCompleted: true },
     });
 
+    const { videoId: _hiddenVideoId, videoUrl: _hiddenVideoUrl, ...safeLesson } = lesson;
+
     return {
-      ...lesson,
+      ...safeLesson,
       videoToken,
       watchedSeconds: progress?.watchedSeconds || 0,
       isCompleted: progress?.isCompleted || false,
@@ -140,46 +157,86 @@ export class LearnService {
   }
 
   public async updateProgress(userId: string, lessonId: string, payload: UpdateProgressDTO) {
-    const lesson = await this.learnRepository.findById(lessonId, {
-      select: { duration: true },
-    });
+    // Dùng findLessonWithModule để lấy được courseId tính % khóa học
+    const lesson = await this.learnRepository.findLessonWithModule(lessonId);
 
     if (!lesson) throw new AppError(404, MESSAGES.COMMON.ERROR.NOT_FOUND(RESOURCES.LESSON));
 
-    // Thuật toán Heartbeat Threshold (90%)
-    let isCompletedAuto = false;
-    if (lesson.duration > 0 && payload.watchedSeconds / lesson.duration >= 0.9) {
+    // Lấy tiến độ cũ để đảm bảo số giây lưu vào Database luôn là thời gian xem cao nhất [cite: 23]
+    const existingProgress = await this.learnRepository.findProgress(userId, lessonId);
+    const maxWatchedSeconds = Math.max(
+      existingProgress?.watchedSeconds || 0,
+      payload.watchedSeconds
+    );
+
+    // Thuật toán Heartbeat Threshold (90%) [cite: 40]
+    let isCompletedAuto = existingProgress?.isCompleted || false;
+    if (!isCompletedAuto && lesson.duration > 0 && maxWatchedSeconds / lesson.duration >= 0.9) {
       isCompletedAuto = true;
     }
 
-    // FE có thể truyền lên true nếu user bấm nút "Mark as Completed"
     const finalIsCompleted = payload.isCompleted || isCompletedAuto;
 
-    // Upsert để tối ưu hóa việc tạo/cập nhật
-    const progress = await prisma.lessonProgress.upsert({
-      where: { userId_lessonId: { userId, lessonId } },
-      update: {
-        watchedSeconds: payload.watchedSeconds,
-        ...(finalIsCompleted && { isCompleted: true }), // Chỉ update nếu thành true
-      },
-      create: {
-        userId,
-        lessonId,
-        watchedSeconds: payload.watchedSeconds,
-        isCompleted: finalIsCompleted,
-      },
+    // Upsert Tiến độ
+    const progress = await this.learnRepository.upsertProgress(userId, lessonId, {
+      watchedSeconds: maxWatchedSeconds,
+      isCompleted: finalIsCompleted,
     });
 
-    return progress;
+    // Tính toán lại ngay tiến độ toàn khóa để FE cập nhật UI
+    const courseId = lesson.module.courseId;
+    const courseProgressPercent = await this.calculateProgress(userId, courseId);
+
+    return {
+      ...progress,
+      courseProgressPercent,
+    };
   }
 
   // [C] TƯƠNG TÁC & CỘNG ĐỒNG
   public async getComments(lessonId: string) {
-    return await this.learnRepository.findCommentsByLessonId(lessonId);
+    const comments = await this.learnRepository.findCommentsByLessonId(lessonId);
+
+    // [BẢN VÁ]: Định dạng lại response để có "Hào quang Giảng viên"
+    return comments.map((c) => {
+      // Giả sử repository trả về role của user
+      const role = (c.user as any).role?.name || 'STUDENT';
+      const isInstructorOrAdmin = role === 'ADMIN' || role === 'INSTRUCTOR';
+
+      return {
+        id: c.id,
+        content: c.content,
+        parentId: c.parentId,
+        createdAt: c.createdAt,
+        user: {
+          id: c.user.id,
+          fullName: c.user.profile?.fullName,
+          avatarUrl: c.user.profile?.avatarUrl,
+          role: role,
+        },
+        isAuthor: isInstructorOrAdmin, // Frontend dùng cờ này để tô nền màu vàng
+      };
+    });
   }
 
   public async createComment(userId: string, lessonId: string, payload: CreateCommentDTO) {
-    // Kiểm tra xem parentId có hợp lệ không (nếu có)
+    const lesson = await this.learnRepository.findLessonWithModule(lessonId);
+    if (!lesson)
+      throw new AppError(404, 'Bài học không tồn tại', ERROR_CODES.DATABASE.RECORD_NOT_FOUND);
+
+    // return true nếu User là ADMIN, Giảng viên của khóa, hoặc Học viên đã mua khóa.
+    const hasAccess = await this.learnRepository.checkUserHasQnaAccess(
+      userId,
+      lesson.module.courseId
+    );
+    if (!hasAccess) {
+      throw new AppError(
+        403,
+        'Bạn không có quyền truy cập khu vực thảo luận của bài học này.',
+        ERROR_CODES.COMMON.FORBIDDEN
+      );
+    }
+
     if (payload.parentId) {
       const parent = await this.learnRepository.findCommentById(payload.parentId);
       if (!parent || parent.lessonId !== lessonId) {
@@ -209,7 +266,6 @@ export class LearnService {
 
     const courseId = course.id;
 
-    // 1. Kiểm tra sở hữu khóa học
     const enrollment = await prisma.enrollment.findUnique({
       where: { userId_courseId: { userId, courseId } },
     });
@@ -218,7 +274,6 @@ export class LearnService {
       throw new AppError(403, 'Bạn phải sở hữu khóa học này mới được phép đánh giá.');
     }
 
-    // 2. Tính toán tiến độ thực tế (Chống Seeding/Review ảo)
     const totalLessons = await prisma.lesson.count({
       where: { module: { courseId } },
     });
@@ -240,7 +295,6 @@ export class LearnService {
       );
     }
 
-    // 3. Upsert Review
     const review = await this.learnRepository.upsertReview(userId, course.id, payload);
 
     return review;
@@ -251,5 +305,42 @@ export class LearnService {
     if (total === 0) return 0;
     const completed = await this.learnRepository.countCompletedLessons(userId, courseId);
     return Math.round((completed / total) * 100);
+  }
+
+  // Thêm vào cuối phần [C] TƯƠNG TÁC & CỘNG ĐỒNG
+  public async updateComment(userId: string, commentId: string, content: string) {
+    const comment = await this.learnRepository.findCommentById(commentId);
+    if (!comment)
+      throw new AppError(404, 'Không tìm thấy bình luận.', ERROR_CODES.DATABASE.RECORD_NOT_FOUND);
+
+    // Gác cổng: Chỉ người tạo ra bình luận mới được sửa
+    if (comment.userId !== userId) {
+      throw new AppError(
+        403,
+        'Bạn không có quyền chỉnh sửa bình luận này.',
+        ERROR_CODES.COMMON.FORBIDDEN_OWNERSHIP
+      );
+    }
+
+    return this.learnRepository.updateComment(commentId, content);
+  }
+
+  public async deleteComment(userId: string, commentId: string) {
+    const comment = await this.learnRepository.findCommentById(commentId);
+    if (!comment)
+      throw new AppError(404, 'Không tìm thấy bình luận.', ERROR_CODES.DATABASE.RECORD_NOT_FOUND);
+
+    // Gác cổng: Chỉ người tạo ra bình luận mới được xóa (Hoặc Admin - sẽ được xử lý ở phân hệ Admin)
+    if (comment.userId !== userId) {
+      throw new AppError(
+        403,
+        'Bạn không có quyền xóa bình luận này.',
+        ERROR_CODES.COMMON.FORBIDDEN_OWNERSHIP
+      );
+    }
+
+    // Prisma onDelete: Cascade sẽ tự động dọn dẹp các replies con nếu đây là bình luận cha
+    await this.learnRepository.deleteComment(commentId);
+    return { message: 'Đã xóa bình luận thành công.' };
   }
 }

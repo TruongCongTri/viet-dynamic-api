@@ -1,22 +1,35 @@
+/**
+ * @file app.ts
+ * @description Core Express application configuration.
+ * Sets up security headers, CORS policies, request parsers, and global error handling.
+ * @module App
+ */
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
-import { env } from '@/common/configs/env';
+import { env } from '@/common/configs/env.config';
 import { errorHandler } from './middlewares/error-handler.middleware';
 import { API_VERSION } from './constants/endpoints';
 import v1Router from './routes/v1';
 
 const app = express();
 
-// Báo cho Express biết nó đang đứng sau Proxy
+/**
+ * --- PROXY CONFIGURATION ---
+ * Required for correct IP tracking and cookie security when behind
+ * load balancers or platforms like Heroku/Vercel.
+ */
 app.set('trust proxy', 1);
 
-// Middlewares bảo mật & Parse dữ liệu
+/**
+ * --- SECURITY MIDDLEWARE ---
+ * Helmet: Sets secure HTTP headers to protect against common web vulnerabilities.
+ * CORS: Restricts cross-origin requests to the validated CLIENT_URL.
+ */
 app.use(helmet());
 
-// 2. CẤU HÌNH CORS (CỰC KỲ QUAN TRỌNG CHO HTTP-ONLY COOKIE)
-const whitelist = [env.CLIENT_URL]; // Lấy URL từ file env đã validate bằng Zod
+const whitelist = env.CLIENT_URL.split(',');
 
 app.use(
   cors({
@@ -27,13 +40,21 @@ app.use(
         callback(new Error('Not allowed by CORS'));
       }
     },
-    credentials: true, // BẮT BUỘC: Cho phép nhận và gửi Cookie giữa FE và BE
+    credentials: true, // Allow cookies to be sent in CORS requests
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   })
 );
 
-// 3. Parse dữ liệu đầu vào
-app.use(express.json()); // Đọc body JSON
+/**
+ * --- REQUEST PARSING ---
+ */
+app.use(
+  express.json({
+    verify: (req: any, _res, buf) => {
+      req.rawBody = buf.toString('utf8');
+    },
+  })
+); // Đọc body JSON
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser()); // Đọc Cookie từ Request Header
 
@@ -43,13 +64,23 @@ app.get('/health', (_req: Request, res: Response) => {
 });
 
 // TODO: Sau này sẽ import router tổng vào đây
-// 4. Mount Routes (Sau này sẽ thêm vào đây)
-// import router from '@/modules/router';
-// app.use('/v1', router);
-// Routing - Gắn bản v1 vào /api/v1
+/**
+ * --- API ROUTES ---
+ */
+// TẠM THỜI DÁN VÀO ĐỂ DEBUG JEST
+app.use((req, _res, next) => {
+  if (req.url.includes('register')) {
+    console.log('🕵️ JEST ĐANG GỌI URL:', req.originalUrl);
+    console.log('🕵️ BODY NHẬN ĐƯỢC:', req.body);
+  }
+  next();
+});
 app.use(API_VERSION, v1Router);
 
-// global error handler
+/**
+ * --- ERROR HANDLING ---
+ * Must be mounted last to catch all errors bubbled up from routes and controllers.
+ */
 app.use(errorHandler);
 
 export default app;

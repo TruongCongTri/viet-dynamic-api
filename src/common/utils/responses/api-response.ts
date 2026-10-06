@@ -1,10 +1,15 @@
+/**
+ * @file api-response.ts
+ * @description Standardized API response wrappers for the Express framework.
+ * Ensures consistent JSON structure across all successful and error states.
+ * @module Common/Utils
+ */
 import { Response } from 'express';
 import { PaginationMetaDto } from '@/data/dtos/pagination.dto';
 
-// --- TYPE DEFINITIONS ---
-
 /**
- * Cấu trúc chi tiết cho lỗi Validation (thường dùng cho Zod)
+ * @interface ValidationErrorDetail
+ * @description Structure for granular validation errors (usually from Zod).
  */
 export interface ValidationErrorDetail {
   field: string | number;
@@ -12,12 +17,9 @@ export interface ValidationErrorDetail {
   code?: string;
 }
 
-/**
- * Định nghĩa kiểu dữ liệu cho errors thay thế cho 'any'
- */
 export type ApiErrorData = string | string[] | ValidationErrorDetail[] | Record<string, unknown>;
 
-// --- INTERFACES ---
+// INTERNAL RESPONSE INTERFACES
 
 interface BaseMeta {
   success: boolean;
@@ -44,34 +46,43 @@ interface ErrorResponseBody {
   meta: ErrorMeta;
 }
 
-// --- IMPLEMENTATION ---
+// EXPORTED FACTORY METHODS
 
+/**
+ * @method successResponse
+ * @description Standard wrapper for successful requests.
+ * @note The 'data' key is inserted before 'meta' to prioritize rendering order in clients.
+ */
 export const successResponse = <T>(
   res: Response,
   {
     message,
     data,
-    pagination,
+    meta,
     statusCode = 200,
   }: {
     message: string;
     data?: T;
-    pagination?: PaginationMetaDto;
+    meta?: PaginationMetaDto;
     statusCode?: number;
   }
 ): Response<SuccessResponseBody<T>> => {
   const responseBody: SuccessResponseBody<T> = {
+    ...(data !== undefined && { data }),
     meta: {
       success: true,
       message,
-      ...(pagination !== undefined && { pagination }),
+      ...(meta !== undefined && { pagination: meta }),
     },
-    ...(data !== undefined && { data }),
   };
 
   return res.status(statusCode).json(responseBody);
 };
 
+/**
+ * @method errorResponse
+ * @description Standard wrapper for failed requests.
+ */
 export const errorResponse = (
   res: Response,
   {

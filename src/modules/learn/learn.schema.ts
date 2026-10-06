@@ -12,7 +12,7 @@ export const updateProgressSchema = z.object({
     isCompleted: z.boolean().optional(),
   }),
   params: z.object({
-    lessonId: z
+    id: z
       .string({ message: MESSAGES.VALIDATION.MUST_BE_STRING(FIELDS.LESSON_ID) })
       .uuid({ message: MESSAGES.VALIDATION.INVALID_UUID(FIELDS.LESSON_ID) }),
   }),
@@ -32,7 +32,7 @@ export const createCommentSchema = z.object({
       .optional(),
   }),
   params: z.object({
-    lessonId: z
+    id: z
       .string({ message: MESSAGES.VALIDATION.MUST_BE_STRING(FIELDS.LESSON_ID) })
       .uuid({ message: MESSAGES.VALIDATION.INVALID_UUID(FIELDS.LESSON_ID) }),
   }),
@@ -59,6 +59,19 @@ export const createReviewSchema = z.object({
   }),
 });
 
+// Thêm vào phần SCHEMA BÌNH LUẬN BÀI HỌC
+export const updateCommentSchema = z.object({
+  body: z.object({
+    content: z.string().trim().min(1, { message: 'Nội dung không được để trống' }).max(2000),
+  }),
+});
+
+export const commentParamSchema = z.object({
+  params: z.object({
+    commentId: z.string().uuid({ message: 'ID Bình luận không hợp lệ' }),
+  }),
+});
+
 // TRÍCH XUẤT TYPE (DTO) CHO TẦNG SERVICE
 export type UpdateProgressDTO = z.infer<typeof updateProgressSchema>['body'];
 export type UpdateProgressParamsDTO = z.infer<typeof updateProgressSchema>['params'];
@@ -68,3 +81,5 @@ export type CreateCommentParamsDTO = z.infer<typeof createCommentSchema>['params
 
 export type CreateReviewDTO = z.infer<typeof createReviewSchema>['body'];
 export type CreateReviewParamsDTO = z.infer<typeof createReviewSchema>['params'];
+
+export type UpdateCommentDTO = z.infer<typeof updateCommentSchema>['body'];

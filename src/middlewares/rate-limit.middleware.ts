@@ -1,25 +1,39 @@
+/**
+ * @file rate-limit.middleware.ts
+ * @description Traffic control middleware to prevent API abuse.
+ * Configures window-based request limits using centralized APP_CONFIG.
+ * @module Middlewares/RateLimit
+ */
 import rateLimit from 'express-rate-limit';
 import { APP_CONFIG } from '@/constants/app.constant';
 import { MESSAGES } from '@/constants/messages';
 import { ERROR_CODES } from '@/constants/error-codes';
+import { env } from '@/common/configs/env.config';
 
-// 1. Limiter chung cho toàn bộ API (Chống spam request)
+/**
+ * @constant apiLimiter
+ * @description General protection for all endpoints to prevent resource exhaustion.
+ */
 export const apiLimiter = rateLimit({
-  windowMs: APP_CONFIG.RATE_LIMIT.API_WINDOW_MINUTES * 60 * 1000, // 15 phút
-  max: APP_CONFIG.RATE_LIMIT.API_MAX_REQUESTS, // Giới hạn 100 request / 1 IP / 15 phút
+  windowMs: APP_CONFIG.RATE_LIMIT.API_WINDOW_MINUTES * 60 * 1000,
+  max: APP_CONFIG.RATE_LIMIT.API_MAX_REQUESTS,
   message: {
     success: false,
     message: MESSAGES.RATE_LIMIT.API_SPAM(APP_CONFIG.RATE_LIMIT.API_WINDOW_MINUTES),
     error_code: ERROR_CODES.RATE_LIMIT.TOO_MANY_REQUESTS,
   },
-  standardHeaders: true, // Trả về thông tin limit trong header `RateLimit-*`
-  legacyHeaders: false, // Tắt các header cũ `X-RateLimit-*`
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: () => env.NODE_ENV === 'test',
 });
 
-// 2. Limiter nghiêm ngặt dành riêng cho Auth (Chống dò mật khẩu/Spam OTP)
+/**
+ * @constant authLimiter
+ * @description Strict protection for sensitive routes (Login, OTP, Password Reset).
+ */
 export const authLimiter = rateLimit({
-  windowMs: APP_CONFIG.RATE_LIMIT.AUTH_WINDOW_MINUTES * 60 * 1000, // 1 phút
-  max: APP_CONFIG.RATE_LIMIT.AUTH_MAX_REQUESTS, // Giới hạn 5 request / 1 IP / 1 phút
+  windowMs: APP_CONFIG.RATE_LIMIT.AUTH_WINDOW_MINUTES * 60 * 1000,
+  max: APP_CONFIG.RATE_LIMIT.AUTH_MAX_REQUESTS,
   message: {
     success: false,
     message: MESSAGES.RATE_LIMIT.AUTH_SPAM(APP_CONFIG.RATE_LIMIT.AUTH_WINDOW_MINUTES),
@@ -27,4 +41,5 @@ export const authLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
+  skip: () => env.NODE_ENV === 'test',
 });

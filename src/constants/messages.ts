@@ -2,12 +2,16 @@ import { ResourceName } from './resources';
 import { FieldName } from './fields';
 
 export const MESSAGES = {
+  SERVER: {
+    CONFIGURE: (field: FieldName) => `Thiếu cấu hình cho ${field}.`,
+  },
   // THÔNG BÁO CHUNG (Tái sử dụng 100% cho các Module sau này)
   COMMON: {
     SUCCESS: {
       CREATED: (resource: ResourceName) => `Tạo ${resource} thành công.`,
       UPDATED: (resource: ResourceName) => `Cập nhật ${resource} thành công.`,
       DELETED: (resource: ResourceName) => `Xóa ${resource} thành công.`,
+      FETCHED_ALL: (resource: ResourceName) => `Lấy danh sách ${resource} thành công.`,
       FETCHED: (resource: ResourceName) => `Lấy thông tin ${resource} thành công.`,
     },
     ERROR: {
@@ -59,6 +63,7 @@ export const MESSAGES = {
     ONLY_NUMBERS: (field: FieldName) => `${field} chỉ được chứa các chữ số`,
     INVALID_UUID: (field: FieldName) => `${field} không đúng định dạng UUID`,
     INVALID_ENUM: (field: FieldName) => `${field} không hợp lệ`,
+    MIN_PRICE_INVALID: 'Giá tối thiểu không được lớn hơn giá tối đa',
 
     // Đặc thù bảo mật (Auth)
     PASSWORD_UPPERCASE: 'Mật khẩu phải chứa ít nhất 1 chữ hoa',
@@ -106,6 +111,93 @@ export const MESSAGES = {
       WRONG_CURRENT_PASSWORD: 'Mật khẩu hiện tại không chính xác.',
       PASSWORD_MUST_BE_DIFFERENT: 'Mật khẩu mới phải khác với mật khẩu hiện tại',
       ROLE_NOT_FOUND: 'Lỗi cấu hình: Không tìm thấy Role mặc định.',
+    },
+  },
+
+  // THÔNG BÁO ĐẶC THÙ NGHIỆP VỤ (PAYMENT MODULE)
+  PAYMENT: {
+    SUCCESS: {
+      VNPAY_WEBHOOK_PROCESSED: 'Xác nhận giao dịch đang được xử lý.',
+      VNPAY_WEBHOOK_COMPLETED: 'Xác nhận giao dịch thành công.',
+    },
+    ERROR: {
+      INVALID_PAYMENT_METHOD: 'Phương thức thanh toán không hợp lệ.',
+      INVALID_SIGNATURE: 'Chữ ký điện tử không hợp lệ hoặc đã bị giả mạo.',
+      INVALID_AMOUNT: 'Số tiền thanh toán không khớp với giá trị đơn hàng.',
+      ALREADY_PROCESSED: 'Giao dịch này đã được xử lý trước đó.',
+      MOMO_NOT_IMPLEMENTED: 'Cổng thanh toán MoMo đang được bảo trì',
+      NOT_SUPPORTED_PAYMENT_METHOD: 'Cổng thanh toán không được hỗ trợ',
+    },
+  },
+
+  CART: {
+    SUCCESS: {
+      SYNC: 'Đồng bộ giỏ hàng thành công',
+    },
+    ERROR: {
+      EMPTY: 'Giỏ hàng trống',
+      MAX_VALUE: (max: number) => `Giỏ hàng không được vượt quá ${max} khóa học tối đa`,
+      OWNED: (resource: ResourceName) => `Bạn đã sở hữu ${resource} này, không thể thêm vào giỏ.`,
+      EXISTING: (resource: ResourceName) => `${resource} này đã có trong giỏ hàng.`,
+    },
+  },
+
+  WISHLIST: {
+    SUCCESS: {},
+    ERROR: {},
+  },
+  VIEW: {
+    SUCCESS: {
+      TRACKED: 'Ghi nhận lịch sử xem thành công.',
+    },
+    ERROR: {},
+  },
+
+  VOUCHER: {
+    SUCCESS: {
+      FETCHED_ALL_AVAILABLE: 'Lấy danh sách mã có thể áp dụng thành công',
+      APPLIED: 'Áp dụng mã giảm giá thành công',
+    },
+    ERROR: {
+      INVALID: 'Mã giảm giá không hợp lệ, chưa bắt đầu, đã hết hạn hoặc bị khóa',
+      OFF_LIMIT: 'Mã giảm giá đã hết lượt sử dụng',
+      FORBIDDEN: 'Bạn không thể tự lưu mã giảm giá đặc quyền này',
+      HAVE_NOT_SAVED: 'Bạn đã lưu mã giảm giá này rồi',
+      EMPTY_CART: 'Giỏ hàng trống, không thể áp mã',
+      NOT_OWNED: 'Bạn không sở hữu mã giảm giá này',
+      MIN_ORDER_VALUE: (min: number) => `Đơn hàng chưa đạt mức tối thiểu ${min} để áp mã này`,
+      RACE_CONDITION:
+        'Rất tiếc, mã giảm giá vừa hết lượt sử dụng trong tích tắc. Vui lòng thử mã khác.',
+    },
+  },
+
+  ORDER: {
+    SUCCESS: {
+      CREATED_PAYMENT_URL: 'Tạo link thanh toán thành công',
+      CREATED: 'Tạo đơn hàng thành công, vui lòng tiến hành thanh toán.',
+      POLLING: 'Polling trạng thái',
+    },
+    ERROR: {
+      PENDING:
+        'Bạn đang có một đơn hàng chờ thanh toán cho các khóa học này. Vui lòng hoàn tất hoặc hủy đơn cũ.',
+      STATUS: (status: string) => `Đơn hàng này đã ở trạng thái ${status}.`,
+    },
+  },
+  ACTIVITY: {
+    SUCCESS: {
+      ADDED: (resource: ResourceName, location: ResourceName) =>
+        `Đã thêm ${resource} vào ${location} thành công.`,
+      SAVED: (resource: ResourceName, location: ResourceName) =>
+        `Lưu ${resource} vào ${location} thành công.`,
+      REMOVED: (resource: ResourceName, location: ResourceName) =>
+        `Đã xóa ${resource} khỏi ${location} thành công.`,
+      CLEARED: (location: ResourceName) => `Đã dọn sạch ${location}.`,
+      MOVED: (resource: ResourceName, from: ResourceName, to: ResourceName) =>
+        `Đã chuyển ${resource} từ ${from} sang ${to}.`,
+    },
+    ERROR: {
+      NON_EXISTING: (resource: ResourceName, location: ResourceName) =>
+        `${resource} không tồn tại trong ${location}.`,
     },
   },
 };

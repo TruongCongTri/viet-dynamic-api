@@ -1,5 +1,5 @@
 import cron from 'node-cron';
-import { prisma } from '@/common/configs/prisma';
+import { prisma } from '@/common/configs/prisma.config';
 
 // Chạy vào lúc 02:00 sáng mỗi ngày
 cron.schedule('0 2 * * *', async () => {

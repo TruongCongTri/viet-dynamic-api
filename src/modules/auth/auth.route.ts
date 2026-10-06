@@ -20,9 +20,10 @@ export class AuthRoute {
   public router: Router;
   private readonly authController: AuthController;
 
-  constructor() {
+  constructor(controller?: AuthController) {
     this.router = Router();
-    this.authController = new AuthController();
+    this.authController = controller || new AuthController();
+
     this.initializeRoutes();
   }
 

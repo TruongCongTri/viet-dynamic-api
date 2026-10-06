@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import { env } from '@/common/configs/env';
+import { env } from '@/common/configs/env.config';
 
 export const PasswordUtil = {
   /**

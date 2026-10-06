@@ -1,11 +1,20 @@
+// import { requireRole, verifyToken } from '@/middlewares/auth.middleware';
 import { Router } from 'express';
-// import { ENDPOINTS } from '../../constants/endpoints';
-// import { adminUserController } from './admin-user.controller';
-// import { adminCourseController } from './admin-course.controller';
-// import { adminFinanceController } from './admin-finance.controller';
-// import { adminSystemController } from './admin-system.controller';
+import usersRoute from './users/admin-user.route';
+import coursesRoute from './courses/admin-course.route';
+import marketingRoute from './marketing/admin-marketing.route';
+import financeRoute from './finance/admin-finance.route';
+import systemRoute from './system/admin-system.route';
 
 const adminRoute = Router();
+
+// adminRoute.use(verifyToken, requireRole(['ADMIN']));
+
+adminRoute.use('/users', usersRoute);
+adminRoute.use('/courses', coursesRoute);
+adminRoute.use('/marketing', marketingRoute);
+adminRoute.use('/finance', financeRoute);
+adminRoute.use('/system', systemRoute);
 
 // --- 2.1 Quản lý Người dùng (User Management) ---
 // // Base: /api/v1/admin/users

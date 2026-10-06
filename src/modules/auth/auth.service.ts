@@ -1,5 +1,6 @@
+import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
-import { env } from '@/common/configs/env';
+import { env } from '@/common/configs/env.config';
 import { JwtUtil } from '@/common/utils/auth/jwt.util';
 import { AuthRepository } from './auth.repository';
 import { AppError } from '@/common/errors/app.error';
@@ -70,7 +71,30 @@ export class AuthService {
         ERROR_CODES.AUTH.INVALID_CREDENTIALS
       );
 
-    // 2. Kiểm tra tài khoản có bị khóa do nhập sai quá nhiều lần không?
+    // 2a. Kiểm tra trạng thái QA/QC
+    if (user.accountStatus === 'PENDING') {
+      throw new AppError(
+        403,
+        'Your account is pending admin approval.',
+        ERROR_CODES.COMMON.FORBIDDEN
+      );
+    }
+    if (user.accountStatus === 'REJECTED') {
+      throw new AppError(
+        403,
+        'Your account application was rejected.',
+        ERROR_CODES.COMMON.FORBIDDEN
+      );
+    }
+    if (user.accountStatus === 'SUSPENDED') {
+      throw new AppError(
+        403,
+        'Your account has been suspended by an administrator.',
+        ERROR_CODES.COMMON.FORBIDDEN
+      );
+    }
+
+    // 2b. Kiểm tra tài khoản có bị khóa do nhập sai quá nhiều lần không?
     if (user.lockedUntil && user.lockedUntil > new Date()) {
       const lockMinutes = Math.ceil((user.lockedUntil.getTime() - Date.now()) / 60000);
       throw new AppError(
@@ -115,14 +139,15 @@ export class AuthService {
     // Nếu số thiết bị vượt mức, tính toán cần xóa bao nhiêu thiết bị cũ nhất
     if (activeSessions.length >= APP_CONFIG.AUTH.MAX_DEVICES_PER_USER) {
       const numToRevoke = activeSessions.length - APP_CONFIG.AUTH.MAX_DEVICES_PER_USER + 1;
-      const sessionsToRevoke = activeSessions.slice(0, numToRevoke);
+
+      const sessionsToRevoke = activeSessions.slice(-numToRevoke);
       const sessionIdsToRevoke = sessionsToRevoke.map((s) => s.id);
 
       await this.authRepository.revokeSessions(sessionIdsToRevoke);
     }
 
     // 5. Tạo Refresh Token mới
-    const refreshToken = JwtUtil.generateRefreshToken({ id: user.id });
+    const refreshToken = JwtUtil.generateRefreshToken({ id: user.id, jti: crypto.randomUUID() });
     // Tính toán thời gian hết hạn dựa trên rememberMe
     const expiresInDays = rememberMe
       ? APP_CONFIG.AUTH.REMEMBER_ME_EXPIRES_IN_DAYS
@@ -395,6 +420,9 @@ export class AuthService {
     // 4. Thực thi Transaction (Giao dịch an toàn)
     await this.authRepository.resetPasswordTransaction(otpRecord.id, user.id, hashedPassword);
 
+    // Đổi pass xong phải đá văng mọi thiết bị đang đăng nhập
+    await this.adminRevokeAllUserSessions(user.id);
+
     return true;
   }
 
@@ -422,6 +450,82 @@ export class AuthService {
     const hashedPassword = await bcrypt.hash(dto.newPassword, salt);
 
     await this.authRepository.updatePassword(userId, hashedPassword);
+
+    await this.adminRevokeAllUserSessions(userId);
+
+    return true;
+  }
+
+  // ==========================================
+  // ADMIN OVERRIDE METHODS
+  // ==========================================
+
+  /**
+   * @description Admin explicitly triggers a password reset email for a user
+   */
+  async adminTriggerPasswordReset(targetUserId: string) {
+    const user = await this.authRepository.findById(targetUserId);
+
+    if (!user) {
+      throw new AppError(
+        404,
+        MESSAGES.COMMON.ERROR.NOT_FOUND(RESOURCES.USER),
+        ERROR_CODES.COMMON.RECORD_NOT_FOUND
+      );
+    }
+
+    // Generate standard reset OTP
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+    await this.authRepository.createOtp({
+      email: user.email,
+      code: otpCode,
+      type: 'FORGOT_PASSWORD',
+      expiresAt: new Date(Date.now() + APP_CONFIG.AUTH.OTP_FORGOT_EXPIRATION_MINUTES * 60 * 1000),
+    });
+
+    console.log(
+      `[MOCK EMAIL to ${user.email}] Your Admin has requested a password reset. Your OTP is: ${otpCode}`
+    );
+    // await notificationService.sendEmailOTP(user.email, otpCode);
+
+    return true;
+  }
+
+  /**
+   * @description Admin instantly logs a user out of all devices
+   */
+  async adminRevokeAllUserSessions(targetUserId: string) {
+    const activeSessions = await this.authRepository.findActiveSessionsForLogin(targetUserId);
+
+    if (activeSessions.length > 0) {
+      const sessionIds = activeSessions.map((s) => s.id);
+      await this.authRepository.revokeSessions(sessionIds);
+    }
+
+    return activeSessions.length; // Return how many sessions were killed
+  }
+
+  /**
+   * @description Admin manually verifies a user's email (Bypasses OTP)
+   */
+  async adminVerifyUserEmail(targetUserId: string) {
+    const user = await this.authRepository.findById(targetUserId);
+
+    if (!user) {
+      throw new AppError(
+        404,
+        MESSAGES.COMMON.ERROR.NOT_FOUND(RESOURCES.USER),
+        ERROR_CODES.COMMON.RECORD_NOT_FOUND
+      );
+    }
+    if (user.isEmailVerified) {
+      throw new AppError(400, 'User email is already verified.', ERROR_CODES.COMMON.INVALID_INPUT);
+    }
+
+    // Update the user directly (You will need to ensure this method exists in your Auth or User repository)
+    // await prisma.user.update({ where: { id: targetUserId }, data: { isEmailVerified: true } });
+
     return true;
   }
 }

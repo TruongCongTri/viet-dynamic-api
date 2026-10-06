@@ -1,21 +1,20 @@
 import { Request, Response, NextFunction } from 'express';
 import { JwtUtil } from '@/common/utils/auth/jwt.util';
-import { prisma } from '@/common/configs/prisma';
+import { prisma } from '@/common/configs/prisma.config';
 import { AppError } from '@/common/errors/app.error';
 import { ERROR_CODES } from '@/constants/error-codes';
 import { MESSAGES } from '@/constants/messages';
-import { RESOURCES } from '@/constants/resources';
 
-// Mở rộng interface Request của Express để chứa thông tin user
+// Extend Express Request interface to hold the authenticated user payload
 declare global {
   namespace Express {
     interface Request {
-      user?: { id: string; role: string; sessionId: string };
+      user?: { id: string; role: string; sessionId: string } | undefined;
     }
   }
 }
 
-// 1. XÁC THỰC TOKEN & KIỂM TRA SESSION (VERIFY TOKEN)
+// 1. VERIFY TOKEN & CHECK SESSION IN DB
 export const verifyToken = async (
   req: Request,
   _res: Response,
@@ -25,12 +24,14 @@ export const verifyToken = async (
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer '))
       throw new AppError(401, MESSAGES.AUTH.ERROR.MISSING_TOKEN, ERROR_CODES.AUTH.MISSING_TOKEN);
-    // Lấy token ra
+
+    // Extract token
     const token = authHeader.split(' ')[1];
 
-    // Kiểm tra xem token có thực sự tồn tại (khác undefined/rỗng) không
-    if (!token)
+    if (!token) {
+      console.log(`🕵️ BỊ CHẶN BỞI VERIFYTOKEN TẠI URL: ${req.originalUrl}`);
       throw new AppError(401, MESSAGES.AUTH.ERROR.INVALID_TOKEN, ERROR_CODES.AUTH.INVALID_TOKEN);
+    }
 
     const decoded = JwtUtil.verifyAccessToken(token) as {
       id: string;
@@ -38,7 +39,7 @@ export const verifyToken = async (
       sessionId: string;
     };
 
-    // Kiểm tra xem Session này có bị Admin "Đá văng" (Revoked) chưa?
+    // Check if this specific login session was revoked (e.g. by Admin or remote logout)
     const session = await prisma.session.findUnique({
       where: { id: decoded.sessionId },
     });
@@ -50,19 +51,71 @@ export const verifyToken = async (
         ERROR_CODES.AUTH.INVALID_SESSION
       );
 
+    // Attach user payload to request for downstream controllers
     req.user = decoded;
     next();
   } catch (error: any) {
     if (error.name === 'TokenExpiredError') {
       next(new AppError(401, MESSAGES.AUTH.ERROR.TOKEN_EXPIRED, ERROR_CODES.AUTH.TOKEN_EXPIRED));
+    } else if (error instanceof AppError) {
+      // Preserve custom errors thrown inside the try block (like missing token)
+      next(error);
     } else {
       next(new AppError(401, MESSAGES.AUTH.ERROR.INVALID_TOKEN, ERROR_CODES.AUTH.INVALID_TOKEN));
     }
   }
 };
 
-// 2. KIỂM TRA VAI TRÒ (REQUIRE ROLE)
-// Dùng cho các luồng cơ bản (VD: Chỉ Học viên mới được xem Khóa học của tôi)
+// 2. OPTIONAL VERIFY TOKEN (For mixed public/private routes like /assets/map)
+export const optionalVerifyToken = async (
+  req: Request,
+  _res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const authHeader = req.headers.authorization;
+
+    // If no valid auth header format, proceed as a Public Guest
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      req.user = undefined;
+      return next();
+    }
+
+    const token = authHeader.split(' ')[1];
+
+    // If empty token, proceed as Guest
+    if (!token) {
+      req.user = undefined;
+      return next();
+    }
+
+    const decoded = JwtUtil.verifyAccessToken(token) as {
+      id: string;
+      role: string;
+      sessionId: string;
+    };
+
+    // We still must check if the session was revoked!
+    const session = await prisma.session.findUnique({
+      where: { id: decoded.sessionId },
+    });
+
+    if (!session || session.isRevoked) {
+      req.user = undefined; // Revoked tokens revert to Guest
+    } else {
+      req.user = decoded; // Valid session! Attach user data.
+    }
+
+    next();
+  } catch (_error: any) {
+    // If the token is invalid, expired, or tampered with, swallow the error
+    // and proceed as a Public Guest.
+    req.user = undefined;
+    next();
+  }
+};
+
+// 2. REQUIRE ROLE (Simple RBAC for our current architecture)
 export const requireRole = (allowedRoles: string[]) => {
   return (req: Request, _res: Response, next: NextFunction): void => {
     if (!req.user || !allowedRoles.includes(req.user.role)) {
@@ -73,66 +126,8 @@ export const requireRole = (allowedRoles: string[]) => {
   };
 };
 
-//
-// 3. KIỂM TRA QUYỀN HẠN HOẠT ĐỘNG (REQUIRE PERMISSION)
-// Kiểm tra cả Quyền gốc (Role) VÀ Quyền ngoại lệ (Extra Permissions)
-export const requirePermission = (requiredAction: string) => {
-  return async (req: Request, _res: Response, next: NextFunction): Promise<void> => {
-    try {
-      if (!req.user)
-        throw new AppError(
-          401,
-          MESSAGES.AUTH.ERROR.UNAUTHENTICATED,
-          ERROR_CODES.AUTH.UNAUTHENTICATED
-        );
-
-      // Query nhanh vào DB để check xem user này CÓ quyền này không (Không cần fetch toàn bộ User)
-      const userWithPermissions = await prisma.user.findUnique({
-        where: { id: req.user.id },
-        select: {
-          role: {
-            select: {
-              permissions: {
-                where: { permission: { action: requiredAction } },
-                take: 1,
-              },
-            },
-          },
-          extraPermissions: {
-            where: { permission: { action: requiredAction } },
-            take: 1,
-          },
-        },
-      });
-
-      if (!userWithPermissions)
-        throw new AppError(
-          401,
-          MESSAGES.COMMON.ERROR.NOT_FOUND(RESOURCES.USER),
-          ERROR_CODES.AUTH.USER_NOT_FOUND
-        );
-
-      // Check xem Quyền có nằm trong Role hoặc nằm trong Extra Permissions không
-      const hasRolePermission = userWithPermissions.role.permissions.length > 0;
-      const hasExtraPermission = userWithPermissions.extraPermissions.length > 0;
-
-      if (!hasRolePermission && !hasExtraPermission) {
-        throw new AppError(
-          403,
-          MESSAGES.MIDDLEWARE.MISSING_PERMISSION(requiredAction),
-          ERROR_CODES.COMMON.FORBIDDEN
-        );
-      }
-
-      next();
-    } catch (error) {
-      next(error);
-    }
-  };
-};
-
-// 4. REQUIRE OWNERSHIP (Kiểm tra sở hữu tài nguyên)
-// paramKey là tên của tham số truyền trên URL (VD: req.params.userId)
+// 3. REQUIRE OWNERSHIP (Check if User owns resource, or if they are ADMIN)
+// paramKey is the URL param containing the owner's ID (e.g., req.params.userId)
 export const requireOwnership = (paramKey: string = 'id') => {
   return (req: Request, _res: Response, next: NextFunction): void => {
     if (!req.user) {
@@ -144,7 +139,7 @@ export const requireOwnership = (paramKey: string = 'id') => {
 
     const resourceUserId = req.params[paramKey];
 
-    // Nếu là Admin hoặc là Chủ sở hữu tài nguyên -> Cho đi tiếp
+    // If Admin OR Resource Owner -> Grant Access
     if (req.user.role === 'ADMIN' || req.user.id === resourceUserId) {
       next();
     } else {
